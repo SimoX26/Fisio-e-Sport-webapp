@@ -1,7 +1,7 @@
-package it.SimoSW.util.dao.FileSystem;
+package it.SimoSW.model.dao.FileSystem;
 
 import it.SimoSW.model.Appointment;
-import it.SimoSW.util.dao.AppuntamentoDAO;
+import it.SimoSW.model.dao.AppuntamentoDAO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

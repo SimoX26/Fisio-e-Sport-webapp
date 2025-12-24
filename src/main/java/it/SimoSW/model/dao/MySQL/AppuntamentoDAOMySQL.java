@@ -1,4 +1,4 @@
-package it.SimoSW.util.dao.MySQL;
+package it.SimoSW.model.dao.MySQL;
 
 public class AppuntamentoDAOMySQL {
 }

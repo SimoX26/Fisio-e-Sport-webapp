@@ -1,4 +1,4 @@
-package it.SimoSW.controller.graphic;
+package it.SimoSW.presentation;
 
 public class TreatmentHistoryServlet {
 }

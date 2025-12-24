@@ -1,4 +1,4 @@
-package it.SimoSW.util;
+package it.SimoSW;
 
 import java.util.HashMap;
 import java.util.Map;
