@@ -1,7 +1,7 @@
-package it.SimoSW.model.dao.FileSystem;
+package it.SimoSW.util.dao.filesystem;
 
 import it.SimoSW.model.Appointment;
-import it.SimoSW.model.dao.AppuntamentoDAO;
+import it.SimoSW.util.dao.AppointmentDAO;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppuntamentoDAOFileSystem implements AppuntamentoDAO {
+public class AppointmentDAOFileSystem implements AppointmentDAO {
     // Percorso del file JSON sul file system
     private static final Path FILE_PATH = Paths.get("data", "appuntamenti.csv");
 
@@ -22,7 +22,7 @@ public class AppuntamentoDAOFileSystem implements AppuntamentoDAO {
 
     private int autoIncrementId = 1; // Simula il comportamento di un DB autoreferenziale
 
-    public AppuntamentoDAOFileSystem() {
+    public AppointmentDAOFileSystem() {
         System.out.println("Tipologia di memorizzazione: CSV file");
         loadFromFileIfExists(); // All'avvio, popola la cache dal JSON
     }
