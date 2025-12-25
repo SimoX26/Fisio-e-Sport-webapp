@@ -3,82 +3,71 @@ package it.SimoSW.model;
 import java.time.LocalDateTime;
 
 public class Appointment {
-    private int id;
-    private int idPaziente;
-    private String titolo;
-    private String descrizione;
-    private LocalDateTime inizio;
-    private LocalDateTime fine;
-    private String colore;
 
-    public Appointment(){
-        // Costruttore vuoto
+    private long id;
+    private long patientId;
+    private long therapistId;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private AppointmentState state;
+
+    public Appointment() {
     }
 
-    public Appointment(int id, int idPaziente, String titolo, String descrizione, LocalDateTime inizio, LocalDateTime fine, String colore){
+    public Appointment(long id, long patientId, long therapistId,
+                       LocalDateTime start, LocalDateTime end) {
         this.id = id;
-        this.idPaziente = idPaziente;
-        this.titolo = titolo;
-        this.descrizione = descrizione;
-        this.inizio = inizio;
-        this.fine = fine;
-        this.colore = colore;
+        this.patientId = patientId;
+        this.therapistId = therapistId;
+        this.start = start;
+        this.end = end;
     }
 
-    // GETTER
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public int getIdPaziente() {
-        return idPaziente;
-    }
-
-    public String getTitolo() {
-        return titolo;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public LocalDateTime getInizio() {
-        return inizio;
-    }
-
-    public LocalDateTime getFine() {
-        return fine;
-    }
-
-    public String getColore() {
-        return colore;
-    }
-
-    // SETTER
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public void setIdPaziente(int idPaziente) {
-        this.idPaziente = idPaziente;
+    public long getPatientId() {
+        return patientId;
     }
 
-    public void setTitolo(String title) {
-        this.titolo = title;
+    public void setPatientId(long patientId) {
+        this.patientId = patientId;
     }
 
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
+    public long getTherapistId() {
+        return therapistId;
     }
 
-    public void setInizio(LocalDateTime inizio) {
-        this.inizio = inizio;
+    public void setTherapistId(long therapistId) {
+        this.therapistId = therapistId;
     }
 
-    public void setFine(LocalDateTime fine) {
-        this.fine = fine;
+    public LocalDateTime getStart() {
+        return start;
     }
 
-    public void setColore(String colore) {
-        this.colore = colore;
-    }}
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
+    }
+
+    public AppointmentState getState() {
+        return state;
+    }
+
+    public void setState(AppointmentState state) {
+        this.state = state;
+    }
+}
