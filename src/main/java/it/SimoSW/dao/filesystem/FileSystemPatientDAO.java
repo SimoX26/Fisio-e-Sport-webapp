@@ -1,8 +1,8 @@
-package it.SimoSW.util.dao.filesystem;
+package it.SimoSW.dao.filesystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.SimoSW.model.Therapist;
-import it.SimoSW.util.dao.TherapistDAO;
+import it.SimoSW.model.Patient;
+import it.SimoSW.dao.PatientDAO;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,46 +11,47 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class FileSystemTherapistDAO extends FileSystemDAOBase implements TherapistDAO {
+public class FileSystemPatientDAO extends FileSystemDAOBase implements PatientDAO {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public FileSystemTherapistDAO(Path baseDir) {
+    public FileSystemPatientDAO(Path baseDir) {
         super(baseDir);
     }
 
     @Override
-    public Therapist save(Therapist therapist) {
-        return write(therapist);
+    public Patient save(Patient patient) {
+        return write(patient);
     }
 
     @Override
-    public Therapist update(Therapist therapist) {
-        return write(therapist);
+    public Patient update(Patient patient) {
+        return write(patient);
     }
 
     @Override
-    public Optional<Therapist> findById(long id) {
+    public Optional<Patient> findById(long id) {
         Path file = fileOf(id);
         if (!Files.exists(file)) return Optional.empty();
-        return Optional.of(read(file, Therapist.class));
+        return Optional.of(read(file, Patient.class));
     }
 
     @Override
-    public List<Therapist> findAll() {
+    public List<Patient> search(String query) {
         try {
             return Files.list(baseDir)
-                    .map(p -> read(p, Therapist.class))
+                    .map(p -> read(p, Patient.class))
+                    .filter(p -> p.getFullName().toLowerCase().contains(query.toLowerCase()))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Therapist write(Therapist therapist) {
+    private Patient write(Patient patient) {
         try {
-            mapper.writeValue(fileOf(therapist.getId()).toFile(), therapist);
-            return therapist;
+            mapper.writeValue(fileOf(patient.getId()).toFile(), patient);
+            return patient;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

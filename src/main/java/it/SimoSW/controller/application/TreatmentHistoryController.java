@@ -5,9 +5,9 @@ import it.SimoSW.exception.TreatmentAlreadyExistsException;
 import it.SimoSW.exception.TreatmentSessionNotFoundException;
 import it.SimoSW.model.TreatmentSession;
 import it.SimoSW.model.TreatmentSessionState;
-import it.SimoSW.util.dao.AppointmentDAO;
-import it.SimoSW.util.dao.PatientDAO;
-import it.SimoSW.util.dao.TreatmentSessionDAO;
+import it.SimoSW.dao.AppointmentDAO;
+import it.SimoSW.dao.PatientDAO;
+import it.SimoSW.dao.TreatmentSessionDAO;
 
 import java.util.List;
 

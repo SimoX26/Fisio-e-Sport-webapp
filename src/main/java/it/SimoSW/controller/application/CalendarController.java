@@ -5,9 +5,9 @@ import it.SimoSW.exception.InvalidAppointmentStateException;
 import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
-import it.SimoSW.util.dao.AppointmentDAO;
-import it.SimoSW.util.dao.PatientDAO;
-import it.SimoSW.util.dao.TherapistDAO;
+import it.SimoSW.dao.AppointmentDAO;
+import it.SimoSW.dao.PatientDAO;
+import it.SimoSW.dao.TherapistDAO;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,8 +1,8 @@
-package it.SimoSW.util.dao.filesystem;
+package it.SimoSW.dao.filesystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.SimoSW.model.TreatmentSession;
-import it.SimoSW.util.dao.TreatmentSessionDAO;
+import it.SimoSW.dao.TreatmentSessionDAO;
 
 import java.io.IOException;
 import java.nio.file.Files;

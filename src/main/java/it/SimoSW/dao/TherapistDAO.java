@@ -1,4 +1,4 @@
-package it.SimoSW.util.dao;
+package it.SimoSW.dao;
 
 import it.SimoSW.model.Therapist;
 
