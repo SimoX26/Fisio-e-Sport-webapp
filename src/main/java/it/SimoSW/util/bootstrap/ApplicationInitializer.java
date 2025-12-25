@@ -17,7 +17,7 @@ public class ApplicationInitializer {
     private AddressBookController addressBookController;
     private CalendarController calendarController;
     private TreatmentHistoryController treatmentHistoryController;
-/*
+
     public void init() {
 
         // Inizializzazione persistenza (DB in questo caso)
@@ -35,7 +35,7 @@ public class ApplicationInitializer {
                 patientDAO
         );
     }
-*/
+
     public AddressBookController getAddressBookController() {
         return addressBookController;
     }
