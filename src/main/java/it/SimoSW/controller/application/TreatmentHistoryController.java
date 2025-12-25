@@ -1,4 +1,4 @@
-package it.SimoSW.controller;
+package it.SimoSW.controller.application;
 
 public class TreatmentHistoryController {
 }

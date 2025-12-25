@@ -12,7 +12,7 @@ public class ApplicationContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         ApplicationInitializer initializer = new ApplicationInitializer();
-        initializer.init();
+//        initializer.init();
 
         ServletContext context = sce.getServletContext();
         context.setAttribute("appInitializer", initializer);

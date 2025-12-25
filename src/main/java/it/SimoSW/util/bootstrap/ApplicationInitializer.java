@@ -1,8 +1,8 @@
 package it.SimoSW.util.bootstrap;
 
-import it.SimoSW.controller.AddressBookController;
-import it.SimoSW.controller.CalendarController;
-import it.SimoSW.controller.TreatmentHistoryController;
+import it.SimoSW.controller.application.AddressBookController;
+import it.SimoSW.controller.application.CalendarController;
+import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.util.dao.AppointmentDAO;
 import it.SimoSW.util.dao.database.DatabaseAppointmentDAO;
 import it.SimoSW.util.dao.database.DatabasePatientDAO;
@@ -17,7 +17,7 @@ public class ApplicationInitializer {
     private AddressBookController addressBookController;
     private CalendarController calendarController;
     private TreatmentHistoryController treatmentHistoryController;
-
+/*
     public void init() {
 
         // Inizializzazione persistenza (DB in questo caso)
@@ -35,7 +35,7 @@ public class ApplicationInitializer {
                 patientDAO
         );
     }
-
+*/
     public AddressBookController getAddressBookController() {
         return addressBookController;
     }

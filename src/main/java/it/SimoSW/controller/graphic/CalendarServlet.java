@@ -1,6 +1,6 @@
-package it.SimoSW.presentation;
+package it.SimoSW.controller.graphic;
 
-import it.SimoSW.controller.CalendarController;
+import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.model.Appointment;
 
 import javax.servlet.ServletException;
