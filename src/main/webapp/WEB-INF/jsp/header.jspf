@@ -1,19 +1,19 @@
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
 
         <!-- Nome applicazione -->
-        <a class="navbar-brand" href="/FisioESport/index.jsp">
+        <a class="navbar-brand"
+           href="<%= request.getContextPath() %>/index.jsp">
             <strong>Fisio e Sport</strong>
         </a>
 
         <!-- Bottone hamburger (mobile) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -21,20 +21,43 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
 
+                <!-- Home -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/FisioESport/index.jsp">🏠 Home</a>
+                    <a class="nav-link"
+                       href="<%= request.getContextPath() %>/index.jsp">
+                        🏠 Home
+                    </a>
                 </li>
 
+                <!-- Calendario -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/FisioESport/CalendarioController">📅 Calendario</a>
+                    <a class="nav-link"
+                       href="<%= request.getContextPath() %>/calendar">
+                        📅 Calendario
+                    </a>
                 </li>
 
+                <!-- Rubrica -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/FisioESport/RubricaController">👤 Rubrica Pazienti</a>
+                    <a class="nav-link"
+                       href="<%= request.getContextPath() %>/address-book">
+                        👤 Rubrica Pazienti
+                    </a>
                 </li>
 
+                <!-- Storico Trattamenti -->
                 <li class="nav-item">
-                    <a class="nav-link text-warning" href="#">🔒 Logout</a>
+                    <a class="nav-link"
+                       href="<%= request.getContextPath() %>/treatment-history?patientId=1">
+                        🩺 Storico Trattamenti
+                    </a>
+                </li>
+
+                <!-- Logout (placeholder) -->
+                <li class="nav-item">
+                    <a class="nav-link text-warning" href="#">
+                        🔒 Logout
+                    </a>
                 </li>
 
             </ul>
@@ -43,4 +66,4 @@
 </nav>
 
 <!-- Spaziatura sotto l’header -->
-<div style="margin-bottom: 20px;"></div>
+<div class="mb-3"></div>
