@@ -75,7 +75,7 @@ public class AddressBookController {
      * @throws InvalidPatientStateException if the patient is archived
      */
     public Patient updatePatientProfile(Patient patient) {
-        if (patient == null || patient.getId() == null) {
+        if (patient == null || patient.getId() == 0) {
             throw new IllegalArgumentException("Patient or patient id cannot be null");
         }
 
