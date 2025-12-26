@@ -15,8 +15,11 @@
           rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
-    <!-- THEME CSS (variabili globali) -->
     <style>
+        /* =========================
+           THEME VARIABLES
+           ========================= */
+
         :root{
             --bg-main: #ffffff;
             --bg-card: rgba(0,0,0,.03);
@@ -39,7 +42,12 @@
                 radial-gradient(1000px 600px at 90% 20%, rgba(32,201,151,.16), transparent 55%),
                 var(--bg-main);
             color: var(--text-main);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
+
+        /* =========================
+           COMMON UI
+           ========================= */
 
         .page-title{
             font-weight: 600;
@@ -57,73 +65,163 @@
             box-shadow: 0 14px 40px rgba(0,0,0,.45);
         }
 
-        .kpi-value{
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .kpi-label{
-            color: var(--text-muted);
-            font-size: .9rem;
-        }
-
-        .action-card{
-            cursor: pointer;
-            transition: .25s ease;
-        }
-
-        .action-card:hover{
-            transform: translateY(-6px);
-            box-shadow: 0 14px 30px rgba(0,0,0,.4);
-        }
-
-        .icon{
-            font-size: 2rem;
-        }
-
-        .btn-soft{
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
-        .btn-soft:hover{
-            background: rgba(255,255,255,.14);
-        }
-        /* ===== NAVBAR THEME-AWARE ===== */
+        /* =========================
+           NAVBAR (override Bootstrap)
+           ========================= */
 
         .navbar .nav-link,
-        .navbar .navbar-brand {
+        .navbar .navbar-brand{
             color: var(--text-main) !important;
         }
 
-        .navbar .nav-link:hover {
+        .navbar .nav-link:hover{
             color: #0d6efd !important;
         }
 
-        .navbar .nav-link.text-danger {
-            color: #dc3545 !important;
-        }
-
-        /* Separatore | */
-        .navbar .nav-link.disabled {
+        .navbar .nav-link.disabled{
             color: var(--text-muted) !important;
         }
 
-        /* Bottone toggle tema */
-        #themeToggle {
+        #themeToggle{
             color: var(--text-main);
             border-color: var(--border-color);
         }
 
-        #themeToggle:hover {
+        #themeToggle:hover{
             background: var(--bg-card);
         }
 
+        /* =========================
+           FULLCALENDAR – BASE
+           ========================= */
+
+        .fc{
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .fc-theme-standard th,
+        .fc-theme-standard td{
+            border-color: var(--border-color);
+        }
+
+        .fc-daygrid-day-number{
+            color: var(--text-main);
+        }
+
+        .fc-daygrid-day:hover{
+            background: var(--bg-card);
+        }
+
+        .fc-day-today{
+            background: rgba(13,110,253,.12) !important;
+        }
+
+        /* =========================
+           FULLCALENDAR – HEADER
+           ========================= */
+
+        /* Riga intera dell’header (dove c’è “martedì”) */
+        .fc .fc-scrollgrid-section-header,
+        .fc .fc-scrollgrid-section-header th{
+            background: var(--bg-card) !important;
+        }
+
+        /* Contenitore colonne header */
+        .fc .fc-col-header{
+            background: var(--bg-card) !important;
+        }
+
+        /* Singola cella header */
+        .fc .fc-col-header-cell{
+            background: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        /* Testo “martedì” (è un <a>) */
+        .fc .fc-col-header-cell-cushion{
+            color: var(--text-main) !important;
+            text-decoration: none !important;
+            font-weight: 600;
+        }
+
+        /* Hover sul giorno */
+        .fc .fc-col-header-cell-cushion:hover{
+            color: #0d6efd !important;
+        }
+
+        /* =========================
+           FULLCALENDAR – REMOVE UNDERLINE
+           ========================= */
+
+        /* Giorni del mese (numeri) */
+        .fc .fc-daygrid-day-number {
+            text-decoration: none !important;
+        }
+
+        /* Giorni settimana (es. martedì) */
+        .fc .fc-col-header-cell-cushion {
+            text-decoration: none !important;
+        }
+
+        /* Hover (manteniamo feedback visivo) */
+        .fc .fc-daygrid-day-number:hover,
+        .fc .fc-col-header-cell-cushion:hover {
+            text-decoration: none !important;
+        }
+
+        /* =========================
+           FULLCALENDAR – BUTTONS
+           ========================= */
+
+        .fc-button{
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            box-shadow: none !important;
+        }
+
+        .fc-button:hover{
+            background: rgba(13,110,253,.15) !important;
+        }
+
+        .fc-button-primary:not(:disabled).fc-button-active{
+            background: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: #fff !important;
+        }
+
+        /* =========================
+           FULLCALENDAR – EVENTS
+           ========================= */
+
+        .fc-event{
+            background: linear-gradient(135deg, #0d6efd, #4dabf7);
+            border: none;
+            border-radius: 8px;
+            color: #fff !important;
+            padding: 2px 4px;
+        }
+
+        .fc-event:hover{
+            opacity: .9;
+        }
+
+        /* =========================
+           DARK / LIGHT REFINEMENTS
+           ========================= */
+
+        body.theme-dark .fc-timegrid-slot{
+            background: rgba(255,255,255,.02);
+        }
+
+        body.theme-light .fc-timegrid-slot{
+            background: rgba(0,0,0,.01);
+        }
     </style>
 </head>
 
-<body>
+<body class="theme-dark">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/header.jspf" %>
@@ -161,28 +259,32 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
 
+            buttonText: {
+                today:    'Oggi',
+                month:    'Mese',
+                week:     'Settimana',
+                day:      'Giorno'
+            },
+
+            allDayText: 'Tutto il giorno',
+
+            slotMinTime: "08:00:00",
+            slotMaxTime: "19:00:00",
+            scrollTime: "08:00:00",
+
             selectable: true,
             editable: false,
 
-            /* EVENTI DI ESEMPIO (da sostituire con servlet JSON) */
             events: [
-                {
-                    title: 'Seduta – Rossi Mario',
-                    start: '2025-01-15T10:00'
-                },
-                {
-                    title: 'Valutazione – Bianchi Anna',
-                    start: '2025-01-18T15:30'
-                }
+                { title: 'Seduta – Rossi Mario', start: '2025-01-15T10:00' },
+                { title: 'Valutazione – Bianchi Anna', start: '2025-01-18T15:30' }
             ],
 
-            /* Click su giorno vuoto */
             dateClick: function (info) {
                 window.location.href =
                     '<%= request.getContextPath() %>/calendar/new?date=' + info.dateStr;
             },
 
-            /* Click su evento */
             eventClick: function (info) {
                 const eventId = info.event.id;
                 window.location.href =
