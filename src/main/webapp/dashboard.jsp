@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>Storico Trattamenti • Fisio e Sport</title>
+    <title>Dashboard • Fisio e Sport</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -119,99 +119,99 @@
     </style>
 </head>
 
-<body>
+<body class="theme-dark">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/header.jspf" %>
 
 <div class="container mt-5">
 
-    <!-- HEADER PAGINA -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="page-title">Storico Trattamenti</h2>
-            <p class="page-subtitle mb-0">
-                Visualizza e consulta le sedute effettuate
-            </p>
-        </div>
-
-        <a href="<%= request.getContextPath() %>/treatments/new"
-           class="btn btn-primary">
-            ➕ Nuovo trattamento
-        </a>
+    <!-- HEADER DASHBOARD -->
+    <div class="mb-4">
+        <h2 class="page-title">Dashboard</h2>
+        <p class="page-subtitle">
+            Panoramica generale dello studio
+        </p>
     </div>
 
-    <!-- LISTA TRATTAMENTI -->
-    <div class="glass-card p-4">
+    <!-- KPI -->
+    <div class="row g-4 mb-5">
 
-        <%--
-            Il controller dovrebbe settare:
-            request.setAttribute("treatments", List<TreatmentSession>);
-        --%>
+        <div class="col-md-4">
+            <div class="glass-card p-4">
+                <div class="kpi-value">12</div>
+                <div class="kpi-label">Appuntamenti oggi</div>
+            </div>
+        </div>
 
-        <%
-            java.util.List<?> treatments =
-                    (java.util.List<?>) request.getAttribute("treatments");
-        %>
+        <div class="col-md-4">
+            <div class="glass-card p-4">
+                <div class="kpi-value">86</div>
+                <div class="kpi-label">Pazienti totali</div>
+            </div>
+        </div>
 
-        <% if (treatments == null || treatments.isEmpty()) { %>
+        <div class="col-md-4">
+            <div class="glass-card p-4">
+                <div class="kpi-value">5</div>
+                <div class="kpi-label">Trattamenti questa settimana</div>
+            </div>
+        </div>
 
-            <!-- EMPTY STATE -->
-            <div class="text-center py-5 empty-state">
-                <h5>Nessun trattamento registrato</h5>
-                <p class="mb-3">
-                    Inizia aggiungendo una nuova seduta
+    </div>
+
+    <!-- AZIONI PRINCIPALI -->
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="glass-card p-4 action-card h-100"
+                 onclick="location.href='<%= request.getContextPath() %>/calendar'">
+                <div class="icon mb-3">📅</div>
+                <h5>Calendario</h5>
+                <p class="page-subtitle">
+                    Visualizza e gestisci gli appuntamenti
                 </p>
-                <a href="<%= request.getContextPath() %>/treatments/new"
-                   class="btn btn-soft">
-                    Aggiungi trattamento
-                </a>
             </div>
+        </div>
 
-        <% } else { %>
-
-            <!-- TABELLA -->
-            <div class="table-responsive">
-                <table class="table table-borderless align-middle mb-0">
-                    <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Paziente</th>
-                        <th>Tipo trattamento</th>
-                        <th>Stato</th>
-                        <th class="text-end">Azioni</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    <% for (Object obj : treatments) {
-                           // cast reale: TreatmentSession session = (TreatmentSession) obj;
-                    %>
-                        <tr>
-                            <td><!-- ${session.data} --></td>
-                            <td><!-- ${session.paziente.nome} --></td>
-                            <td><!-- ${session.tipo} --></td>
-                            <td>
-                                <%-- esempio stato --%>
-                                <span class="badge-state state-completed">
-                                    Completato
-                                </span>
-                            </td>
-                            <td class="text-end">
-                                <a href="#"
-                                   class="btn btn-sm btn-soft">
-                                    Dettagli
-                                </a>
-                            </td>
-                        </tr>
-                    <% } %>
-
-                    </tbody>
-                </table>
+        <div class="col-md-4">
+            <div class="glass-card p-4 action-card h-100"
+                 onclick="location.href='<%= request.getContextPath() %>/address-book'">
+                <div class="icon mb-3">👤</div>
+                <h5>Rubrica Pazienti</h5>
+                <p class="page-subtitle">
+                    Consulta l’elenco dei pazienti
+                </p>
             </div>
+        </div>
 
-        <% } %>
+        <div class="col-md-4">
+            <div class="glass-card p-4 action-card h-100"
+                 onclick="location.href='<%= request.getContextPath() %>/treatment-history'">
+                <div class="icon mb-3">🧾</div>
+                <h5>Storico Trattamenti</h5>
+                <p class="page-subtitle">
+                    Visualizza le sedute effettuate
+                </p>
+            </div>
+        </div>
 
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-5">
+        <div class="glass-card p-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1">Nuovo appuntamento</h5>
+                <p class="page-subtitle mb-0">
+                    Inserisci rapidamente una nuova seduta
+                </p>
+            </div>
+            <a href="<%= request.getContextPath() %>/calendar/new"
+               class="btn btn-primary">
+                ➕ Crea
+            </a>
+        </div>
     </div>
 
 </div>

@@ -1,69 +1,127 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg px-3 py-2"
+     style="
+        background: transparent;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-color);
+     ">
+
     <div class="container-fluid">
 
-        <!-- Nome applicazione -->
-        <a class="navbar-brand"
-           href="<%= request.getContextPath() %>/index.jsp">
-            <strong>Fisio e Sport</strong>
+        <!-- BRAND -->
+        <a class="navbar-brand fw-bold"
+           href="<%= request.getContextPath() %>/index.jsp"
+           style="letter-spacing: .6px; color: var(--text-main);">
+
+            <span style="
+                display:inline-block;
+                width:10px;
+                height:10px;
+                border-radius:50%;
+                background: linear-gradient(135deg,#0d6efd,#20c997);
+                margin-right:.5rem;">
+            </span>
+
+            Fisio e Sport
         </a>
 
-        <!-- Bottone hamburger (mobile) -->
+        <!-- TOGGLER (mobile) -->
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
+                data-bs-target="#mainNav"
+                aria-controls="mainNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Link del menu -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+        <!-- LINKS -->
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
 
-                <!-- Home -->
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="<%= request.getContextPath() %>/index.jsp">
-                        🏠 Home
+                       href="<%= request.getContextPath() %>/dashboard.jsp">
+                        Dashboard
                     </a>
                 </li>
 
-                <!-- Calendario -->
                 <li class="nav-item">
                     <a class="nav-link"
                        href="<%= request.getContextPath() %>/calendar">
-                        📅 Calendario
+                        Calendario
                     </a>
                 </li>
 
-                <!-- Rubrica -->
                 <li class="nav-item">
                     <a class="nav-link"
                        href="<%= request.getContextPath() %>/address-book">
-                        👤 Rubrica Pazienti
+                        Rubrica
                     </a>
                 </li>
 
-                <!-- Storico Trattamenti -->
+                <!-- Separator -->
+                <li class="nav-item d-none d-lg-block mx-2">
+                    <span class="nav-link disabled" style="opacity:.4;">|</span>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="<%= request.getContextPath() %>/treatment-history?patientId=1">
-                        🩺 Storico Trattamenti
+                       href="<%= request.getContextPath() %>/profile.jsp">
+                        Profilo
                     </a>
                 </li>
 
-                <!-- Logout (placeholder) -->
                 <li class="nav-item">
-                    <a class="nav-link text-warning" href="#">
-                        🔒 Logout
+                    <a class="nav-link text-danger"
+                       href="<%= request.getContextPath() %>/logout">
+                        Logout
                     </a>
+                </li>
+
+                <!-- THEME TOGGLE -->
+                <li class="nav-item ms-3">
+                    <button class="btn btn-sm btn-outline-secondary"
+                            id="themeToggle"
+                            onclick="toggleTheme()"
+                            title="Cambia tema">
+                        🌙
+                    </button>
                 </li>
 
             </ul>
         </div>
+
     </div>
 </nav>
 
-<!-- Spaziatura sotto l’header -->
-<div class="mb-3"></div>
+<script>
+    function applyTheme(theme){
+        document.body.classList.remove('theme-dark','theme-light');
+        document.body.classList.add(theme);
+        localStorage.setItem('theme', theme);
+
+        const btn = document.getElementById('themeToggle');
+        if (btn) {
+            btn.innerText = theme === 'theme-dark' ? "Tema chiaro" : 'Tema scuro';
+        }
+    }
+
+    function toggleTheme(){
+        const current =
+            document.body.classList.contains('theme-dark')
+                ? 'theme-dark'
+                : 'theme-light';
+
+        applyTheme(current === 'theme-dark'
+            ? 'theme-light'
+            : 'theme-dark');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'theme-dark';
+        applyTheme(savedTheme);
+    });
+</script>
