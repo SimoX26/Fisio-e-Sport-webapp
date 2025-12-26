@@ -64,7 +64,6 @@
         </div>
 
         <!-- 🟣 STORICO TRATTAMENTI -->
-        <!--
         <div class="col-md-4">
             <div class="card dashboard-card"
                  onclick="location.href='<%= request.getContextPath() %>/treatment-history?patientId=1'">
@@ -74,7 +73,6 @@
                 </div>
             </div>
         </div>
-        -->
 
     </div>
 </div>
