@@ -14,6 +14,7 @@ public class Appointment {
     public Appointment() {
     }
 
+
     public Appointment(long id, long patientId, long therapistId,
                        LocalDateTime start, LocalDateTime end) {
         this.id = id;
