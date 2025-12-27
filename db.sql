@@ -1,25 +1,32 @@
--- 🔥 Elimina il database se esiste
-DROP DATABASE IF EXISTS crm_fisioterapia;
+DROP DATABASE IF EXISTS fisio_e_sport;
 
--- 🏗️ Crea il database
-CREATE DATABASE crm_fisioterapia
-  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE fisio_e_sport
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 
--- 👤 Crea l'utente (opzionale)
-CREATE USER IF NOT EXISTS 'crm_user'@'localhost'
+CREATE USER IF NOT EXISTS 'fisio_e_sport'@'localhost'
 IDENTIFIED BY 'password_123';
 
--- 🛡️ Concedi i permessi
-GRANT ALL PRIVILEGES ON crm_fisioterapia.* TO 'crm_user'@'localhost';
+GRANT ALL PRIVILEGES ON fisio_e_sport.* TO 'fisio_e_sport'@'localhost';
 
--- 💾 Rendi effettive le modifiche
 FLUSH PRIVILEGES;
 
--- 📂 Seleziona il database
-USE crm_fisioterapia;
+USE fisio_e_sport;
 
--- 🩺 Tabella Pazienti
-CREATE TABLE pazienti (
+
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password_hash CHAR(64) NOT NULL,
+  role ENUM('PHYSIOTHERAPIST', 'ADMIN') NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE patient (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome_completo VARCHAR(200) NOT NULL,
   telefono VARCHAR(20) NOT NULL,
@@ -49,8 +56,8 @@ CREATE TABLE pazienti (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 📅 Tabella Eventi (ora id_paziente è FACOLTATIVO)
-CREATE TABLE eventi (
+
+CREATE TABLE appointment (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_paziente INT NOT NULL,
   title VARCHAR(255) NOT NULL,
@@ -64,8 +71,9 @@ CREATE TABLE eventi (
     ON UPDATE CASCADE
 );
 
--- 💆 Tabella Sedute (collegate agli Eventi)
-CREATE TABLE sedute (
+
+
+CREATE TABLE treatment_session (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_evento INT NOT NULL,
   valutazione_pre_trattamento TEXT NOT NULL,
@@ -78,7 +86,8 @@ CREATE TABLE sedute (
     ON UPDATE CASCADE
 );
 
--- 👁️ View: unione Eventi + Sedute + Pazienti (anche se paziente è NULL)
+
+
 CREATE OR REPLACE VIEW vista_eventi_sedute AS
 SELECT
   e.id AS id_evento,
