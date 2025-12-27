@@ -1,44 +1,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<nav class="navbar navbar-expand-lg px-3 py-2"
-     style="
-        background: transparent;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--border-color);
-     ">
-
+<nav class="navbar navbar-expand-lg px-3 px-lg-5"
+    style="border-bottom: 1px solid var(--border-color);">
     <div class="container-fluid">
 
         <!-- BRAND -->
         <a class="navbar-brand fw-bold"
-           href="<%= request.getContextPath() %>/index.jsp"
-           style="letter-spacing: .6px; color: var(--text-main);">
-
-            <span style="
-                display:inline-block;
-                width:10px;
-                height:10px;
-                border-radius:50%;
-                background: linear-gradient(135deg,#0d6efd,#20c997);
-                margin-right:.5rem;">
-            </span>
-
+           href="<%= request.getContextPath() %>/index.jsp">
+            <span class="brand-dot"></span>
             Fisio e Sport
         </a>
 
-        <!-- TOGGLER (mobile) -->
+        <!-- TOGGLER -->
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#mainNav"
-                aria-controls="mainNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
+                data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- LINKS -->
-        <div class="collapse navbar-collapse" id="mainNav">
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
 
                 <li class="nav-item">
@@ -62,9 +44,8 @@
                     </a>
                 </li>
 
-                <!-- Separator -->
                 <li class="nav-item d-none d-lg-block mx-2">
-                    <span class="nav-link disabled" style="opacity:.4;">|</span>
+                    <span class="nav-link disabled nav-separator">|</span>
                 </li>
 
                 <li class="nav-item">
@@ -81,16 +62,6 @@
                     </a>
                 </li>
 
-                <!-- THEME TOGGLE -->
-                <li class="nav-item ms-3">
-                    <button class="btn btn-sm btn-outline-secondary"
-                            id="themeToggle"
-                            onclick="toggleTheme()"
-                            title="Cambia tema">
-                        🌙
-                    </button>
-                </li>
-
             </ul>
         </div>
 
@@ -98,30 +69,9 @@
 </nav>
 
 <script>
-    function applyTheme(theme){
+    document.addEventListener('DOMContentLoaded', () => {
+        const theme = localStorage.getItem('theme') || 'theme-dark';
         document.body.classList.remove('theme-dark','theme-light');
         document.body.classList.add(theme);
-        localStorage.setItem('theme', theme);
-
-        const btn = document.getElementById('themeToggle');
-        if (btn) {
-            btn.innerText = theme === 'theme-dark' ? "Tema chiaro" : 'Tema scuro';
-        }
-    }
-
-    function toggleTheme(){
-        const current =
-            document.body.classList.contains('theme-dark')
-                ? 'theme-dark'
-                : 'theme-light';
-
-        applyTheme(current === 'theme-dark'
-            ? 'theme-light'
-            : 'theme-dark');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'theme-dark';
-        applyTheme(savedTheme);
     });
 </script>

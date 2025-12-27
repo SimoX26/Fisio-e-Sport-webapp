@@ -10,21 +10,78 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        /* =========================
+           THEME VARIABLES
+           ========================= */
+
+        :root{
+            --bg-main: #ffffff;
+            --text-main: #212529;
+            --text-muted: rgba(33,37,41,.7);
+            --bg-card: rgba(0,0,0,.04);
+            --border-color: rgba(0,0,0,.12);
+        }
+
+        body.theme-dark{
+            --bg-main: #0b1220;
+            --text-main: #e9eefb;
+            --text-muted: rgba(233,238,251,.75);
+            --bg-card: rgba(255,255,255,.06);
+            --border-color: rgba(255,255,255,.12);
+        }
+
+        /* =========================
+           BASE
+           ========================= */
+
         body{
             min-height: 100vh;
             background:
                 radial-gradient(1200px 600px at 10% 10%, rgba(13,110,253,.20), transparent 55%),
                 radial-gradient(1000px 600px at 90% 20%, rgba(32,201,151,.18), transparent 55%),
-                #0b1220;
-            color: #e9eefb;
+                var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
+
+        /* =========================
+           NAVBAR – CLEAN & INTEGRATED
+           ========================= */
 
         .navbar{
-            background: rgba(11,18,32,.6);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255,255,255,.08);
+            background: transparent;
+            backdrop-filter: blur(6px);
         }
 
+        /* Brand & links */
+        .navbar .navbar-brand,
+        .navbar .nav-link{
+            color: var(--text-main) !important;
+        }
+
+        /* Hover */
+        .navbar .navbar-brand:hover,
+        .navbar .nav-link:hover{
+            color: #0d6efd !important;
+        }
+
+        /* Toggle tema */
+        #themeToggle{
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        /* Fix Bootstrap outline-light */
+        .btn-outline-light{
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .btn-outline-light:hover{
+            background: var(--bg-card) !important;
+        }
+
+        /* Brand dot */
         .brand-dot{
             width: 10px;
             height: 10px;
@@ -33,6 +90,10 @@
             display: inline-block;
             margin-right: .5rem;
         }
+
+        /* =========================
+           HERO
+           ========================= */
 
         .hero{
             padding: 6rem 1rem 4rem;
@@ -44,13 +105,17 @@
         }
 
         .hero p{
-            color: rgba(233,238,251,.75);
+            color: var(--text-muted);
             max-width: 520px;
         }
 
+        /* =========================
+           GLASS CARD
+           ========================= */
+
         .glass-card{
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 18px;
             backdrop-filter: blur(10px);
             box-shadow: 0 14px 40px rgba(0,0,0,.4);
@@ -60,22 +125,35 @@
             font-size: 1.4rem;
         }
 
+        /* =========================
+           FOOTER
+           ========================= */
+
         footer{
-            border-top: 1px solid rgba(255,255,255,.08);
-            color: rgba(233,238,251,.6);
+            border-top: none; /* footer più leggero */
+            color: var(--text-muted);
         }
     </style>
 </head>
 
-<body>
+<body class="theme-dark">
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark px-3 px-lg-5">
+<nav class="navbar navbar-expand-lg px-3 px-lg-5">
     <a class="navbar-brand fw-bold" href="#">
         <span class="brand-dot"></span>Fisio e Sport
     </a>
 
-    <div class="ms-auto d-flex gap-2">
+    <div class="ms-auto d-flex gap-2 align-items-center">
+
+        <!-- THEME TOGGLE -->
+        <button class="btn btn-outline-secondary btn-sm"
+                id="themeToggle"
+                onclick="toggleTheme()"
+                title="Cambia tema">
+            🌙
+        </button>
+
         <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-outline-light btn-sm">
             Login
         </a>
@@ -168,6 +246,37 @@
     </div>
 </footer>
 
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function applyTheme(theme) {
+        document.body.classList.remove('theme-dark', 'theme-light');
+        document.body.classList.add(theme);
+        localStorage.setItem('theme', theme);
+
+        const toggleBtn = document.getElementById('themeToggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = theme === 'theme-dark' ? '☀️' : '🌙';
+        }
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.contains('theme-dark');
+        applyTheme(isDark ? 'theme-light' : 'theme-dark');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+
+        // default esplicito
+        if (savedTheme === 'theme-light' || savedTheme === 'theme-dark') {
+            applyTheme(savedTheme);
+        } else {
+            applyTheme('theme-dark');
+        }
+    });
+</script>
+
 </body>
 </html>
