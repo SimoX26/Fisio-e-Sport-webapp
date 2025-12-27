@@ -68,8 +68,6 @@ public class CalendarController {
         return appointmentDAO.findInPeriod(start, end);
     }
 
-    public
-
     /**
      * Schedules a new appointment.
      *
