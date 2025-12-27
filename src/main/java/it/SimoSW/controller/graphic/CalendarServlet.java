@@ -39,11 +39,13 @@ public class CalendarServlet extends HttpServlet {
             return;
         }
 
+        /*
         // Caso 2: richiesta dettagli appuntamento
         if ("true".equals(request.getParameter("details"))) {
             loadAppointmentDetails(request, response);
             return;
         }
+         */
 
         // Caso 3: visualizzazione pagina calendario
         request.getRequestDispatcher("/WEB-INF/jsp/calendar.jsp").forward(request, response);
@@ -87,6 +89,7 @@ public class CalendarServlet extends HttpServlet {
         mapper.writeValue(response.getWriter(), appointments);
     }
 
+/*
     private void loadAppointmentDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         long appointmentId = Long.parseLong(request.getParameter("id"));
@@ -96,6 +99,7 @@ public class CalendarServlet extends HttpServlet {
         response.setContentType("application/json");
         mapper.writeValue(response.getWriter(), appointment);
     }
+*/
 
     private void createAppointment(HttpServletRequest request) {
 
