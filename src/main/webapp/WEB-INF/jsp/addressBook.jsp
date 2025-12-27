@@ -135,7 +135,7 @@
             </p>
         </div>
 
-        <a href="<%= request.getContextPath() %>/address-book/new"
+        <a href="<%= request.getContextPath() %>/address-book/create"
            class="btn btn-primary">
             ➕ Nuovo paziente
         </a>
@@ -162,7 +162,7 @@
                 <p class="mb-3">
                     Inizia aggiungendo il primo paziente alla rubrica
                 </p>
-                <a href="<%= request.getContextPath() %>/address-book/new"
+                <a href="<%= request.getContextPath() %>/address-book/create"
                    class="btn btn-soft">
                     Aggiungi paziente
                 </a>

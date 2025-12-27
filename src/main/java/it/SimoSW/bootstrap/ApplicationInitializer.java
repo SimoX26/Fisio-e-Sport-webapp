@@ -30,6 +30,8 @@ public class ApplicationInitializer {
            ===================================================== */
         Path dataRoot = Paths.get("data");
 
+        System.out.println(">>> DATA ROOT = " + dataRoot.toAbsolutePath());
+
         Path patientsDir = dataRoot.resolve("patients");
         Path therapistsDir = dataRoot.resolve("therapists");
         Path appointmentsDir = dataRoot.resolve("appointments");
