@@ -1,6 +1,6 @@
 package it.SimoSW.controller.graphic;
 
-import it.SimoSW.bootstrap.ApplicationInitializer;
+import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.model.TreatmentSession;
 

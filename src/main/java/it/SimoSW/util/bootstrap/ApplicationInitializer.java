@@ -1,4 +1,4 @@
-package it.SimoSW.bootstrap;
+package it.SimoSW.util.bootstrap;
 
 import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.controller.application.CalendarController;

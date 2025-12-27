@@ -1,4 +1,4 @@
-package it.SimoSW.bootstrap;
+package it.SimoSW.util.bootstrap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

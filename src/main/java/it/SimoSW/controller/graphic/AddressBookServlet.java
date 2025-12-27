@@ -1,9 +1,8 @@
 package it.SimoSW.controller.graphic;
 
-import it.SimoSW.bootstrap.ApplicationInitializer;
+import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.model.Patient;
-import it.SimoSW.exception.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
