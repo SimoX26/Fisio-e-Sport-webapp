@@ -49,9 +49,7 @@ public class CalendarController {
      * @param patientDAO DAO for patient lookup
      * @param therapistDAO DAO for therapist lookup
      */
-    public CalendarController(AppointmentDAO appointmentDAO,
-                              PatientDAO patientDAO,
-                              TherapistDAO therapistDAO) {
+    public CalendarController(AppointmentDAO appointmentDAO, PatientDAO patientDAO, TherapistDAO therapistDAO) {
         this.appointmentDAO = appointmentDAO;
         this.patientDAO = patientDAO;
         this.therapistDAO = therapistDAO;
@@ -69,6 +67,8 @@ public class CalendarController {
         validateTimeRange(start, end);
         return appointmentDAO.findInPeriod(start, end);
     }
+
+    public
 
     /**
      * Schedules a new appointment.
@@ -120,16 +120,12 @@ public class CalendarController {
      * @throws InvalidAppointmentStateException if the appointment state is invalid
      * @throws TimeSlotNotAvailableException if the new time slot is not available
      */
-    public Appointment rescheduleAppointment(long appointmentId,
-                                             LocalDateTime newStart,
-                                             LocalDateTime newEnd) {
+    public Appointment rescheduleAppointment(long appointmentId, LocalDateTime newStart, LocalDateTime newEnd) {
         Appointment existing = appointmentDAO.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
 
         if (existing.getState() != AppointmentState.SCHEDULED) {
-            throw new InvalidAppointmentStateException(
-                    "Only scheduled appointments can be rescheduled"
-            );
+            throw new InvalidAppointmentStateException("Only scheduled appointments can be rescheduled");
         }
 
         validateTimeRange(newStart, newEnd);
@@ -161,9 +157,7 @@ public class CalendarController {
         }
 
         if (appointment.getState() == AppointmentState.COMPLETED) {
-            throw new InvalidAppointmentStateException(
-                    "Completed appointment cannot be cancelled"
-            );
+            throw new InvalidAppointmentStateException("Completed appointment cannot be cancelled");
         }
 
         appointment.setState(AppointmentState.CANCELLED);
@@ -203,8 +197,7 @@ public class CalendarController {
      */
     private void checkTherapistExists(long therapistId) {
         therapistDAO.findById(therapistId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Therapist not found: " + therapistId));
+                .orElseThrow(() -> new IllegalArgumentException("Therapist not found: " + therapistId));
     }
 
     /**
@@ -215,12 +208,11 @@ public class CalendarController {
      * @throws TimeSlotNotAvailableException if a conflict is detected
      */
     private void checkForConflicts(Appointment appointment) {
-        List<Appointment> overlapping =
-                appointmentDAO.findByTherapistInPeriod(
-                        appointment.getTherapistId(),
-                        appointment.getStart(),
-                        appointment.getEnd()
-                );
+        List<Appointment> overlapping = appointmentDAO.findByTherapistInPeriod(
+                                                                            appointment.getTherapistId(),
+                                                                            appointment.getStart(),
+                                                                            appointment.getEnd()
+                                                                    );
 
         if (!overlapping.isEmpty()) {
             throw new TimeSlotNotAvailableException();

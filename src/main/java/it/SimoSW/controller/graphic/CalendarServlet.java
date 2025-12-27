@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-        import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -22,9 +22,7 @@ public class CalendarServlet extends HttpServlet {
 
     @Override
     public void init() {
-        ApplicationInitializer initializer =
-                (ApplicationInitializer) getServletContext()
-                        .getAttribute("appInitializer");
+        ApplicationInitializer initializer = (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
 
         this.calendarController = initializer.getCalendarController();
     }
@@ -33,28 +31,29 @@ public class CalendarServlet extends HttpServlet {
        GET
        ========================= */
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // Caso 1: richiesta eventi (AJAX FullCalendar)
+        // Caso 1: richiesta eventi
         if ("true".equals(request.getParameter("events"))) {
             loadEvents(request, response);
             return;
         }
 
-        // Caso 2: visualizzazione pagina calendario
-        request.getRequestDispatcher("/WEB-INF/jsp/calendar.jsp")
-                .forward(request, response);
+        // Caso 2: richiesta dettagli appuntamento
+        if ("true".equals(request.getParameter("details"))) {
+            loadAppointmentDetails(request, response);
+            return;
+        }
+
+        // Caso 3: visualizzazione pagina calendario
+        request.getRequestDispatcher("/WEB-INF/jsp/calendar.jsp").forward(request, response);
     }
 
     /* =========================
        POST
        ========================= */
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
@@ -69,10 +68,7 @@ public class CalendarServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
 
         } catch (RuntimeException ex) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    ex.getMessage()
-            );
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         }
     }
 
@@ -80,20 +76,25 @@ public class CalendarServlet extends HttpServlet {
        Support methods
        ========================= */
 
-    private void loadEvents(HttpServletRequest request,
-                            HttpServletResponse response)
-            throws IOException {
+    private void loadEvents(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        LocalDateTime start =
-                LocalDateTime.parse(request.getParameter("start"));
-        LocalDateTime end =
-                LocalDateTime.parse(request.getParameter("end"));
+        LocalDateTime start = LocalDateTime.parse(request.getParameter("start"));
+        LocalDateTime end = LocalDateTime.parse(request.getParameter("end"));
 
-        List<Appointment> appointments =
-                calendarController.getAppointmentsInPeriod(start, end);
+        List<Appointment> appointments = calendarController.getAppointmentsInPeriod(start, end);
 
         response.setContentType("application/json");
         mapper.writeValue(response.getWriter(), appointments);
+    }
+
+    private void loadAppointmentDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        long appointmentId = Long.parseLong(request.getParameter("id"));
+
+        Appointment appointment = calendarController.getAppointmentDetails(appointmentId);
+
+        response.setContentType("application/json");
+        mapper.writeValue(response.getWriter(), appointment);
     }
 
     private void createAppointment(HttpServletRequest request) {
