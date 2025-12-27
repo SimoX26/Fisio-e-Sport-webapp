@@ -239,6 +239,43 @@
     <!-- CALENDAR -->
     <div class="glass-card p-4">
         <div id="calendar"></div>
+        <!-- MODALE DETTAGLI APPUNTAMENTO -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content glass-card">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle"></h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p><strong>Paziente:</strong> <span id="modalPatient"></span></p>
+                        <p><strong>Tipo:</strong> <span id="modalType"></span></p>
+                        <p><strong>Orario:</strong> <span id="modalTime"></span></p>
+                        <p><strong>Note:</strong></p>
+                        <p id="modalNotes" class="text-muted"></p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            Chiudi
+                        </button>
+
+                        <a href="#"
+                           id="editEventBtn"
+                           class="btn btn-primary">
+                            Modifica
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -249,14 +286,13 @@
         const calendarEl = document.getElementById('calendar');
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
             locale: 'it',
             height: 'auto',
 
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                right: 'timeGridDay,timeGridWeek,dayGridMonth'
             },
 
             buttonText: {
@@ -266,18 +302,22 @@
                 day:      'Giorno'
             },
 
+            initialView: 'timeGridWeek',
+
+            slotDuration: '00:30:00',
+
             allDayText: 'Tutto il giorno',
 
+            nowIndicator: true,
+
             slotMinTime: "08:00:00",
-            slotMaxTime: "19:00:00",
+            slotMaxTime: "21:00:00",
             scrollTime: "08:00:00",
 
             selectable: true,
             editable: false,
 
             events: [
-                { title: 'Seduta – Rossi Mario', start: '2025-01-15T10:00' },
-                { title: 'Valutazione – Bianchi Anna', start: '2025-01-18T15:30' }
             ],
 
             dateClick: function (info) {
@@ -286,10 +326,44 @@
             },
 
             eventClick: function (info) {
-                const eventId = info.event.id;
-                window.location.href =
-                    '<%= request.getContextPath() %>/calendar/event?id=' + eventId;
+                info.jsEvent.preventDefault();
+
+                const event = info.event;
+
+                // Titolo
+                document.getElementById('modalTitle').innerText =
+                    event.title;
+
+                // Extended props
+                document.getElementById('modalPatient').innerText =
+                    event.extendedProps.patient || '-';
+
+                document.getElementById('modalType').innerText =
+                    event.extendedProps.type || '-';
+
+                document.getElementById('modalNotes').innerText =
+                    event.extendedProps.notes || 'Nessuna nota';
+
+                // Orario
+                const start = event.start.toLocaleString('it-IT');
+                const end = event.end
+                    ? event.end.toLocaleString('it-IT')
+                    : '';
+
+                document.getElementById('modalTime').innerText =
+                    end ? `${start} – ${end}` : start;
+
+                // Link modifica (opzionale)
+                document.getElementById('editEventBtn').href =
+                    '<%= request.getContextPath() %>/calendar/edit?id=' + event.id;
+
+                // Apri modale
+                const modal = new bootstrap.Modal(
+                    document.getElementById('eventModal')
+                );
+                modal.show();
             }
+
         });
 
         calendar.render();
