@@ -2,6 +2,7 @@ package it.SimoSW.dao;
 
 import it.SimoSW.model.Appointment;
 
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
