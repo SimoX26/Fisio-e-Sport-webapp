@@ -22,8 +22,7 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         """;
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                     sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setLong(1, appointment.getPatientId());
             ps.setLong(2, appointment.getTherapistId());
