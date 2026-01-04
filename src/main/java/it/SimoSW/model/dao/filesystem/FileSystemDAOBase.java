@@ -1,4 +1,4 @@
-package it.SimoSW.dao.filesystem;
+package it.SimoSW.model.dao.filesystem;
 
 import java.io.IOException;
 import java.nio.file.Files;

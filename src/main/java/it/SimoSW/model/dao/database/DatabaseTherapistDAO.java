@@ -1,4 +1,4 @@
-package it.SimoSW.dao.database;
+package it.SimoSW.model.dao.database;
 
 public class DatabaseTherapistDAO {
 }

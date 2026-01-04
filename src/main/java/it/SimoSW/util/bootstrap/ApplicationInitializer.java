@@ -3,9 +3,8 @@ package it.SimoSW.util.bootstrap;
 import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
-import it.SimoSW.dao.*;
-import it.SimoSW.dao.filesystem.*;
-import it.SimoSW.dao.database.*;
+import it.SimoSW.model.dao.*;
+import it.SimoSW.model.dao.filesystem.*;
 
 import java.io.InputStream;
 import java.nio.file.Path;

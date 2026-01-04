@@ -4,7 +4,7 @@ import it.SimoSW.exception.InvalidPatientStateException;
 import it.SimoSW.exception.PatientNotFoundException;
 import it.SimoSW.model.Patient;
 import it.SimoSW.model.PatientState;
-import it.SimoSW.dao.PatientDAO;
+import it.SimoSW.model.dao.PatientDAO;
 
 import java.util.List;
 

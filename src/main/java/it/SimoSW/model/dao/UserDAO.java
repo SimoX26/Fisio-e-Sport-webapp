@@ -1,4 +1,4 @@
-package it.SimoSW.dao;
+package it.SimoSW.model.dao;
 
 import it.SimoSW.model.User;
 

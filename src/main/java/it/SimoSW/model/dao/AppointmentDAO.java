@@ -1,8 +1,7 @@
-package it.SimoSW.dao;
+package it.SimoSW.model.dao;
 
 import it.SimoSW.model.Appointment;
 
-import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

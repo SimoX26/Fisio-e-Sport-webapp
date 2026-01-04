@@ -1,4 +1,4 @@
-package it.SimoSW.dao.database;
+package it.SimoSW.model.dao.database;
 
 import java.io.InputStream;
 import java.sql.Connection;

@@ -1,6 +1,6 @@
-package it.SimoSW.dao.database;
+package it.SimoSW.model.dao.database;
 
-import it.SimoSW.dao.AppointmentDAO;
+import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 

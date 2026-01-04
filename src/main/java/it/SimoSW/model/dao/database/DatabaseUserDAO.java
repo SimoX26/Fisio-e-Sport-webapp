@@ -1,6 +1,6 @@
-package it.SimoSW.dao.database;
+package it.SimoSW.model.dao.database;
 
-import it.SimoSW.dao.UserDAO;
+import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.User;
 import it.SimoSW.model.UserRole;
 

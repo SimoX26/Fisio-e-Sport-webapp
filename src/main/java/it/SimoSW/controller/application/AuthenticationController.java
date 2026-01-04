@@ -1,6 +1,6 @@
 package it.SimoSW.controller.application;
 
-import it.SimoSW.dao.UserDAO;
+import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.exception.AuthenticationFailedException;
 import it.SimoSW.model.User;
 
