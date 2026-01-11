@@ -297,6 +297,88 @@ body{
 
 
 
+
+
+/* =========================
+   MODAL
+   ========================= */
+
+/* forza ereditarietà corretta */
+.modal,
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer {
+    color: var(--text-main);
+    background-color: transparent;
+}
+
+/* titolo */
+.modal-title {
+    color: var(--text-main);
+}
+
+/* testi generici */
+.modal p,
+.modal span,
+.modal label {
+    color: var(--text-main);
+}
+
+/* muted */
+.modal .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* =========================
+   MODAL – FORM FIX
+   ========================= */
+
+.modal .form-control,
+.modal .form-select {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border-color: var(--border-color);
+}
+
+.modal .form-control::placeholder {
+    color: var(--text-muted);
+}
+
+/* option dropdown */
+.modal .form-select option {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* =========================
+   MODAL – HEADER / FOOTER
+   ========================= */
+
+.modal-header,
+.modal-footer {
+    border-color: var(--border-color);
+}
+
+/* =========================
+   MODAL – CLOSE BUTTON
+   ========================= */
+
+.modal-header .btn-close {
+    filter: invert(1);
+    opacity: .75;
+}
+
+body:not(.theme-dark) .modal-header .btn-close {
+    filter: none;
+}
+
+
+
+
+
+
+
 /* =========================
    DARK / LIGHT REFINEMENTS
    ========================= */
