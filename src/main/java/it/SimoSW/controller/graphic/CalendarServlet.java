@@ -118,10 +118,8 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId =
                 Long.parseLong(request.getParameter("id"));
 
-        LocalDateTime newStart =
-                LocalDateTime.parse(request.getParameter("start"));
-        LocalDateTime newEnd =
-                LocalDateTime.parse(request.getParameter("end"));
+        LocalDateTime newStart = LocalDateTime.parse(request.getParameter("start"));
+        LocalDateTime newEnd = LocalDateTime.parse(request.getParameter("end"));
 
         calendarController.rescheduleAppointment(
                 appointmentId,
@@ -132,8 +130,7 @@ public class CalendarServlet extends HttpServlet {
 
     private void cancelAppointment(HttpServletRequest request) {
 
-        long appointmentId =
-                Long.parseLong(request.getParameter("id"));
+        long appointmentId = Long.parseLong(request.getParameter("id"));
 
         calendarController.cancelAppointment(appointmentId);
     }
