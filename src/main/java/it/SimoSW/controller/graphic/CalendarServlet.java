@@ -104,11 +104,11 @@ public class CalendarServlet extends HttpServlet {
     private void createAppointment(HttpServletRequest request) {
 
         Appointment a = new Appointment();
-        a.setId(Long.parseLong(request.getParameter("id")));
         a.setPatientId(Long.parseLong(request.getParameter("patientId")));
-        a.setTherapistId(Long.parseLong(request.getParameter("therapistId")));
         a.setStart(LocalDateTime.parse(request.getParameter("start")));
         a.setEnd(LocalDateTime.parse(request.getParameter("end")));
+
+        a.setTherapistId(Long.parseLong(request.getParameter("therapistId")));
 
         calendarController.scheduleAppointment(a);
     }

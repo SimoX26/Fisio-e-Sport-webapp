@@ -83,6 +83,7 @@
             <div class="modal-body">
                 <form id="appointmentForm">
 
+                    <!-- Paziente -->
                     <div class="mb-3">
                         <label class="form-label">Paziente</label>
                         <select class="form-select" id="patientId" required>
@@ -91,13 +92,7 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Terapista</label>
-                        <select class="form-select" id="therapistId" required>
-                            <option value="">Seleziona terapista</option>
-                        </select>
-                    </div>
-
+                    <!-- Giorno e orario -->
                     <div class="row">
                         <div class="col">
                             <label class="form-label">Inizio</label>
