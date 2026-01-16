@@ -390,3 +390,15 @@ body.theme-dark .fc-timegrid-slot{
 body.theme-light .fc-timegrid-slot{
     background: rgba(0,0,0,.01);
 }
+
+
+
+
+/* =========================
+    FOOTER
+    ========================= */
+
+footer{
+    border-top: none; /* footer più leggero */
+    color: var(--text-muted);
+}

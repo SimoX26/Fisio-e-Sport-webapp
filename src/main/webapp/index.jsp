@@ -134,6 +134,10 @@
             color: var(--text-muted);
         }
     </style>
+
+
+      <!-- Custom CSS -->
+       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 
 <body class="theme-dark">
