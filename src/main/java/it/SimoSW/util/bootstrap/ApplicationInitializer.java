@@ -3,7 +3,9 @@ package it.SimoSW.util.bootstrap;
 import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
+import it.SimoSW.controller.application.UserController;
 import it.SimoSW.model.dao.*;
+import it.SimoSW.model.dao.database.*;
 import it.SimoSW.model.dao.filesystem.*;
 
 import java.io.InputStream;
@@ -18,34 +20,19 @@ public class ApplicationInitializer {
     private AddressBookController addressBookController;
     private CalendarController calendarController;
     private TreatmentHistoryController treatmentHistoryController;
+    private UserController userController;
+
 
     public void init() {
-
-        Properties config = loadConfiguration();
-
-        String persistenceType = config.getProperty("persistence.type");
-
-        if (persistenceType == null) {
-            throw new RuntimeException("persistence.type non specificato in config.properties");
-        }
-
-        switch (persistenceType.toLowerCase()) {
-            case "filesystem":
-                initFileSystemPersistence(config);
-                break;
-
-            case "mysql":
-                // initDatabasePersistence();
-                break;
-
-            default:
-                throw new RuntimeException("Tipo di persistenza non supportato: " + persistenceType);
-        }
+        //  per ora SOLO DATABASE
+        initDatabasePersistence();
     }
 
     /* =====================================================
        Inizializzazione FILE SYSTEM
        ===================================================== */
+    /*
+
     private void initFileSystemPersistence(Properties config) {
 
         String basePath = config.getProperty("fs.base.path", "data");
@@ -66,21 +53,24 @@ public class ApplicationInitializer {
         wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO);
     }
 
+    */
+
 
     /* =====================================================
        Inizializzazione DATABASE (MySQL)
        ===================================================== */
-  /*  private void initDatabasePersistence() {
+    private void initDatabasePersistence() {
 
-        PatientDAO patientDAO = new DatabasePatientDAO();
-        TherapistDAO therapistDAO = new DatabaseTherapistDAO();
+        // PatientDAO patientDAO = new DatabasePatientDAO();
+        // TherapistDAO therapistDAO = new DatabaseTherapistDAO();
         AppointmentDAO appointmentDAO = new DatabaseAppointmentDAO();
-        TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
+        // TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
+        UserDAO userDAO = new DatabaseUserDAO();
 
-        wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO);
+
+        wireControllers(null, null, appointmentDAO, null, userDAO);
+
     }
-
-   */
 
 
     /* =====================================================
@@ -90,7 +80,8 @@ public class ApplicationInitializer {
             PatientDAO patientDAO,
             TherapistDAO therapistDAO,
             AppointmentDAO appointmentDAO,
-            TreatmentSessionDAO treatmentSessionDAO
+            TreatmentSessionDAO treatmentSessionDAO,
+            UserDAO userDAO
     ) {
         addressBookController = new AddressBookController(patientDAO);
         calendarController = new CalendarController(appointmentDAO, patientDAO, therapistDAO);
@@ -99,7 +90,10 @@ public class ApplicationInitializer {
                 appointmentDAO,
                 patientDAO
         );
+        userController = new UserController(userDAO);
     }
+
+
 
     /* =====================================================
        Caricamento configurazione
@@ -123,6 +117,7 @@ public class ApplicationInitializer {
         }
     }
 
+
     /* =====================================================
        Getter per Servlet
        ===================================================== */
@@ -137,4 +132,10 @@ public class ApplicationInitializer {
     public TreatmentHistoryController getTreatmentHistoryController() {
         return treatmentHistoryController;
     }
+
+    public UserController getUserController() {
+        return userController;
+    }
+
+
 }
