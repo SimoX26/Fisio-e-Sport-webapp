@@ -119,8 +119,7 @@ public class CalendarController {
      * @throws TimeSlotNotAvailableException if the new time slot is not available
      */
     public Appointment rescheduleAppointment(long appointmentId, LocalDateTime newStart, LocalDateTime newEnd) {
-        Appointment existing = appointmentDAO.findById(appointmentId)
-                .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+        Appointment existing = appointmentDAO.findById(appointmentId).orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
 
         if (existing.getState() != AppointmentState.SCHEDULED) {
             throw new InvalidAppointmentStateException("Only scheduled appointments can be rescheduled");
@@ -182,9 +181,7 @@ public class CalendarController {
      * @throws IllegalArgumentException if the patient does not exist
      */
     private void checkPatientExists(long patientId) {
-        patientDAO.findById(patientId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Patient not found: " + patientId));
+        patientDAO.findById(patientId).orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
     }
 
     /**
@@ -194,8 +191,7 @@ public class CalendarController {
      * @throws IllegalArgumentException if the therapist does not exist
      */
     private void checkTherapistExists(long therapistId) {
-        therapistDAO.findById(therapistId)
-                .orElseThrow(() -> new IllegalArgumentException("Therapist not found: " + therapistId));
+        therapistDAO.findById(therapistId).orElseThrow(() -> new IllegalArgumentException("Therapist not found: " + therapistId));
     }
 
     /**
@@ -206,11 +202,7 @@ public class CalendarController {
      * @throws TimeSlotNotAvailableException if a conflict is detected
      */
     private void checkForConflicts(Appointment appointment) {
-        List<Appointment> overlapping = appointmentDAO.findByTherapistInPeriod(
-                                                                            appointment.getTherapistId(),
-                                                                            appointment.getStart(),
-                                                                            appointment.getEnd()
-                                                                    );
+        List<Appointment> overlapping = appointmentDAO.findByTherapistInPeriod(appointment.getTherapistId(), appointment.getStart(), appointment.getEnd());
 
         if (!overlapping.isEmpty()) {
             throw new TimeSlotNotAvailableException();
