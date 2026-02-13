@@ -48,7 +48,7 @@ public class CalendarServlet extends HttpServlet {
          */
 
         // Caso 3: visualizzazione pagina calendario
-        request.getRequestDispatcher("/WEB-INF/jsp/calendar.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/therapist/calendar.jsp").forward(request, response);
     }
 
     /* =========================

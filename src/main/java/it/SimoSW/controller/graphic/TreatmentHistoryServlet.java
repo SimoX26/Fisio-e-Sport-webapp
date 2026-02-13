@@ -45,7 +45,7 @@ public class TreatmentHistoryServlet extends HttpServlet {
         request.setAttribute("sessions", sessions);
         request.setAttribute("patientId", patientId);
 
-        request.getRequestDispatcher("/WEB-INF/jsp/treatmentHistory.jsp")
+        request.getRequestDispatcher("/WEB-INF/jsp/therapist/treatmenthistory.jsp")
                 .forward(request, response);
     }
 

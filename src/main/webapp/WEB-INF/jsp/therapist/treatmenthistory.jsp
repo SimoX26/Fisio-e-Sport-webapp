@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -17,7 +18,7 @@
 <body>
 
 <!-- HEADER -->
-<%@ include file="/WEB-INF/jsp/header.jspf" %>
+<%@ include file="/WEB-INF/jsp/therapist/header.jspf" %>
 
 <div class="container mt-5">
 
@@ -41,15 +42,11 @@
 
         <%--
             Il controller dovrebbe settare:
-            request.setAttribute("treatments", List<TreatmentSession>);
+            request.setAttribute("sessions", List<TreatmentSession>);
         --%>
 
-        <%
-            java.util.List<?> treatments =
-                    (java.util.List<?>) request.getAttribute("treatments");
-        %>
-
-        <% if (treatments == null || treatments.isEmpty()) { %>
+        <c:choose>
+            <c:when test="${empty sessions}">
 
             <!-- EMPTY STATE -->
             <div class="text-center py-5 empty-state">
@@ -63,7 +60,8 @@
                 </a>
             </div>
 
-        <% } else { %>
+            </c:when>
+            <c:otherwise>
 
             <!-- TABELLA -->
             <div class="table-responsive">
@@ -79,17 +77,14 @@
                     </thead>
                     <tbody>
 
-                    <% for (Object obj : treatments) {
-                           // cast reale: TreatmentSession session = (TreatmentSession) obj;
-                    %>
+                    <c:forEach var="session" items="${sessions}">
                         <tr>
-                            <td><!-- ${session.data} --></td>
-                            <td><!-- ${session.paziente.nome} --></td>
-                            <td><!-- ${session.tipo} --></td>
+                            <td><c:out value="${session.start}" /></td>
+                            <td><c:out value="${session.patientId}" /></td>
+                            <td><c:out value="${session.appointmentId}" /></td>
                             <td>
-                                <%-- esempio stato --%>
                                 <span class="badge-state state-completed">
-                                    Completato
+                                    <c:out value="${session.state}" />
                                 </span>
                             </td>
                             <td class="text-end">
@@ -99,13 +94,14 @@
                                 </a>
                             </td>
                         </tr>
-                    <% } %>
+                    </c:forEach>
 
                     </tbody>
                 </table>
             </div>
 
-        <% } %>
+            </c:otherwise>
+        </c:choose>
 
     </div>
 

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -17,7 +18,7 @@
 <body>
 
 <!-- HEADER -->
-<%@ include file="/WEB-INF/jsp/header.jspf" %>
+<%@ include file="/WEB-INF/jsp/therapist/header.jspf" %>
 
 <div class="container mt-5">
 
@@ -41,15 +42,11 @@
 
         <%--
             Qui il controller dovrebbe settare:
-            request.setAttribute("patients", List<PazienteBean>);
+            request.setAttribute("patients", List<Patient>);
         --%>
 
-        <%
-            java.util.List<?> patients =
-                    (java.util.List<?>) request.getAttribute("patients");
-        %>
-
-        <% if (patients == null || patients.isEmpty()) { %>
+        <c:choose>
+            <c:when test="${empty patients}">
 
             <!-- EMPTY STATE -->
             <div class="text-center py-5 empty-state">
@@ -63,7 +60,8 @@
                 </a>
             </div>
 
-        <% } else { %>
+            </c:when>
+            <c:otherwise>
 
             <!-- TABELLA -->
             <div class="table-responsive">
@@ -78,15 +76,13 @@
                     </thead>
                     <tbody>
 
-                    <% for (Object obj : patients) {
-                           // cast reale nel tuo progetto (es. PazienteBean)
-                    %>
+                    <c:forEach var="patient" items="${patients}">
                         <tr>
                             <td>
-                                <strong><!-- ${paziente.nome} ${paziente.cognome} --></strong>
+                                <strong><c:out value="${patient.fullName}" /></strong>
                             </td>
-                            <td><!-- ${paziente.email} --></td>
-                            <td><!-- ${paziente.telefono} --></td>
+                            <td><c:out value="${patient.email}" /></td>
+                            <td><c:out value="${patient.phone}" /></td>
                             <td class="text-end">
                                 <a href="#"
                                    class="btn btn-sm btn-soft">
@@ -94,13 +90,14 @@
                                 </a>
                             </td>
                         </tr>
-                    <% } %>
+                    </c:forEach>
 
                     </tbody>
                 </table>
             </div>
 
-        <% } %>
+            </c:otherwise>
+        </c:choose>
 
     </div>
 

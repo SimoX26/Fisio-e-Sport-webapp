@@ -44,7 +44,7 @@ public class CreateUserServlet extends HttpServlet {
             request.setAttribute("role", role);
             request.setAttribute("active", active);
 
-            request.getRequestDispatcher("/WEB-INF/jsp/admin/newUser.jsp")
+            request.getRequestDispatcher("/WEB-INF/jsp/admin/insertNewUser.jsp")
                     .forward(request, response);
 
         }

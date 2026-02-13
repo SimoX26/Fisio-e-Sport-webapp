@@ -42,7 +42,7 @@ public class AddressBookServlet extends HttpServlet {
                 );
 
         request.setAttribute("patients", patients);
-        request.getRequestDispatcher("/WEB-INF/jsp/addressBook.jsp")
+        request.getRequestDispatcher("/WEB-INF/jsp/therapist/addressBook.jsp")
                 .forward(request, response);
     }
 

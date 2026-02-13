@@ -17,7 +17,7 @@
 
 <body>
 
-<%@ include file="/WEB-INF/jsp/header.jspf" %>
+<%@ include file="/WEB-INF/jsp/therapist/header.jspf" %>
 
 <div class="container mt-5">
 
