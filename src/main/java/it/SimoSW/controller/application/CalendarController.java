@@ -204,7 +204,10 @@ public class CalendarController {
     private void checkForConflicts(Appointment appointment) {
         List<Appointment> overlapping = appointmentDAO.findByTherapistInPeriod(appointment.getTherapistId(), appointment.getStart(), appointment.getEnd());
 
-        if (!overlapping.isEmpty()) {
+        boolean hasConflict = overlapping.stream()
+                .anyMatch(existing -> existing.getId() != appointment.getId());
+
+        if (hasConflict) {
             throw new TimeSlotNotAvailableException();
         }
     }

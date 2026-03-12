@@ -144,19 +144,20 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         String sql = """
             SELECT * FROM appointments
             WHERE therapist_id = ?
-              AND start_time >= ?
-              AND end_time <= ?
+              AND state <> 'CANCELLED'
+              AND start_time < ?
+              AND end_time > ?
             ORDER BY start_time
         """;
 
         List<Appointment> result = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, therapistId);
-            ps.setTimestamp(2, Timestamp.valueOf(start));
-            ps.setTimestamp(3, Timestamp.valueOf(end));
+            ps.setTimestamp(2, Timestamp.valueOf(end));
+            ps.setTimestamp(3, Timestamp.valueOf(start));
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

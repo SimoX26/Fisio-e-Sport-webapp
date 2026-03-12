@@ -35,7 +35,7 @@ public class CreateUserServlet extends HttpServlet {
         try {
             userController.createUser(username, password, role, active);
 
-            response.sendRedirect(request.getContextPath() + "/admin/users");
+            response.sendRedirect(request.getContextPath() + "/admin/new-user");
 
         } catch (InvalidUserDataException | UsernameAlreadyExistsException e) {
 

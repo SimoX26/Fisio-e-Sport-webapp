@@ -25,7 +25,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="<%= request.getContextPath() %>/dashboard.jsp">
+                       href="<%= request.getContextPath() %>/dashboard">
                         Dashboard
                     </a>
                 </li>
@@ -50,8 +50,8 @@
 
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="<%= request.getContextPath() %>/profile.jsp">
-                        Profilo
+                       href="<%= request.getContextPath() %>/dashboard">
+                        Home
                     </a>
                 </li>
 

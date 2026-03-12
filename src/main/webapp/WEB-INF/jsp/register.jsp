@@ -56,7 +56,7 @@
 
                 <div class="text-center mt-4 small">
                     Hai già un account?
-                    <a href="<%= request.getContextPath() %>/login.jsp">Accedi</a>
+                    <a href="<%= request.getContextPath() %>/login">Accedi</a>
                 </div>
 
                 <div class="text-center mt-3 small">

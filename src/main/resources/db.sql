@@ -1,119 +1,106 @@
--- 🔥 Elimina il database se esiste
+-- Drop and recreate database
 DROP DATABASE IF EXISTS fisio_e_sport;
 
--- 🏗️ Crea il database
 CREATE DATABASE fisio_e_sport
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
--- 👤 Crea l'utente DB
+-- Optional local DB user bootstrap
 CREATE USER IF NOT EXISTS 'fisio_e_sport'@'localhost'
 IDENTIFIED BY 'password_123';
 
--- 🛡️ Permessi (semplificati per progetto universitario)
 GRANT ALL PRIVILEGES ON fisio_e_sport.* TO 'fisio_e_sport'@'localhost';
-
 FLUSH PRIVILEGES;
 
--- 📂 Usa il database
 USE fisio_e_sport;
 
 -- =========================
--- 👤 USERS (AUTENTICAZIONE)
+-- USERS
 -- =========================
-CREATE TABLE user (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
   password_hash CHAR(64) NOT NULL,
   role ENUM('THERAPIST', 'ADMIN') NOT NULL,
   active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
--- 🩺 PATIENT
+-- PATIENTS
 -- =========================
-CREATE TABLE patient (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome_completo VARCHAR(200) NOT NULL,
-  telefono VARCHAR(20) NOT NULL,
+CREATE TABLE patients (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
   email VARCHAR(150),
-  data_nascita DATE,
-  cautele TEXT,
-
-  -- Campi clinici
-  motivo_consulto TEXT,
-  localizzazione TEXT,
-  tipologia_dolore TEXT,
-  insorgenza TEXT,
-  causa_presunta TEXT,
-  invalidante TEXT,
-  frequenza TEXT,
-  progressione TEXT,
-  dolore_movimento TEXT,
-  dolore_riposo TEXT,
-  dolore_notturno TEXT,
-  intensita TINYINT CHECK (intensita BETWEEN 0 AND 10),
-  farmaci TEXT,
-  esami TEXT,
-  visite TEXT,
-  farmaci_regolari TEXT,
-  interventi TEXT,
-
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  phone VARCHAR(20),
+  state ENUM('ACTIVE', 'INACTIVE', 'ARCHIVED') NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
--- 📅 APPOINTMENT (CALENDARIO)
+-- THERAPISTS
 -- =========================
-CREATE TABLE appointment (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  patient_id INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  start DATETIME NOT NULL,
-  end DATETIME NOT NULL,
-  note TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE therapists (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  specialization VARCHAR(120),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
-  CONSTRAINT fk_appointment_patient
-    FOREIGN KEY (patient_id) REFERENCES patient(id)
+-- =========================
+-- APPOINTMENTS
+-- =========================
+CREATE TABLE appointments (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  patient_id BIGINT NOT NULL,
+  therapist_id BIGINT NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  state ENUM('SCHEDULED', 'CANCELLED', 'COMPLETED') NOT NULL DEFAULT 'SCHEDULED',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_appointments_patient
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_appointments_therapist
+    FOREIGN KEY (therapist_id) REFERENCES therapists(id)
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 );
 
 -- =========================
--- 💆 TREATMENT SESSION
+-- TREATMENT SESSIONS
 -- =========================
-CREATE TABLE treatment_session (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  appointment_id INT NOT NULL,
-  valutazione_pre_trattamento TEXT NOT NULL,
-  note_post_trattamento TEXT,
-  durata_minuti INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE treatment_sessions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  appointment_id BIGINT NOT NULL,
+  patient_id BIGINT NOT NULL,
+  therapist_id BIGINT NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  notes TEXT,
+  state ENUM('IN_PROGRESS', 'COMPLETED') NOT NULL DEFAULT 'IN_PROGRESS',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  CONSTRAINT fk_treatment_session_appointment
-    FOREIGN KEY (appointment_id) REFERENCES appointment(id)
+  CONSTRAINT uq_treatment_sessions_appointment UNIQUE (appointment_id),
+
+  CONSTRAINT fk_treatment_sessions_appointment
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id)
     ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_treatment_sessions_patient
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_treatment_sessions_therapist
+    FOREIGN KEY (therapist_id) REFERENCES therapists(id)
+    ON DELETE RESTRICT
     ON UPDATE CASCADE
 );
-
--- =========================
--- 👁️ VIEW: APPOINTMENT + PATIENT + TREATMENT
--- =========================
-CREATE OR REPLACE VIEW appointment_overview AS
-SELECT
-  a.id AS appointment_id,
-  p.id AS patient_id,
-  p.nome_completo,
-  a.start,
-  a.end,
-  a.title,
-  a.note AS appointment_note,
-  ts.id AS treatment_session_id,
-  ts.valutazione_pre_trattamento,
-  ts.note_post_trattamento,
-  ts.durata_minuti
-FROM appointment a
-JOIN patient p ON a.patient_id = p.id
-LEFT JOIN treatment_session ts ON ts.appointment_id = a.id;

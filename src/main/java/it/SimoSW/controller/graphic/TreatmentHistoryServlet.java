@@ -8,8 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-        import java.io.IOException;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/treatment-history")
@@ -35,8 +36,15 @@ public class TreatmentHistoryServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        long patientId =
-                Long.parseLong(request.getParameter("patientId"));
+        String patientIdParam = request.getParameter("patientId");
+        if (patientIdParam == null || patientIdParam.isBlank()) {
+            request.setAttribute("sessions", Collections.emptyList());
+            request.getRequestDispatcher("/WEB-INF/jsp/therapist/treatmenthistory.jsp")
+                    .forward(request, response);
+            return;
+        }
+
+        long patientId = Long.parseLong(patientIdParam);
 
         List<TreatmentSession> sessions =
                 treatmentHistoryController

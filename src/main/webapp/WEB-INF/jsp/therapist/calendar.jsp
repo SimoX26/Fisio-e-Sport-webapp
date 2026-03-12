@@ -20,7 +20,7 @@
 <body class="theme-dark">
 
 <!-- HEADER -->
-<%@ include file="/WEB-INF/jsp/therapist/header.jspf" %>
+<%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
 <div class="container mt-5">
 

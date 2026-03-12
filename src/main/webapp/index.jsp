@@ -158,10 +158,10 @@
             🌙
         </button>
 
-        <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-outline-light btn-sm">
+        <a href="<%= request.getContextPath() %>/login" class="btn btn-outline-light btn-sm">
             Login
         </a>
-        <a href="<%= request.getContextPath() %>/register.jsp" class="btn btn-primary btn-sm">
+        <a href="<%= request.getContextPath() %>/register" class="btn btn-primary btn-sm">
             Registrati
         </a>
     </div>
@@ -184,10 +184,10 @@
                 </p>
 
                 <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
-                    <a href="<%= request.getContextPath() %>/dashboard.jsp" class="btn btn-primary btn-lg">
+                    <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-primary btn-lg">
                         Accedi alla dashboard
                     </a>
-                    <a href="<%= request.getContextPath() %>/register.jsp" class="btn btn-outline-light btn-lg">
+                    <a href="<%= request.getContextPath() %>/register" class="btn btn-outline-light btn-lg">
                         Inizia ora
                     </a>
                 </div>

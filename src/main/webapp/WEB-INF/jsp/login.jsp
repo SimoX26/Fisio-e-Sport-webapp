@@ -44,7 +44,7 @@
 
                 <div class="text-center mt-4 small">
                     Non hai un account?
-                    <a href="<%= request.getContextPath() %>/register.jsp">Registrati</a>
+                    <a href="<%= request.getContextPath() %>/register">Registrati</a>
                 </div>
 
                 <div class="text-center mt-3 small">

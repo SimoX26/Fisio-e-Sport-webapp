@@ -61,14 +61,14 @@ public class ApplicationInitializer {
        ===================================================== */
     private void initDatabasePersistence() {
 
-        // PatientDAO patientDAO = new DatabasePatientDAO();
-        // TherapistDAO therapistDAO = new DatabaseTherapistDAO();
+        PatientDAO patientDAO = new DatabasePatientDAO();
+        TherapistDAO therapistDAO = new DatabaseTherapistDAO();
         AppointmentDAO appointmentDAO = new DatabaseAppointmentDAO();
-        // TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
+        TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
 
 
-        wireControllers(null, null, appointmentDAO, null, userDAO);
+        wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO, userDAO);
 
     }
 

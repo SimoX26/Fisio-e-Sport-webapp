@@ -18,7 +18,7 @@
 <body>
 
 <!-- HEADER -->
-<%@ include file="/WEB-INF/jsp/therapist/header.jspf" %>
+<%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
 <div class="container mt-5">
 
@@ -31,7 +31,7 @@
             </p>
         </div>
 
-        <a href="<%= request.getContextPath() %>/treatments/new"
+        <a href="<%= request.getContextPath() %>/calendar"
            class="btn btn-primary">
             ➕ Nuovo trattamento
         </a>
@@ -54,7 +54,7 @@
                 <p class="mb-3">
                     Inizia aggiungendo una nuova seduta
                 </p>
-                <a href="<%= request.getContextPath() %>/treatments/new"
+                <a href="<%= request.getContextPath() %>/calendar"
                    class="btn btn-soft">
                     Aggiungi trattamento
                 </a>
