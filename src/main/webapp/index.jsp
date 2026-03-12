@@ -22,14 +22,6 @@
             --border-color: rgba(0,0,0,.12);
         }
 
-        body.theme-dark{
-            --bg-main: #0b1220;
-            --text-main: #e9eefb;
-            --text-muted: rgba(233,238,251,.75);
-            --bg-card: rgba(255,255,255,.06);
-            --border-color: rgba(255,255,255,.12);
-        }
-
         /* =========================
            BASE
            ========================= */
@@ -63,12 +55,6 @@
         .navbar .navbar-brand:hover,
         .navbar .nav-link:hover{
             color: #0d6efd !important;
-        }
-
-        /* Toggle tema */
-        #themeToggle{
-            color: var(--text-main) !important;
-            border-color: var(--border-color) !important;
         }
 
         /* Fix Bootstrap outline-light */
@@ -133,6 +119,39 @@
             border-top: none; /* footer più leggero */
             color: var(--text-muted);
         }
+
+        @media (max-width: 767.98px){
+            .hero{
+                padding: 3rem 1rem 2rem;
+            }
+
+            .hero h1{
+                font-size: 1.9rem;
+                line-height: 1.2;
+            }
+
+            .hero .d-flex{
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: .75rem !important;
+            }
+
+            .hero .btn{
+                width: 100%;
+            }
+
+            .navbar .ms-auto{
+                width: 100%;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                margin-top: .5rem;
+            }
+
+            .navbar .ms-auto .btn{
+                flex: 1 1 auto;
+                min-width: 110px;
+            }
+        }
     </style>
 
 
@@ -140,7 +159,7 @@
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 
-<body class="theme-dark">
+<body>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg px-3 px-lg-5">
@@ -149,14 +168,6 @@
     </a>
 
     <div class="ms-auto d-flex gap-2 align-items-center">
-
-        <!-- THEME TOGGLE -->
-        <button class="btn btn-outline-secondary btn-sm"
-                id="themeToggle"
-                onclick="toggleTheme()"
-                title="Cambia tema">
-            🌙
-        </button>
 
         <a href="<%= request.getContextPath() %>/login" class="btn btn-outline-light btn-sm">
             Login
@@ -249,38 +260,6 @@
         © <%= java.time.Year.now() %> Fisio e Sport — Gestionale per fisioterapia e sport
     </div>
 </footer>
-
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    function applyTheme(theme) {
-        document.body.classList.remove('theme-dark', 'theme-light');
-        document.body.classList.add(theme);
-        localStorage.setItem('theme', theme);
-
-        const toggleBtn = document.getElementById('themeToggle');
-        if (toggleBtn) {
-            toggleBtn.textContent = theme === 'theme-dark' ? '☀️' : '🌙';
-        }
-    }
-
-    function toggleTheme() {
-        const isDark = document.body.classList.contains('theme-dark');
-        applyTheme(isDark ? 'theme-light' : 'theme-dark');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme');
-
-        // default esplicito
-        if (savedTheme === 'theme-light' || savedTheme === 'theme-dark') {
-            applyTheme(savedTheme);
-        } else {
-            applyTheme('theme-dark');
-        }
-    });
-</script>
 
 </body>
 </html>

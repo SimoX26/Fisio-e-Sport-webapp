@@ -3,17 +3,18 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard • Fisio e Sport</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
       <!-- Custom CSS -->
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 
-<body class="theme-dark">
+<body>
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
@@ -58,43 +59,43 @@
     <div class="row g-4">
 
         <div class="col-md-4">
-            <div class="glass-card p-4 action-card h-100"
-                 onclick="location.href='<%= request.getContextPath() %>/calendar'">
+            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/calendar">
                 <div class="icon mb-3">📅</div>
                 <h5>Calendario</h5>
                 <p class="page-subtitle">
                     Visualizza e gestisci gli appuntamenti
                 </p>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card p-4 action-card h-100"
-                 onclick="location.href='<%= request.getContextPath() %>/address-book'">
+            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/address-book">
                 <div class="icon mb-3">👤</div>
                 <h5>Rubrica Pazienti</h5>
                 <p class="page-subtitle">
                     Consulta l’elenco dei pazienti
                 </p>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card p-4 action-card h-100"
-                 onclick="location.href='<%= request.getContextPath() %>/treatment-history'">
+            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/treatment-history">
                 <div class="icon mb-3">🧾</div>
                 <h5>Storico Trattamenti</h5>
                 <p class="page-subtitle">
                     Visualizza le sedute effettuate
                 </p>
-            </div>
+            </a>
         </div>
 
     </div>
 
     <!-- CTA -->
     <div class="mt-5">
-        <div class="glass-card p-4 d-flex justify-content-between align-items-center">
+        <div class="glass-card p-4 dashboard-cta">
             <div>
                 <h5 class="mb-1">Nuovo appuntamento</h5>
                 <p class="page-subtitle mb-0">

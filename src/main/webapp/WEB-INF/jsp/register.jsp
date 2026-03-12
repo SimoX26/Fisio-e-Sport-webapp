@@ -12,7 +12,7 @@
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 
-<body class="d-flex align-items-center justify-content-center">
+<body class="auth-page d-flex align-items-center justify-content-center">
 
 <div class="container">
     <div class="row justify-content-center">

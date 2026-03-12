@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/address-book")
@@ -35,11 +36,16 @@ public class AddressBookServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
 
+        List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
-        List<Patient> patients =
-                addressBookController.searchPatients(
-                        query != null ? query : ""
-                );
+
+        try {
+            patients = addressBookController.searchPatients(
+                    query != null ? query : ""
+            );
+        } catch (RuntimeException ex) {
+            request.setAttribute("error", "Impossibile caricare la rubrica in questo momento.");
+        }
 
         request.setAttribute("patients", patients);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/addressBook.jsp")

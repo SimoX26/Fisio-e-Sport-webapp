@@ -1,6 +1,7 @@
 package it.SimoSW.util.bootstrap;
 
 import it.SimoSW.controller.application.AddressBookController;
+import it.SimoSW.controller.application.AuthenticationController;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.controller.application.UserController;
@@ -20,6 +21,7 @@ public class ApplicationInitializer {
     private AddressBookController addressBookController;
     private CalendarController calendarController;
     private TreatmentHistoryController treatmentHistoryController;
+    private AuthenticationController authenticationController;
     private UserController userController;
 
 
@@ -90,6 +92,7 @@ public class ApplicationInitializer {
                 appointmentDAO,
                 patientDAO
         );
+        authenticationController = new AuthenticationController(userDAO);
         userController = new UserController(userDAO);
     }
 
@@ -135,6 +138,10 @@ public class ApplicationInitializer {
 
     public UserController getUserController() {
         return userController;
+    }
+
+    public AuthenticationController getAuthenticationController() {
+        return authenticationController;
     }
 
 

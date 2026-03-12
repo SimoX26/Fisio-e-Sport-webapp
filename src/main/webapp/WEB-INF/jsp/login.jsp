@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -12,7 +13,7 @@
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
 
-<body class="d-flex align-items-center justify-content-center">
+<body class="auth-page d-flex align-items-center justify-content-center">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -24,16 +25,22 @@
                     <p class="text-muted">Accedi alla tua dashboard</p>
                 </div>
 
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger" role="alert">
+                        <c:out value="${error}" />
+                    </div>
+                </c:if>
+
                 <form action="<%= request.getContextPath() %>/login" method="post">
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="email"
-                               name="email" placeholder="email" required>
-                        <label for="email">Email</label>
+                        <input type="text" class="form-control" id="username"
+                               name="username" placeholder="Inserisci username" required>
+                        <label for="username">Username</label>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input type="password" class="form-control" id="password"
-                               name="password" placeholder="password" required>
+                               name="password" placeholder="Inserisci password" required>
                         <label for="password">Password</label>
                     </div>
 

@@ -8,14 +8,7 @@
     --border-color: rgba(0,0,0,.12);
     --text-main: #212529;
     --text-muted: #6c757d;
-}
-
-body.theme-dark{
-    --bg-main: #0b1220;
-    --bg-card: rgba(255,255,255,.06);
-    --border-color: rgba(255,255,255,.12);
-    --text-main: #e9eefb;
-    --text-muted: rgba(233,238,251,.65);
+    --input-bg: #ffffff;
 }
 
 body{
@@ -25,6 +18,7 @@ body{
         var(--bg-main);
     color: var(--text-main);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
 }
 
 
@@ -40,6 +34,21 @@ body{
 
 .page-subtitle{
     color: var(--text-muted);
+}
+
+.calendar-card{
+    padding: 1rem;
+}
+
+.calendar-scroll-shell{
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 75vh;
+}
+
+#calendar{
+    min-width: 980px;
+    min-height: 700px;
 }
 
 .glass-card{
@@ -109,6 +118,7 @@ body{
 .action-card{
     cursor: pointer;
     transition: .25s ease;
+    color: inherit;
 }
 
 .action-card:hover{
@@ -144,6 +154,14 @@ body{
     color: var(--text-main) !important;
 }
 
+.app-navbar{
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg-main) 72%, transparent);
+}
+
 .navbar .nav-link:hover{
     color: #0d6efd !important;
 }
@@ -152,13 +170,16 @@ body{
     color: var(--text-muted) !important;
 }
 
-#themeToggle{
-    color: var(--text-main);
+.navbar-toggler{
     border-color: var(--border-color);
 }
 
-#themeToggle:hover{
-    background: var(--bg-card);
+.navbar-toggler:focus{
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.18);
+}
+
+.navbar-toggler-icon{
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(33,37,41,0.92)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 
@@ -318,6 +339,171 @@ body{
     color: var(--text-main);
 }
 
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+.page-header-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.form-actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+}
+
+.dashboard-cta{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+@media (max-width: 991.98px){
+    .navbar .navbar-collapse{
+        margin-top: .75rem;
+        padding: .75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background: var(--bg-card);
+    }
+
+    #calendar{
+        min-width: 900px;
+        min-height: 680px;
+    }
+
+    .navbar .navbar-nav{
+        gap: .25rem;
+    }
+
+    .navbar .nav-link{
+        padding: .5rem .25rem;
+    }
+}
+
+@media (max-width: 767.98px){
+    body.auth-page{
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        min-height: 100vh;
+        padding: 1rem 0;
+    }
+
+    .container{
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .glass-card{
+        border-radius: 14px;
+        box-shadow: 0 10px 26px rgba(0,0,0,.35);
+    }
+
+    .page-title{
+        font-size: 1.5rem;
+    }
+
+    .page-subtitle{
+        font-size: .95rem;
+    }
+
+    .kpi-value{
+        font-size: 1.6rem;
+    }
+
+    .icon{
+        font-size: 1.7rem;
+    }
+
+    .action-card:hover{
+        transform: none;
+    }
+
+    .page-header-row{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .page-header-row .btn{
+        width: 100%;
+    }
+
+    .form-actions{
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .dashboard-cta{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-cta .btn{
+        width: 100%;
+    }
+
+    .table{
+        font-size: .92rem;
+    }
+
+    .table th,
+    .table td{
+        white-space: nowrap;
+    }
+
+    .calendar-card{
+        padding: .75rem;
+    }
+
+    .calendar-scroll-shell{
+        max-height: 70vh;
+    }
+
+    #calendar{
+        min-width: 840px;
+        min-height: 640px;
+    }
+
+    .fc .fc-toolbar{
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
+
+    .fc .fc-toolbar-title{
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .fc .fc-button{
+        padding: .3rem .55rem !important;
+        font-size: .82rem !important;
+    }
+
+    .fc .fc-timegrid-slot-label{
+        font-size: .75rem;
+    }
+
+    .fc .fc-col-header-cell-cushion{
+        font-size: .8rem;
+    }
+
+    .fc .fc-event{
+        font-size: .75rem;
+        padding: 1px 3px;
+    }
+
+    .modal-dialog{
+        margin: .5rem;
+    }
+}
+
 /* testi generici */
 .modal p,
 .modal span,
@@ -365,29 +551,11 @@ body{
    ========================= */
 
 .modal-header .btn-close {
-    filter: invert(1);
+    filter: none;
     opacity: .75;
 }
 
-body:not(.theme-dark) .modal-header .btn-close {
-    filter: none;
-}
-
-
-
-
-
-
-
-/* =========================
-   DARK / LIGHT REFINEMENTS
-   ========================= */
-
-body.theme-dark .fc-timegrid-slot{
-    background: rgba(255,255,255,.02);
-}
-
-body.theme-light .fc-timegrid-slot{
+.fc-timegrid-slot{
     background: rgba(0,0,0,.01);
 }
 

@@ -4,11 +4,12 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rubrica Pazienti • Fisio e Sport</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
    <!-- Custom CSS -->
    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
@@ -23,7 +24,7 @@
 <div class="container mt-5">
 
     <!-- HEADER PAGINA -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="page-header-row mb-4">
         <div>
             <h2 class="page-title">Rubrica Pazienti</h2>
             <p class="page-subtitle mb-0">
@@ -39,6 +40,12 @@
 
     <!-- LISTA PAZIENTI -->
     <div class="glass-card p-4">
+
+        <c:if test="${not empty error}">
+            <div class="alert alert-warning" role="alert">
+                <c:out value="${error}" />
+            </div>
+        </c:if>
 
         <%--
             Qui il controller dovrebbe settare:

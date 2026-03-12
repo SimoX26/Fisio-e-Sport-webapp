@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<nav class="navbar navbar-expand-lg px-3 px-lg-5"
+<nav class="navbar navbar-expand-lg px-3 px-lg-5 app-navbar"
     style="border-bottom: 1px solid var(--border-color);">
     <div class="container-fluid">
 
@@ -15,7 +15,10 @@
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Apri menu di navigazione">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -68,10 +71,4 @@
     </div>
 </nav>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const theme = localStorage.getItem('theme') || 'theme-dark';
-        document.body.classList.remove('theme-dark','theme-light');
-        document.body.classList.add(theme);
-    });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
