@@ -67,7 +67,10 @@ Implicazione architetturale: wiring centralizzato e semplice, ma senza DI contai
 - Endpoint `/calendar`
 - GET eventi in JSON per FullCalendar
 - POST con azioni `create`, `reschedule`, `cancel`
+- Associazione terapista derivata dall'utente loggato (`users` con ruolo `THERAPIST`)
 - Regole business gestite da `CalendarController`
+- Contratto eventi frontend standardizzato su `title/start/end/extendedProps` per visibilita immediata in FullCalendar
+- Parsing date-time lato backend compatibile con formati ISO locali e con offset timezone
 
 3. Rubrica pazienti (address book): **Operativa**
 - Endpoint `/address-book` e pagina creazione
@@ -91,6 +94,7 @@ Implicazione architetturale: wiring centralizzato e semplice, ma senza DI contai
 - Modalita attiva: MySQL
 - Script schema disponibile: `src/main/resources/db.sql`
 - Seed utenti test disponibile: `src/main/resources/seed_test_users.sql`
+- Entita terapista gestita tramite tabella `users` (role-based), senza tabella `therapists`
 
 ## Sicurezza e sessione
 - Hash password previsto con SHA-256 (config + utilita `PasswordHasher`)
@@ -99,7 +103,7 @@ Implicazione architetturale: wiring centralizzato e semplice, ma senza DI contai
 
 ## Allineamento codice-configurazione
 Punti coerenti:
-- Modello dominio allineato allo schema SQL (users, patients, therapists, appointments, treatment_sessions)
+- Modello dominio allineato allo schema SQL (users, patients, appointments, treatment_sessions)
 - Frontend calendario allineato a endpoint JSON `/calendar`
 
 Punti da consolidare:
