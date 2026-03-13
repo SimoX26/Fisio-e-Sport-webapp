@@ -4,17 +4,20 @@
 
 :root{
     --bg-main: #ffffff;
-    --bg-card: rgba(0,0,0,.03);
-    --border-color: rgba(0,0,0,.12);
-    --text-main: #212529;
-    --text-muted: #6c757d;
+    --bg-soft: #f3fbff;
+    --bg-card: #ffffff;
+    --border-color: rgba(13,110,253,.14);
+    --text-main: #1f2d3d;
+    --text-muted: #5f6f82;
+    --brand-primary: #0d6efd;
+    --brand-secondary: #20c997;
     --input-bg: #ffffff;
 }
 
 body{
     background: var(--bg-main);
     color: var(--text-main);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
     margin: 0;
 }
 
@@ -41,7 +44,8 @@ body.auth-page{
    ========================= */
 
 .page-title{
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: .2px;
 }
 
 .page-subtitle{
@@ -66,9 +70,9 @@ body.auth-page{
 .glass-card{
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 18px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 14px 40px rgba(0,0,0,.45);
+    border-radius: 14px;
+    backdrop-filter: none;
+    box-shadow: 0 10px 26px rgba(19, 44, 77, .08);
 }
 
 
@@ -93,7 +97,7 @@ body.auth-page{
 .form-control:focus{
     background: var(--input-bg);
     color: var(--text-main);
-    border-color: #0d6efd;
+    border-color: var(--brand-primary);
     box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
 }
 
@@ -109,7 +113,17 @@ body.auth-page{
 }
 
 .btn-outline-secondary:hover{
-    background: var(--bg-card);
+    background: var(--bg-soft);
+}
+
+.btn-primary{
+    border-color: var(--brand-primary);
+    background: var(--brand-primary);
+}
+
+.btn-primary:hover{
+    background: #0b5ed7;
+    border-color: #0b5ed7;
 }
 
 
@@ -134,8 +148,9 @@ body.auth-page{
 }
 
 .action-card:hover{
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(0,0,0,.4);
+    transform: translateY(-3px);
+    border-color: rgba(13,110,253,.28);
+    box-shadow: 0 14px 28px rgba(13,110,253,.12);
 }
 
 .icon{
@@ -143,13 +158,13 @@ body.auth-page{
 }
 
 .btn-soft{
-    background: var(--bg-card);
+    background: var(--bg-soft);
     border: 1px solid var(--border-color);
     color: var(--text-main);
 }
 
 .btn-soft:hover{
-    background: rgba(255,255,255,.14);
+    background: rgba(13,110,253,.08);
 }
 
 
@@ -170,12 +185,26 @@ body.auth-page{
     position: sticky;
     top: 0;
     z-index: 1030;
-    backdrop-filter: blur(10px);
-    background: color-mix(in srgb, var(--bg-main) 72%, transparent);
+    backdrop-filter: none;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 16px rgba(13,110,253,.06);
 }
 
 .navbar .nav-link:hover{
-    color: #0d6efd !important;
+    color: var(--brand-primary) !important;
+}
+
+.navbar .nav-link.logout-link,
+.navbar .nav-link.logout-link:visited,
+.navbar .nav-link.logout-link:focus,
+.navbar .nav-link.logout-link:active{
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+.navbar .nav-link.logout-link:hover{
+    color: #b02a37 !important;
 }
 
 .navbar .nav-link.disabled{
@@ -221,7 +250,7 @@ body.auth-page{
 }
 
 .fc-day-today{
-    background: rgba(13,110,253,.12) !important;
+    background: rgba(13,110,253,.08) !important;
 }
 
 
@@ -235,17 +264,17 @@ body.auth-page{
 /* Riga intera dell’header (dove c’è “martedì”) */
 .fc .fc-scrollgrid-section-header,
 .fc .fc-scrollgrid-section-header th{
-    background: var(--bg-card) !important;
+    background: var(--bg-soft) !important;
 }
 
 /* Contenitore colonne header */
 .fc .fc-col-header{
-    background: var(--bg-card) !important;
+    background: var(--bg-soft) !important;
 }
 
 /* Singola cella header */
 .fc .fc-col-header-cell{
-    background: var(--bg-card) !important;
+    background: var(--bg-soft) !important;
     border-color: var(--border-color) !important;
 }
 
@@ -258,7 +287,7 @@ body.auth-page{
 
 /* Hover sul giorno */
 .fc .fc-col-header-cell-cushion:hover{
-    color: #0d6efd !important;
+    color: var(--brand-primary) !important;
 }
 
 
@@ -294,19 +323,19 @@ body.auth-page{
    ========================= */
 
 .fc-button{
-    background: var(--bg-card) !important;
+    background: #ffffff !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-main) !important;
     box-shadow: none !important;
 }
 
 .fc-button:hover{
-    background: rgba(13,110,253,.15) !important;
+    background: var(--bg-soft) !important;
 }
 
 .fc-button-primary:not(:disabled).fc-button-active{
-    background: #0d6efd !important;
-    border-color: #0d6efd !important;
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
     color: #fff !important;
 }
 
@@ -317,7 +346,7 @@ body.auth-page{
    ========================= */
 
 .fc-event{
-    background: linear-gradient(135deg, #0d6efd, #4dabf7);
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
     border: none;
     border-radius: 8px;
     color: #fff !important;
@@ -343,7 +372,7 @@ body.auth-page{
 .modal-body,
 .modal-footer {
     color: var(--text-main);
-    background-color: transparent;
+    background-color: #ffffff;
 }
 
 /* titolo */
@@ -374,6 +403,32 @@ body.auth-page{
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    background: linear-gradient(135deg, #f7fbff, #eefbf7);
+}
+
+.table thead th{
+    font-size: .84rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table td{
+    border-bottom: 1px solid rgba(13,110,253,.09);
+}
+
+.badge-state{
+    border-radius: 999px;
+    padding: .35rem .62rem;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.state-completed{
+    background: rgba(32,201,151,.14);
+    color: #0f8b67;
 }
 
 @media (max-width: 991.98px){
@@ -382,7 +437,7 @@ body.auth-page{
         padding: .75rem;
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        background: var(--bg-card);
+        background: #ffffff;
     }
 
     #calendar{
@@ -413,7 +468,7 @@ body.auth-page{
 
     .glass-card{
         border-radius: 14px;
-        box-shadow: 0 10px 26px rgba(0,0,0,.35);
+        box-shadow: 0 10px 22px rgba(19, 44, 77, .10);
     }
 
     .page-title{

@@ -13,28 +13,31 @@
 </head>
 <body>
 
+<%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
+
 <div class="container mt-5">
 
-    <h2 class="mb-4">Admin Dashboard</h2>
+    <div class="mb-4">
+        <h2 class="page-title">Dashboard amministrativa</h2>
+        <p class="page-subtitle mb-0">Gestione utenti e configurazione operativa</p>
+    </div>
 
     <!-- =========================
          SEZIONE GESTIONE UTENTI
          ========================= -->
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="glass-card p-4">
 
-            <h5 class="card-title mb-3">Gestione Utenti</h5>
+        <h5 class="mb-3">Gestione utenti</h5>
 
-            <p class="card-text">
-                Da questa sezione è possibile creare nuovi utenti del sistema.
-            </p>
+        <p class="page-subtitle">
+            Da questa sezione è possibile creare nuovi utenti del sistema.
+        </p>
 
-            <a href="${pageContext.request.contextPath}/admin/new-user"
-               class="btn btn-primary">
-                Aggiungi nuovo utente
-            </a>
+        <a href="${pageContext.request.contextPath}/admin/new-user"
+           class="btn btn-primary">
+            Aggiungi nuovo utente
+        </a>
 
-        </div>
     </div>
 
 </div>
