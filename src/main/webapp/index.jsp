@@ -3,262 +3,184 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Fisio e Sport • Gestione professionale</title>
+    <title>Fisio e Sport • Centro di fisioterapia e riabilitazione</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* =========================
-           THEME VARIABLES
-           ========================= */
-
         :root{
-            --bg-main: #ffffff;
-            --text-main: #212529;
-            --text-muted: rgba(33,37,41,.7);
-            --bg-card: rgba(0,0,0,.04);
-            --border-color: rgba(0,0,0,.12);
+            --primary: #0d6efd;
+            --secondary: #20c997;
+            --bg-soft: #f3fbff;
+            --text-main: #1f2d3d;
+            --text-muted: #5f6f82;
+            --card-border: rgba(13, 110, 253, .15);
         }
-
-        /* =========================
-           BASE
-           ========================= */
 
         body{
-            min-height: 100vh;
-            background:
-                radial-gradient(1200px 600px at 10% 10%, rgba(13,110,253,.20), transparent 55%),
-                radial-gradient(1000px 600px at 90% 20%, rgba(32,201,151,.18), transparent 55%),
-                var(--bg-main);
+            margin: 0;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
             color: var(--text-main);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: #ffffff;
         }
 
-        /* =========================
-           NAVBAR – CLEAN & INTEGRATED
-           ========================= */
-
-        .navbar{
-            background: transparent;
-            backdrop-filter: blur(6px);
+        .landing-navbar{
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0,0,0,.06);
         }
 
-        /* Brand & links */
-        .navbar .navbar-brand,
-        .navbar .nav-link{
-            color: var(--text-main) !important;
-        }
-
-        /* Hover */
-        .navbar .navbar-brand:hover,
-        .navbar .nav-link:hover{
-            color: #0d6efd !important;
-        }
-
-        /* Fix Bootstrap outline-light */
-        .btn-outline-light{
-            color: var(--text-main) !important;
-            border-color: var(--border-color) !important;
-        }
-
-        .btn-outline-light:hover{
-            background: var(--bg-card) !important;
-        }
-
-        /* Brand dot */
         .brand-dot{
             width: 10px;
             height: 10px;
             border-radius: 999px;
-            background: linear-gradient(135deg,#0d6efd,#20c997);
             display: inline-block;
-            margin-right: .5rem;
+            margin-right: .45rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
-
-        /* =========================
-           HERO
-           ========================= */
 
         .hero{
-            padding: 6rem 1rem 4rem;
+            color: #ffffff;
+            min-height: 68vh;
+            display: flex;
+            align-items: center;
+            background:
+                linear-gradient(110deg, rgba(13,110,253,.82), rgba(32,201,151,.60)),
+                url('<%= request.getContextPath() %>/assets/img/hero-fisioterapia.jpg') center/cover no-repeat;
         }
 
-        .hero h1{
+        .hero-title{
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.15;
             font-weight: 700;
-            letter-spacing: .3px;
         }
 
-        .hero p{
+        .hero-subtitle{
+            font-size: 1.05rem;
+            color: rgba(255,255,255,.95);
+            max-width: 760px;
+        }
+
+        .btn-hero-primary{
+            background: #ffffff;
+            border: 1px solid #ffffff;
+            color: var(--primary);
+            font-weight: 600;
+            padding: .7rem 1.1rem;
+        }
+
+        .btn-hero-primary:hover{
+            color: #0a58ca;
+            border-color: #ffffff;
+            background: #f7faff;
+        }
+
+        .btn-hero-secondary{
+            border: 1px solid rgba(255,255,255,.85);
+            color: #ffffff;
+            font-weight: 600;
+            padding: .7rem 1.1rem;
+        }
+
+        .btn-hero-secondary:hover{
+            background: rgba(255,255,255,.15);
+            color: #ffffff;
+        }
+
+        .section-soft{
+            background: var(--bg-soft);
+        }
+
+        .feature-card{
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            height: 100%;
+        }
+
+        .feature-title{
+            color: #0a58ca;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .feature-text{
             color: var(--text-muted);
-            max-width: 520px;
+            margin: 0;
         }
-
-        /* =========================
-           GLASS CARD
-           ========================= */
-
-        .glass-card{
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 14px 40px rgba(0,0,0,.4);
-        }
-
-        .feature-icon{
-            font-size: 1.4rem;
-        }
-
-        /* =========================
-           FOOTER
-           ========================= */
 
         footer{
-            border-top: none; /* footer più leggero */
             color: var(--text-muted);
         }
 
         @media (max-width: 767.98px){
             .hero{
-                padding: 3rem 1rem 2rem;
-            }
-
-            .hero h1{
-                font-size: 1.9rem;
-                line-height: 1.2;
-            }
-
-            .hero .d-flex{
-                flex-direction: column;
-                align-items: stretch !important;
-                gap: .75rem !important;
+                min-height: 76vh;
             }
 
             .hero .btn{
                 width: 100%;
             }
-
-            .navbar .ms-auto{
-                width: 100%;
-                justify-content: flex-end;
-                flex-wrap: wrap;
-                margin-top: .5rem;
-            }
-
-            .navbar .ms-auto .btn{
-                flex: 1 1 auto;
-                min-width: 110px;
-            }
         }
     </style>
-
-
-      <!-- Custom CSS -->
-       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg px-3 px-lg-5">
-    <a class="navbar-brand fw-bold" href="#">
-        <span class="brand-dot"></span>Fisio e Sport
-    </a>
-
-    <div class="ms-auto d-flex gap-2 align-items-center">
-
-        <a href="<%= request.getContextPath() %>/login" class="btn btn-outline-light btn-sm">
-            Login
+<nav class="landing-navbar py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="#" class="navbar-brand m-0 fw-semibold text-dark">
+            <span class="brand-dot"></span>Fisio e Sport
         </a>
-        <a href="<%= request.getContextPath() %>/register" class="btn btn-primary btn-sm">
-            Registrati
-        </a>
+
+        <div class="d-flex gap-2">
+            <a href="<%= request.getContextPath() %>/login" class="btn btn-outline-primary btn-sm">Login</a>
+            <a href="<%= request.getContextPath() %>/register" class="btn btn-primary btn-sm">Registrati</a>
+        </div>
     </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero text-center text-lg-start">
+<header class="hero">
+    <div class="container py-5">
+        <h1 class="hero-title mb-3">Centro di fisioterapia e riabilitazione</h1>
+        <p class="hero-subtitle mb-4">
+            Supportiamo il recupero funzionale con percorsi personalizzati: valutazione clinica,
+            pianificazione trattamenti e monitoraggio progressi in un flusso semplice e chiaro.
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <a href="<%= request.getContextPath() %>/login" class="btn btn-hero-primary btn-lg">Accedi al gestionale</a>
+            <a href="<%= request.getContextPath() %>/register" class="btn btn-hero-secondary btn-lg">Richiedi accesso</a>
+        </div>
+    </div>
+</header>
+
+<section class="section-soft py-5">
     <div class="container">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-6">
-                <h1 class="display-5 mb-3">
-                    Gestisci il tuo studio<br>
-                    <span class="text-primary">in modo semplice e professionale</span>
-                </h1>
-
-                <p class="mb-4">
-                    <strong>Fisio e Sport</strong> è la piattaforma pensata per fisioterapisti e professionisti
-                    dello sport che vogliono organizzare pazienti, appuntamenti e trattamenti
-                    in un’unica dashboard moderna.
-                </p>
-
-                <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
-                    <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-primary btn-lg">
-                        Accedi alla dashboard
-                    </a>
-                    <a href="<%= request.getContextPath() %>/register" class="btn btn-outline-light btn-lg">
-                        Inizia ora
-                    </a>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="feature-card p-4">
+                    <h3 class="feature-title mb-2">Agenda sedute</h3>
+                    <p class="feature-text">Gestione appuntamenti e disponibilita terapisti con vista chiara settimanale.</p>
                 </div>
             </div>
-
-            <div class="col-lg-6">
-                <div class="glass-card p-4">
-                    <h5 class="mb-3">Cosa puoi fare</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2">📅 Pianificare appuntamenti e sedute</li>
-                        <li class="mb-2">👤 Gestire la rubrica pazienti</li>
-                        <li class="mb-2">🧾 Tenere traccia dello storico trattamenti</li>
-                        <li class="mb-2">📊 Avere una visione chiara del tuo lavoro</li>
-                    </ul>
+            <div class="col-md-4">
+                <div class="feature-card p-4">
+                    <h3 class="feature-title mb-2">Schede paziente</h3>
+                    <p class="feature-text">Anagrafica, stato clinico e storico sedute ordinati e consultabili rapidamente.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card p-4">
+                    <h3 class="feature-title mb-2">Continuita terapeutica</h3>
+                    <p class="feature-text">Tracciamento del percorso riabilitativo per seguire i progressi nel tempo.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FEATURES -->
-<section class="container my-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="glass-card p-4 h-100">
-                <div class="feature-icon mb-2">⚡</div>
-                <h5>Veloce</h5>
-                <p class="small text-muted">
-                    Interfaccia reattiva e progettata per ridurre al minimo i click inutili.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="glass-card p-4 h-100">
-                <div class="feature-icon mb-2">🔒</div>
-                <h5>Sicuro</h5>
-                <p class="small text-muted">
-                    Accessi controllati e gestione separata dei dati sensibili.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="glass-card p-4 h-100">
-                <div class="feature-icon mb-2">🧠</div>
-                <h5>Organizzato</h5>
-                <p class="small text-muted">
-                    Tutto ciò che serve per il tuo studio, in un’unica piattaforma.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="py-4 text-center">
-    <div class="container small">
-        © <%= java.time.Year.now() %> Fisio e Sport — Gestionale per fisioterapia e sport
-    </div>
+<footer class="py-4 text-center small">
+    © <%= java.time.Year.now() %> Fisio e Sport • Fisioterapia e riabilitazione
 </footer>
 
 </body>
