@@ -7,12 +7,10 @@ import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.controller.application.UserController;
 import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.dao.PatientDAO;
-import it.SimoSW.model.dao.TherapistDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
 import it.SimoSW.model.dao.database.DatabasePatientDAO;
-import it.SimoSW.model.dao.database.DatabaseTherapistDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
 import it.SimoSW.model.dao.database.DatabaseUserDAO;
 
@@ -30,23 +28,21 @@ public class ApplicationInitializer {
 
     private void initDatabasePersistence() {
         PatientDAO patientDAO = new DatabasePatientDAO();
-        TherapistDAO therapistDAO = new DatabaseTherapistDAO();
         AppointmentDAO appointmentDAO = new DatabaseAppointmentDAO();
         TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
 
-        wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO, userDAO);
+        wireControllers(patientDAO, appointmentDAO, treatmentSessionDAO, userDAO);
     }
 
     private void wireControllers(
             PatientDAO patientDAO,
-            TherapistDAO therapistDAO,
             AppointmentDAO appointmentDAO,
             TreatmentSessionDAO treatmentSessionDAO,
             UserDAO userDAO
     ) {
         addressBookController = new AddressBookController(patientDAO);
-        calendarController = new CalendarController(appointmentDAO, patientDAO, therapistDAO);
+        calendarController = new CalendarController(appointmentDAO, patientDAO, userDAO);
         treatmentHistoryController = new TreatmentHistoryController(
                 treatmentSessionDAO,
                 appointmentDAO,

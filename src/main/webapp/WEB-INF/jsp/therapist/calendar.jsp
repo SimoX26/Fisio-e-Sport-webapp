@@ -27,8 +27,14 @@
 <div class="container mt-5">
 
     <!-- HEADER PAGINA -->
-    <div class="mb-4">
-        <h2 class="page-title">Calendario</h2>
+    <div class="page-header-row mb-4">
+        <h2 class="page-title mb-0">Calendario</h2>
+        <button type="button"
+                class="btn btn-primary"
+                id="openAppointmentModalBtn"
+                aria-label="Nuovo appuntamento">
+            +
+        </button>
     </div>
 
     <!-- CALENDAR -->
@@ -87,15 +93,11 @@
                     <!-- Paziente -->
                     <div class="mb-3">
                         <label class="form-label">Paziente</label>
-                        <select class="form-select" id="patientId" required>
-                            <option value="">Seleziona paziente</option>
-                            <!-- popolabile via JSP o JS -->
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Terapista (ID)</label>
-                        <input type="number" class="form-control" id="therapistId" min="1" required>
+                        <input type="text"
+                               class="form-control"
+                               id="patientName"
+                               placeholder="Nome e cognome paziente"
+                               required>
                     </div>
 
                     <!-- Giorno e orario -->

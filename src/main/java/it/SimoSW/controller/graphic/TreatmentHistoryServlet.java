@@ -1,6 +1,7 @@
 package it.SimoSW.controller.graphic;
 
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
+import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.model.TreatmentSession;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class TreatmentHistoryServlet extends HttpServlet {
 
     private TreatmentHistoryController treatmentHistoryController;
+    private CalendarController calendarController;
 
     @Override
     public void init() {
@@ -26,6 +28,7 @@ public class TreatmentHistoryServlet extends HttpServlet {
 
         this.treatmentHistoryController =
                 initializer.getTreatmentHistoryController();
+        this.calendarController = initializer.getCalendarController();
     }
 
     /* =========================
@@ -94,6 +97,12 @@ public class TreatmentHistoryServlet extends HttpServlet {
        ========================= */
 
     private void createSession(HttpServletRequest request) {
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        if (loggedUser == null || loggedUser.isBlank()) {
+            throw new IllegalArgumentException("Sessione non valida: utente non autenticato");
+        }
+
+        long therapistUserId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
         TreatmentSession session = new TreatmentSession();
 
@@ -106,9 +115,7 @@ public class TreatmentHistoryServlet extends HttpServlet {
         session.setPatientId(
                 Long.parseLong(request.getParameter("patientId"))
         );
-        session.setTherapistId(
-                Long.parseLong(request.getParameter("therapistId"))
-        );
+        session.setTherapistId(therapistUserId);
         session.setStart(
                 LocalDateTime.parse(request.getParameter("start"))
         );

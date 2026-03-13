@@ -20,6 +20,12 @@ public class DatabaseUserDAO implements UserDAO {
             "SELECT id, username, password_hash, role, active " +
                     "FROM users WHERE username = ?";
 
+    private static final String FIND_ID_BY_USERNAME_AND_ROLE =
+            "SELECT id FROM users WHERE username = ? AND role = ? AND active = TRUE";
+
+    private static final String EXISTS_BY_ID_AND_ROLE =
+            "SELECT 1 FROM users WHERE id = ? AND role = ? AND active = TRUE";
+
     @Override
     public User save(User user) {
 
@@ -68,6 +74,43 @@ public class DatabaseUserDAO implements UserDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException("Error accessing user data", e);
+        }
+    }
+
+    @Override
+    public Optional<Long> findIdByUsernameAndRole(String username, UserRole role) {
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(FIND_ID_BY_USERNAME_AND_ROLE)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, role.name());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(rs.getLong("id"));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error resolving user id by username and role", e);
+        }
+    }
+
+    @Override
+    public boolean existsByIdAndRole(long id, UserRole role) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(EXISTS_BY_ID_AND_ROLE)) {
+
+            stmt.setLong(1, id);
+            stmt.setString(2, role.name());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking user existence by id and role", e);
         }
     }
 }

@@ -40,17 +40,6 @@ CREATE TABLE patients (
 );
 
 -- =========================
--- THERAPISTS
--- =========================
-CREATE TABLE therapists (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100) NOT NULL,
-  specialization VARCHAR(120),
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- =========================
 -- APPOINTMENTS
 -- =========================
 CREATE TABLE appointments (
@@ -68,7 +57,7 @@ CREATE TABLE appointments (
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_appointments_therapist
-    FOREIGN KEY (therapist_id) REFERENCES therapists(id)
+    FOREIGN KEY (therapist_id) REFERENCES users(id)
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 );
@@ -100,7 +89,7 @@ CREATE TABLE treatment_sessions (
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_treatment_sessions_therapist
-    FOREIGN KEY (therapist_id) REFERENCES therapists(id)
+    FOREIGN KEY (therapist_id) REFERENCES users(id)
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 );
