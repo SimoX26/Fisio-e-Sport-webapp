@@ -29,9 +29,6 @@
     <!-- HEADER PAGINA -->
     <div class="mb-4">
         <h2 class="page-title">Calendario</h2>
-        <p class="page-subtitle mb-0">
-            Gestisci appuntamenti e sedute del centro
-        </p>
     </div>
 
     <!-- CALENDAR -->

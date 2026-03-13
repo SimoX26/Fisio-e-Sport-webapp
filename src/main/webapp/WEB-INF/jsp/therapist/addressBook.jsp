@@ -27,9 +27,6 @@
     <div class="page-header-row mb-4">
         <div>
             <h2 class="page-title">Rubrica Pazienti</h2>
-            <p class="page-subtitle mb-0">
-                Gestisci e consulta i pazienti registrati
-            </p>
         </div>
 
         <a href="<%= request.getContextPath() %>/address-book/create"
