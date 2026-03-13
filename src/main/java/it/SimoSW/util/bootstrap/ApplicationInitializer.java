@@ -5,18 +5,18 @@ import it.SimoSW.controller.application.AuthenticationController;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.controller.application.UserController;
-import it.SimoSW.model.dao.*;
-import it.SimoSW.model.dao.database.*;
-import it.SimoSW.model.dao.filesystem.*;
-
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
+import it.SimoSW.model.dao.AppointmentDAO;
+import it.SimoSW.model.dao.PatientDAO;
+import it.SimoSW.model.dao.TherapistDAO;
+import it.SimoSW.model.dao.TreatmentSessionDAO;
+import it.SimoSW.model.dao.UserDAO;
+import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
+import it.SimoSW.model.dao.database.DatabasePatientDAO;
+import it.SimoSW.model.dao.database.DatabaseTherapistDAO;
+import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
+import it.SimoSW.model.dao.database.DatabaseUserDAO;
 
 public class ApplicationInitializer {
-
-    private static final String CONFIG_FILE = "config.properties";
 
     private AddressBookController addressBookController;
     private CalendarController calendarController;
@@ -24,60 +24,20 @@ public class ApplicationInitializer {
     private AuthenticationController authenticationController;
     private UserController userController;
 
-
     public void init() {
-        //  per ora SOLO DATABASE
         initDatabasePersistence();
     }
 
-    /* =====================================================
-       Inizializzazione FILE SYSTEM
-       ===================================================== */
-    /*
-
-    private void initFileSystemPersistence(Properties config) {
-
-        String basePath = config.getProperty("fs.base.path", "data");
-        Path dataRoot = Paths.get(basePath);
-
-        System.out.println(">>> DATA ROOT = " + dataRoot.toAbsolutePath());
-
-        Path patientsDir = dataRoot.resolve("patients");
-        Path therapistsDir = dataRoot.resolve("therapists");
-        Path appointmentsDir = dataRoot.resolve("appointments");
-        Path treatmentSessionsDir = dataRoot.resolve("treatment_sessions");
-
-        PatientDAO patientDAO = new FileSystemPatientDAO(patientsDir);
-        TherapistDAO therapistDAO = new FileSystemTherapistDAO(therapistsDir);
-        AppointmentDAO appointmentDAO = new FileSystemAppointmentDAO(appointmentsDir);
-        TreatmentSessionDAO treatmentSessionDAO = new FileSystemTreatmentSessionDAO(treatmentSessionsDir);
-
-        wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO);
-    }
-
-    */
-
-
-    /* =====================================================
-       Inizializzazione DATABASE (MySQL)
-       ===================================================== */
     private void initDatabasePersistence() {
-
         PatientDAO patientDAO = new DatabasePatientDAO();
         TherapistDAO therapistDAO = new DatabaseTherapistDAO();
         AppointmentDAO appointmentDAO = new DatabaseAppointmentDAO();
         TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
 
-
         wireControllers(patientDAO, therapistDAO, appointmentDAO, treatmentSessionDAO, userDAO);
-
     }
 
-
-    /* =====================================================
-       Wiring controller applicativi
-       ===================================================== */
     private void wireControllers(
             PatientDAO patientDAO,
             TherapistDAO therapistDAO,
@@ -96,34 +56,6 @@ public class ApplicationInitializer {
         userController = new UserController(userDAO);
     }
 
-
-
-    /* =====================================================
-       Caricamento configurazione
-       ===================================================== */
-    private Properties loadConfiguration() {
-        try {
-            Properties props = new Properties();
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(CONFIG_FILE);
-
-            if (is == null) {
-                throw new RuntimeException("Impossibile trovare " + CONFIG_FILE);
-            }
-
-            props.load(is);
-            return props;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Errore nel caricamento della configurazione", e);
-        }
-    }
-
-
-    /* =====================================================
-       Getter per Servlet
-       ===================================================== */
     public AddressBookController getAddressBookController() {
         return addressBookController;
     }
@@ -143,6 +75,4 @@ public class ApplicationInitializer {
     public AuthenticationController getAuthenticationController() {
         return authenticationController;
     }
-
-
 }
