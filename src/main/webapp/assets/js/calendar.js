@@ -1,7 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const DEFAULT_APPOINTMENT_DURATION_MINUTES = 60;
+
     function toLocalDateTimeInputValue(date) {
         const pad = (n) => String(n).padStart(2, '0');
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function addMinutes(date, minutes) {
+        return new Date(date.getTime() + minutes * 60 * 1000);
+    }
+
+    function ceilToHour(date) {
+        const rounded = new Date(date);
+        const minutes = rounded.getMinutes();
+        const seconds = rounded.getSeconds();
+        const ms = rounded.getMilliseconds();
+
+        if (minutes !== 0 || seconds !== 0 || ms !== 0) {
+            rounded.setHours(rounded.getHours() + 1);
+        }
+
+        rounded.setMinutes(0, 0, 0);
+        return rounded;
     }
 
     const contextPath = document.body.dataset.contextPath || '';
@@ -9,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('saveAppointmentBtn');
     const openModalButton = document.getElementById('openAppointmentModalBtn');
     const appointmentModalEl = document.getElementById('appointmentModal');
+    const startInput = document.getElementById('start');
+    const endInput = document.getElementById('end');
+    const notesInput = document.getElementById('notes');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
         return;
@@ -25,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             right: 'timeGridDay,timeGridWeek,dayGridMonth'
         },
         initialView: 'timeGridWeek',
-        slotDuration: '00:30:00',
+        slotDuration: '01:00:00',
+        snapDuration: '01:00:00',
         nowIndicator: true,
         slotMinTime: '08:00:00',
         slotMaxTime: '21:00:00',
@@ -38,9 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
             extraParams: { events: 'true' }
         },
         select(info) {
+            const startDate = ceilToHour(new Date(info.start));
+            const defaultEndDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+
             document.getElementById('patientName').value = '';
-            document.getElementById('start').value = info.startStr.slice(0, 16);
-            document.getElementById('end').value = info.endStr.slice(0, 16);
+            startInput.value = toLocalDateTimeInputValue(startDate);
+            endInput.value = toLocalDateTimeInputValue(defaultEndDate);
+            if (notesInput) {
+                notesInput.value = '';
+            }
             appointmentModal.show();
         },
         eventClick(info) {
@@ -67,14 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {
             const now = new Date();
-            const rounded = new Date(now);
-            rounded.setMinutes(Math.ceil(now.getMinutes() / 30) * 30, 0, 0);
-            const end = new Date(rounded.getTime() + 30 * 60 * 1000);
+            const rounded = ceilToHour(now);
+            const end = addMinutes(rounded, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             document.getElementById('patientName').value = '';
-            document.getElementById('start').value = toLocalDateTimeInputValue(rounded);
-            document.getElementById('end').value = toLocalDateTimeInputValue(end);
+            startInput.value = toLocalDateTimeInputValue(rounded);
+            endInput.value = toLocalDateTimeInputValue(end);
+            if (notesInput) {
+                notesInput.value = '';
+            }
             appointmentModal.show();
+        });
+    }
+
+    if (startInput && endInput) {
+        startInput.addEventListener('change', () => {
+            if (!startInput.value) {
+                return;
+            }
+
+            const normalizedStart = ceilToHour(new Date(startInput.value));
+            const normalizedEnd = addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+
+            startInput.value = toLocalDateTimeInputValue(normalizedStart);
+            endInput.value = toLocalDateTimeInputValue(normalizedEnd);
         });
     }
 
@@ -84,12 +130,25 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Inserisci il nome del paziente.");
             return;
         }
+        if (!startInput || !startInput.value) {
+            alert("Inserisci un orario di inizio valido.");
+            return;
+        }
 
         const data = new URLSearchParams();
         data.append('action', 'create');
         data.append('patientName', patientName);
-        data.append('start', document.getElementById('start').value);
-        data.append('end', document.getElementById('end').value);
+        const startDate = ceilToHour(new Date(startInput.value));
+        const endDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+        const normalizedStart = toLocalDateTimeInputValue(startDate);
+        const normalizedEnd = toLocalDateTimeInputValue(endDate);
+
+        startInput.value = normalizedStart;
+        endInput.value = normalizedEnd;
+
+        data.append('start', normalizedStart);
+        data.append('end', normalizedEnd);
+        data.append('notes', notesInput ? notesInput.value.trim() : '');
 
         fetch(contextPath + '/calendar', {
             method: 'POST',

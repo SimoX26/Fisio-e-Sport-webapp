@@ -104,12 +104,20 @@
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
                             <label class="form-label">Inizio</label>
-                            <input type="datetime-local" class="form-control" id="start" required>
+                            <input type="datetime-local" class="form-control" id="start" step="3600" required>
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label">Fine</label>
-                            <input type="datetime-local" class="form-control" id="end" required>
+                            <input type="datetime-local" class="form-control" id="end" step="3600" readonly required>
                         </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Note</label>
+                        <textarea class="form-control"
+                                  id="notes"
+                                  rows="3"
+                                  placeholder="Inserisci eventuali note sull'appuntamento"></textarea>
                     </div>
 
                 </form>

@@ -102,6 +102,7 @@ public class CalendarServlet extends HttpServlet {
             extendedProps.put("patientId", appointment.getPatientId());
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());
+            extendedProps.put("notes", appointment.getNotes());
             event.put("extendedProps", extendedProps);
 
             events.add(event);
@@ -137,6 +138,7 @@ public class CalendarServlet extends HttpServlet {
         a.setPatientId(patientId);
         a.setStart(LocalDateTime.parse(request.getParameter("start")));
         a.setEnd(LocalDateTime.parse(request.getParameter("end")));
+        a.setNotes(normalizeNotes(request.getParameter("notes")));
         a.setTherapistId(therapistId);
 
         calendarController.scheduleAppointment(a);
@@ -179,5 +181,14 @@ public class CalendarServlet extends HttpServlet {
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Formato data/ora non valido: " + value);
         }
+    }
+
+    private String normalizeNotes(String notes) {
+        if (notes == null) {
+            return null;
+        }
+
+        String normalized = notes.trim();
+        return normalized.isEmpty() ? null : normalized;
     }
 }

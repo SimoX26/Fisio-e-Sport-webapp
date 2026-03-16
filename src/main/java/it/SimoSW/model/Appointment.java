@@ -9,6 +9,7 @@ public class Appointment {
     private long therapistId;
     private LocalDateTime start;
     private LocalDateTime end;
+    private String notes;
     private AppointmentState state;
 
     public Appointment() {
@@ -70,5 +71,13 @@ public class Appointment {
 
     public void setState(AppointmentState state) {
         this.state = state;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

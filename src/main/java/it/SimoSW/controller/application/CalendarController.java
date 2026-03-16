@@ -13,10 +13,12 @@ import it.SimoSW.model.dao.PatientDAO;
 import it.SimoSW.model.dao.UserDAO;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 
 public class CalendarController {
+    private static final int APPOINTMENT_DURATION_HOURS = 1;
 
     private final AppointmentDAO appointmentDAO;
     private final PatientDAO patientDAO;
@@ -119,6 +121,21 @@ public class CalendarController {
         if (start == null || end == null || !start.isBefore(end)) {
             throw new IllegalArgumentException("Invalid time range");
         }
+
+        if (!isOnHourBoundary(start) || !isOnHourBoundary(end)) {
+            throw new IllegalArgumentException("Gli appuntamenti devono iniziare e finire all'ora piena");
+        }
+
+        long durationHours = ChronoUnit.HOURS.between(start, end);
+        if (durationHours != APPOINTMENT_DURATION_HOURS) {
+            throw new IllegalArgumentException("La durata dell'appuntamento deve essere di 1 ora");
+        }
+    }
+
+    private boolean isOnHourBoundary(LocalDateTime value) {
+        return value.getMinute() == 0
+                && value.getSecond() == 0
+                && value.getNano() == 0;
     }
 
     private void checkPatientExists(long patientId) {
