@@ -1,5 +1,9 @@
 package it.SimoSW.controller.graphic;
 
+import it.SimoSW.controller.application.AuthenticationController;
+import it.SimoSW.util.SessionCookieService;
+import it.SimoSW.util.bootstrap.ApplicationInitializer;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +14,23 @@ import java.io.IOException;
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
 
+    private AuthenticationController authenticationController;
+
+    @Override
+    public void init() {
+        ApplicationInitializer initializer =
+                (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
+        this.authenticationController = initializer.getAuthenticationController();
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String rememberMeToken = SessionCookieService.extractRememberMeToken(request.getCookies());
+        if (rememberMeToken != null && !rememberMeToken.isBlank()) {
+            authenticationController.revokeRememberMeToken(rememberMeToken);
+        }
+        SessionCookieService.clearRememberMeCookie(request, response);
+
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();

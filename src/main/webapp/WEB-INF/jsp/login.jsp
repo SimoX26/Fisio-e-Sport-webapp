@@ -34,7 +34,8 @@
                 <form action="<%= request.getContextPath() %>/login" method="post">
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="username"
-                               name="username" placeholder="Inserisci username" required>
+                               name="username" placeholder="Inserisci username"
+                               value="<c:out value='${username}' />" required>
                         <label for="username">Username</label>
                     </div>
 

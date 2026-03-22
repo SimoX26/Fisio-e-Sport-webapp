@@ -4,6 +4,7 @@ import it.SimoSW.controller.application.AuthenticationController;
 import it.SimoSW.exception.AuthenticationFailedException;
 import it.SimoSW.model.User;
 import it.SimoSW.model.UserRole;
+import it.SimoSW.util.SessionCookieService;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 
 import javax.servlet.ServletException;
@@ -29,6 +30,17 @@ public class LoginPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loggedUser") != null && session.getAttribute("userRole") != null) {
+            String userRole = String.valueOf(session.getAttribute("userRole"));
+            if (UserRole.ADMIN.name().equals(userRole)) {
+                response.sendRedirect(request.getContextPath() + "/admin");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/dashboard");
+            }
+            return;
+        }
+
         request.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(request, response);
     }
 
@@ -49,6 +61,9 @@ public class LoginPageServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("loggedUser", user.getUsername());
             session.setAttribute("userRole", user.getRole().name());
+
+            String rememberMeToken = authenticationController.createRememberMeToken(user);
+            SessionCookieService.addRememberMeCookie(request, response, rememberMeToken);
 
             if (user.getRole() == UserRole.ADMIN) {
                 response.sendRedirect(request.getContextPath() + "/admin");
