@@ -12,16 +12,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
    <!-- Custom CSS -->
-   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 
 </head>
 
-<body>
+<body class="app-page">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container app-shell mt-4">
 
     <!-- HEADER PAGINA -->
     <div class="page-header-row mb-4">
@@ -30,13 +30,13 @@
         </div>
 
         <a href="<%= request.getContextPath() %>/address-book/create"
-           class="btn btn-primary">
-            ➕ Nuovo paziente
+           class="btn btn-primary section-action-btn">
+            Nuovo paziente
         </a>
     </div>
 
     <!-- LISTA PAZIENTI -->
-    <div class="glass-card p-4">
+    <div class="glass-card section-card p-4">
 
         <c:if test="${not empty error}">
             <div class="alert alert-warning" role="alert">
@@ -88,10 +88,21 @@
                             <td><c:out value="${patient.email}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
                             <td class="text-end">
-                                <a href="#"
-                                   class="btn btn-sm btn-soft">
-                                    Dettagli
-                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary js-edit-patient"
+                                        data-id="<c:out value='${patient.id}'/>"
+                                        data-first-name="<c:out value='${patient.firstName}'/>"
+                                        data-last-name="<c:out value='${patient.lastName}'/>"
+                                        data-email="<c:out value='${patient.email}'/>"
+                                        data-phone="<c:out value='${patient.phone}'/>">
+                                    Modifica
+                                </button>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger js-delete-patient"
+                                        data-id="<c:out value='${patient.id}'/>"
+                                        data-name="<c:out value='${patient.fullName}'/>">
+                                    Elimina
+                                </button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -106,6 +117,110 @@
     </div>
 
 </div>
+
+<!-- MODALE MODIFICA PAZIENTE -->
+<div class="modal fade" id="editPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Modifica paziente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="<%= request.getContextPath() %>/address-book">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="id" id="editPatientId">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" name="firstName" id="editPatientFirstName" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cognome</label>
+                        <input type="text" class="form-control" name="lastName" id="editPatientLastName">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="editPatientEmail">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Telefono</label>
+                        <input type="text" class="form-control" name="phone" id="editPatientPhone">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODALE CONFERMA ELIMINAZIONE -->
+<div class="modal fade" id="confirmDeletePatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Conferma eliminazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="<%= request.getContextPath() %>/address-book">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" id="deletePatientId">
+                    <p class="mb-0">Vuoi eliminare il paziente <strong id="deletePatientName"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-danger">Elimina</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const editModalEl = document.getElementById('editPatientModal');
+    const deleteModalEl = document.getElementById('confirmDeletePatientModal');
+    const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
+    const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+
+    const editId = document.getElementById('editPatientId');
+    const editFirstName = document.getElementById('editPatientFirstName');
+    const editLastName = document.getElementById('editPatientLastName');
+    const editEmail = document.getElementById('editPatientEmail');
+    const editPhone = document.getElementById('editPatientPhone');
+
+    const deleteId = document.getElementById('deletePatientId');
+    const deleteName = document.getElementById('deletePatientName');
+
+    document.querySelectorAll('.js-edit-patient').forEach(function (button) {
+        button.addEventListener('click', function () {
+            if (!editModal) return;
+            editId.value = this.dataset.id || '';
+            editFirstName.value = this.dataset.firstName || '';
+            editLastName.value = this.dataset.lastName || '';
+            editEmail.value = this.dataset.email || '';
+            editPhone.value = this.dataset.phone || '';
+            editModal.show();
+        });
+    });
+
+    document.querySelectorAll('.js-delete-patient').forEach(function (button) {
+        button.addEventListener('click', function () {
+            if (!deleteModal) return;
+            deleteId.value = this.dataset.id || '';
+            deleteName.textContent = this.dataset.name || 'questo paziente';
+            deleteModal.show();
+        });
+    });
+});
+</script>
 
 </body>
 </html>

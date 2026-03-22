@@ -15,30 +15,33 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260322-2" defer></script>
 </head>
 
-<body data-context-path="<%= request.getContextPath() %>">
+<body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container-fluid calendar-gcal-wrap mt-4">
 
     <!-- HEADER PAGINA -->
-    <div class="page-header-row mb-4">
-        <h2 class="page-title mb-0">Calendario</h2>
+    <div class="page-header-row calendar-gcal-head mb-3">
+        <div>
+            <h2 class="page-title mb-0">Calendario</h2>
+        </div>
         <button type="button"
-                class="btn btn-primary"
+                class="btn btn-primary calendar-add-btn gcal-create-btn"
                 id="openAppointmentModalBtn"
                 aria-label="Nuovo appuntamento">
-            +
+            <span>+</span>
+            <span>Crea</span>
         </button>
     </div>
 
     <!-- CALENDAR -->
-    <div class="glass-card p-4 calendar-card">
+    <div class="calendar-host">
         <div class="calendar-scroll-shell">
             <div id="calendar"></div>
         </div>
@@ -59,13 +62,19 @@
 
             <div class="modal-body">
                 <p><strong>Paziente:</strong> <span id="modalPatient"></span></p>
-                <p><strong>Tipo:</strong> <span id="modalType"></span></p>
                 <p><strong>Orario:</strong> <span id="modalTime"></span></p>
                 <p><strong>Note:</strong></p>
                 <p id="modalNotes" class="text-muted"></p>
+                <span id="modalType" class="d-none" aria-hidden="true"></span>
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" id="editAppointmentBtn">
+                    Modifica
+                </button>
+                <button type="button" class="btn btn-outline-danger" id="deleteAppointmentBtn">
+                    Elimina
+                </button>
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     Chiudi
                 </button>
@@ -83,7 +92,7 @@
         <div class="modal-content glass-card">
 
             <div class="modal-header">
-                <h5 class="modal-title">Nuovo appuntamento</h5>
+                <h5 class="modal-title" id="appointmentModalTitle">Nuovo appuntamento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -128,6 +137,27 @@
                 <button class="btn btn-primary" id="saveAppointmentBtn">Salva</button>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+     MODALE CONFERMA ELIMINAZIONE
+     ========================= -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Conferma eliminazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Vuoi eliminare questo appuntamento?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button class="btn btn-danger" id="confirmDeleteAppointmentBtn">Elimina</button>
+            </div>
         </div>
     </div>
 </div>

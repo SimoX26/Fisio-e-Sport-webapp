@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,11 @@ public class DatabasePatientDAO implements PatientDAO {
                OR LOWER(COALESCE(email, '')) LIKE ?
                OR LOWER(COALESCE(phone, '')) LIKE ?
             ORDER BY last_name, first_name
+            """;
+
+    private static final String DELETE_BY_ID = """
+            DELETE FROM patients
+            WHERE id = ?
             """;
 
     @Override
@@ -146,6 +152,24 @@ public class DatabasePatientDAO implements PatientDAO {
             return result;
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante la ricerca dei pazienti", e);
+        }
+    }
+
+    @Override
+    public void deleteById(long id) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(DELETE_BY_ID)) {
+
+            stmt.setLong(1, id);
+            int deletedRows = stmt.executeUpdate();
+            if (deletedRows == 0) {
+                throw new RuntimeException("Nessun paziente eliminato, id non trovato: " + id);
+            }
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("Impossibile eliminare il paziente: esistono appuntamenti collegati", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione del paziente", e);
         }
     }
 

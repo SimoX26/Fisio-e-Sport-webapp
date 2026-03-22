@@ -12,15 +12,15 @@
               rel="stylesheet">
 
           <!-- Custom CSS -->
-           <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+           <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 </head>
 
 
-<body>
+<body class="app-page">
 
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container app-shell mt-4">
 
     <!-- HEADER -->
     <div class="mb-4">
@@ -31,7 +31,7 @@
     </div>
 
     <!-- FORM -->
-    <div class="glass-card p-4">
+    <div class="glass-card section-card p-4">
 
         <form action="<%= request.getContextPath() %>/address-book"
               method="POST">
@@ -57,7 +57,7 @@
                 <input type="text"
                        name="lastName"
                        class="form-control"
-                       required>
+                       placeholder="Opzionale">
             </div>
 
             <!-- EMAIL -->

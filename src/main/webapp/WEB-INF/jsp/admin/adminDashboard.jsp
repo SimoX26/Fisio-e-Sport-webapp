@@ -9,13 +9,13 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=20260322-2">
 </head>
-<body>
+<body class="app-page">
 
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container app-shell mt-4">
 
     <div class="mb-4">
         <h2 class="page-title">Dashboard amministrativa</h2>
@@ -25,7 +25,7 @@
     <!-- =========================
          SEZIONE GESTIONE UTENTI
          ========================= -->
-    <div class="glass-card p-4">
+    <div class="glass-card section-card p-4">
 
         <h5 class="mb-3">Gestione utenti</h5>
 
@@ -34,7 +34,7 @@
         </p>
 
         <a href="${pageContext.request.contextPath}/admin/new-user"
-           class="btn btn-primary">
+           class="btn btn-primary section-action-btn">
             Aggiungi nuovo utente
         </a>
 

@@ -117,6 +117,7 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         String sql = """
             SELECT * FROM appointments
             WHERE start_time >= ? AND end_time <= ?
+              AND state <> 'CANCELLED'
             ORDER BY start_time
         """;
 

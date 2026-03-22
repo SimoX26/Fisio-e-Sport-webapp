@@ -67,6 +67,7 @@ public class AddressBookServlet extends HttpServlet {
 
                 case "create" -> createPatient(request);
                 case "update" -> updatePatient(request);
+                case "delete" -> deletePatient(request);
                 case "activate" -> changeState(request, "activate");
                 case "deactivate" -> changeState(request, "deactivate");
                 case "archive" -> changeState(request, "archive");
@@ -89,10 +90,10 @@ public class AddressBookServlet extends HttpServlet {
     private void createPatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(request.getParameter("firstName"));
-        p.setLastName(request.getParameter("lastName"));
-        p.setEmail(request.getParameter("email"));
-        p.setPhone(request.getParameter("phone"));
+        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome e obbligatorio"));
+        p.setLastName(normalizeOptional(request.getParameter("lastName")));
+        p.setEmail(normalizeOptional(request.getParameter("email")));
+        p.setPhone(normalizeOptional(request.getParameter("phone")));
 
         addressBookController.registerPatient(p);
     }
@@ -100,10 +101,10 @@ public class AddressBookServlet extends HttpServlet {
     private void updatePatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(request.getParameter("firstName"));
-        p.setLastName(request.getParameter("lastName"));
-        p.setEmail(request.getParameter("email"));
-        p.setPhone(request.getParameter("phone"));
+        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome e obbligatorio"));
+        p.setLastName(normalizeOptional(request.getParameter("lastName")));
+        p.setEmail(normalizeOptional(request.getParameter("email")));
+        p.setPhone(normalizeOptional(request.getParameter("phone")));
 
         addressBookController.updatePatientProfile(p);
     }
@@ -119,5 +120,25 @@ public class AddressBookServlet extends HttpServlet {
             case "archive" ->
                     addressBookController.archivePatient(patientId);
         }
+    }
+
+    private void deletePatient(HttpServletRequest request) {
+        long patientId = Long.parseLong(request.getParameter("id"));
+        addressBookController.deletePatient(patientId);
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.trim();
+    }
+
+    private String normalizeRequired(String value, String errorMessage) {
+        String normalized = normalizeOptional(value);
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return normalized;
     }
 }

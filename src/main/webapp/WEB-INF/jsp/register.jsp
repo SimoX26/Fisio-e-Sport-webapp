@@ -9,10 +9,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
       <!-- Custom CSS -->
-       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 </head>
 
-<body class="auth-page d-flex align-items-center justify-content-center">
+<body class="auth-page app-page d-flex align-items-center justify-content-center">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -49,7 +49,7 @@
                         <label for="password">Password</label>
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100 py-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2">
                         Registrati
                     </button>
                 </form>

@@ -14,4 +14,6 @@ public interface PatientDAO {
     Optional<Patient> findById(long id);
 
     List<Patient> search(String query);
+
+    void deleteById(long id);
 }

@@ -13,15 +13,15 @@
           rel="stylesheet">
 
       <!-- Custom CSS -->
-       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 </head>
 
-<body>
+<body class="app-page">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container app-shell mt-4">
 
     <!-- HEADER PAGINA -->
     <div class="page-header-row mb-4">
@@ -33,13 +33,13 @@
         </div>
 
         <a href="<%= request.getContextPath() %>/calendar"
-           class="btn btn-primary">
-            ➕ Nuovo trattamento
+           class="btn btn-primary section-action-btn">
+            Nuovo trattamento
         </a>
     </div>
 
     <!-- LISTA TRATTAMENTI -->
-    <div class="glass-card p-4">
+    <div class="glass-card section-card p-4">
 
         <%--
             Il controller dovrebbe settare:

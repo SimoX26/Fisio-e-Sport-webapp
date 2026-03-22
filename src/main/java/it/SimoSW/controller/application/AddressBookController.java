@@ -175,4 +175,9 @@ public class AddressBookController {
         patientDAO.update(patient);
     }
 
+    public void deletePatient(long patientId) {
+        getPatientById(patientId);
+        patientDAO.deleteById(patientId);
+    }
+
 }

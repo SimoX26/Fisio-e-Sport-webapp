@@ -3,6 +3,7 @@ package it.SimoSW.controller.graphic;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.model.Appointment;
+import it.SimoSW.model.AppointmentState;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -65,6 +66,10 @@ public class CalendarServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
+            if (action == null || action.isBlank()) {
+                throw new IllegalArgumentException("Azione mancante");
+            }
+
             switch (action) {
                 case "create" -> createAppointment(request);
                 case "reschedule" -> rescheduleAppointment(request);
@@ -75,7 +80,7 @@ public class CalendarServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
 
         } catch (RuntimeException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+            sendClientError(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         }
     }
 
@@ -92,14 +97,22 @@ public class CalendarServlet extends HttpServlet {
         List<Map<String, Object>> events = new ArrayList<>();
 
         for (Appointment appointment : appointments) {
+            if (appointment.getState() == AppointmentState.CANCELLED) {
+                continue;
+            }
             Map<String, Object> event = new HashMap<>();
+            String patientFullName = calendarController.resolvePatientFullName(appointment.getPatientId());
             event.put("id", appointment.getId());
-            event.put("title", "Appuntamento");
+            event.put("title", patientFullName);
             event.put("start", appointment.getStart().toString());
             event.put("end", appointment.getEnd().toString());
+            event.put("backgroundColor", "#eaf1fb");
+            event.put("borderColor", "#7f9fcd");
+            event.put("textColor", "#1f2d3d");
 
             Map<String, Object> extendedProps = new HashMap<>();
             extendedProps.put("patientId", appointment.getPatientId());
+            extendedProps.put("patient", patientFullName);
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());
             extendedProps.put("notes", appointment.getNotes());
@@ -136,8 +149,8 @@ public class CalendarServlet extends HttpServlet {
 
         Appointment a = new Appointment();
         a.setPatientId(patientId);
-        a.setStart(LocalDateTime.parse(request.getParameter("start")));
-        a.setEnd(LocalDateTime.parse(request.getParameter("end")));
+        a.setStart(parseDateTime(request.getParameter("start")));
+        a.setEnd(parseDateTime(request.getParameter("end")));
         a.setNotes(normalizeNotes(request.getParameter("notes")));
         a.setTherapistId(therapistId);
 
@@ -149,8 +162,8 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId =
                 Long.parseLong(request.getParameter("id"));
 
-        LocalDateTime newStart = LocalDateTime.parse(request.getParameter("start"));
-        LocalDateTime newEnd = LocalDateTime.parse(request.getParameter("end"));
+        LocalDateTime newStart = parseDateTime(request.getParameter("start"));
+        LocalDateTime newEnd = parseDateTime(request.getParameter("end"));
 
         calendarController.rescheduleAppointment(
                 appointmentId,
@@ -190,5 +203,14 @@ public class CalendarServlet extends HttpServlet {
 
         String normalized = notes.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("error", message == null || message.isBlank() ? "Richiesta non valida" : message);
+        mapper.writeValue(response.getWriter(), payload);
     }
 }

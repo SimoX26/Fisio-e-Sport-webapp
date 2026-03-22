@@ -4,14 +4,15 @@
 
 :root{
     --bg-main: #ffffff;
-    --bg-soft: #f3fbff;
+    --bg-soft: #f8f9fa;
     --bg-card: #ffffff;
-    --border-color: rgba(13,110,253,.14);
+    --border-color: #dfe3e8;
     --text-main: #1f2d3d;
     --text-muted: #5f6f82;
     --brand-primary: #0d6efd;
     --brand-secondary: #20c997;
     --input-bg: #ffffff;
+    --calendar-event-border: #7f9fcd;
 }
 
 body{
@@ -19,6 +20,10 @@ body{
     color: var(--text-main);
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
     margin: 0;
+}
+
+body.app-page{
+    background: #ffffff;
 }
 
 body.auth-page{
@@ -52,27 +57,68 @@ body.auth-page{
     color: var(--text-muted);
 }
 
-.calendar-card{
-    padding: 1rem;
+body.calendar-gcal-page{
+    background: #ffffff;
+}
+
+.calendar-gcal-page .app-navbar{
+    background: #ffffff;
+    border-bottom: 1px solid #dfe3e8;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.calendar-gcal-wrap{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.calendar-gcal-head{
+    align-items: center;
+}
+
+.calendar-add-btn{
+    min-width: 96px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 22px;
+    font-size: 1.2rem;
+    line-height: 1;
+    box-shadow: none;
+}
+
+.gcal-create-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.calendar-host{
+    border: none;
+    border-radius: 0;
+    background: #ffffff;
 }
 
 .calendar-scroll-shell{
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: 75vh;
+    max-height: calc(100vh - 170px);
 }
 
 #calendar{
-    min-width: 980px;
-    min-height: 700px;
+    min-width: 1100px;
+    min-height: 760px;
 }
 
 .glass-card{
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
+    border-radius: 12px;
     backdrop-filter: none;
-    box-shadow: 0 10px 26px rgba(19, 44, 77, .08);
+    box-shadow: none;
 }
 
 
@@ -158,13 +204,14 @@ body.auth-page{
 }
 
 .btn-soft{
-    background: var(--bg-soft);
+    background: #ffffff;
     border: 1px solid var(--border-color);
-    color: var(--text-main);
+    color: #3c4043;
 }
 
 .btn-soft:hover{
-    background: rgba(13,110,253,.08);
+    background: #f8f9fa;
+    border-color: #c8ccd1;
 }
 
 
@@ -188,7 +235,7 @@ body.auth-page{
     backdrop-filter: none;
     background: #ffffff;
     border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 16px rgba(13,110,253,.06);
+    box-shadow: none;
 }
 
 .navbar .nav-link:hover{
@@ -233,12 +280,12 @@ body.auth-page{
 
 .fc{
     color: var(--text-main);
-    background: transparent;
+    background: #ffffff;
 }
 
 .fc-theme-standard th,
 .fc-theme-standard td{
-    border-color: var(--border-color);
+    border-color: #e0e3e7;
 }
 
 .fc-daygrid-day-number{
@@ -250,7 +297,7 @@ body.auth-page{
 }
 
 .fc-day-today{
-    background: rgba(13,110,253,.08) !important;
+    background: #e8f0fe !important;
 }
 
 
@@ -264,30 +311,33 @@ body.auth-page{
 /* Riga intera dell’header (dove c’è “martedì”) */
 .fc .fc-scrollgrid-section-header,
 .fc .fc-scrollgrid-section-header th{
-    background: var(--bg-soft) !important;
+    background: #ffffff !important;
 }
 
 /* Contenitore colonne header */
 .fc .fc-col-header{
-    background: var(--bg-soft) !important;
+    background: #ffffff !important;
 }
 
 /* Singola cella header */
 .fc .fc-col-header-cell{
-    background: var(--bg-soft) !important;
-    border-color: var(--border-color) !important;
+    background: #ffffff !important;
+    border-color: #e0e3e7 !important;
 }
 
 /* Testo “martedì” (è un <a>) */
 .fc .fc-col-header-cell-cushion{
-    color: var(--text-main) !important;
+    color: #5f6368 !important;
     text-decoration: none !important;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    font-size: .82rem;
 }
 
 /* Hover sul giorno */
 .fc .fc-col-header-cell-cushion:hover{
-    color: var(--brand-primary) !important;
+    color: #1a73e8 !important;
 }
 
 
@@ -324,19 +374,23 @@ body.auth-page{
 
 .fc-button{
     background: #ffffff !important;
-    border: 1px solid var(--border-color) !important;
-    color: var(--text-main) !important;
+    border: 1px solid #dadce0 !important;
+    color: #3c4043 !important;
     box-shadow: none !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    min-height: 38px;
 }
 
 .fc-button:hover{
-    background: var(--bg-soft) !important;
+    background: #f8f9fa !important;
+    border-color: #c8ccd1 !important;
 }
 
 .fc-button-primary:not(:disabled).fc-button-active{
-    background: var(--brand-primary) !important;
-    border-color: var(--brand-primary) !important;
-    color: #fff !important;
+    background: #e8f0fe !important;
+    border-color: #c7dafc !important;
+    color: #1967d2 !important;
 }
 
 
@@ -346,15 +400,67 @@ body.auth-page{
    ========================= */
 
 .fc-event{
-    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-    border: none;
-    border-radius: 8px;
-    color: #fff !important;
-    padding: 2px 4px;
+    background: #dfe9f8 !important;
+    border: 1px solid var(--calendar-event-border) !important;
+    border-radius: 6px;
+    color: #24364d !important;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-size: .84rem;
+    font-weight: 500;
+    line-height: 1.25;
+    box-shadow: none !important;
 }
 
 .fc-event:hover{
-    opacity: .9;
+    background: #d5e2f6 !important;
+    border-color: var(--calendar-event-border) !important;
+}
+
+.fc-event .fc-event-main{
+    color: inherit !important;
+}
+
+.fc-event .fc-event-title,
+.fc-event .fc-event-title-container{
+    font-size: inherit !important;
+    font-weight: inherit !important;
+}
+
+.fc .fc-h-event,
+.fc .fc-timegrid-event,
+.fc .fc-daygrid-event{
+    background: #dfe9f8 !important;
+    background-image: none !important;
+    border: 1px solid var(--calendar-event-border) !important;
+    color: #24364d !important;
+    box-shadow: none !important;
+}
+
+.fc .fc-timegrid-event{
+    min-height: 34px;
+}
+
+.fc .fc-timegrid-event .fc-event-main{
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1.2;
+}
+
+.fc .fc-timegrid-event .fc-event-time-line{
+    font-size: .72rem;
+    font-weight: 600;
+    color: #3b4f6b;
+}
+
+.fc .fc-timegrid-event .fc-event-title-line{
+    font-size: .8rem;
+    font-weight: 500;
+    color: #24364d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -380,7 +486,6 @@ body.auth-page{
     color: var(--text-main);
 }
 
-
 /* =========================
    RESPONSIVE
    ========================= */
@@ -403,7 +508,7 @@ body.auth-page{
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    background: linear-gradient(135deg, #f7fbff, #eefbf7);
+    background: var(--bg-soft);
 }
 
 .table thead th{
@@ -452,6 +557,7 @@ body.auth-page{
     .navbar .nav-link{
         padding: .5rem .25rem;
     }
+
 }
 
 @media (max-width: 767.98px){
@@ -467,8 +573,8 @@ body.auth-page{
     }
 
     .glass-card{
-        border-radius: 14px;
-        box-shadow: 0 10px 22px rgba(19, 44, 77, .10);
+        border-radius: 12px;
+        box-shadow: none;
     }
 
     .page-title{
@@ -498,6 +604,12 @@ body.auth-page{
 
     .page-header-row .btn{
         width: 100%;
+    }
+
+    .calendar-add-btn{
+        width: 100%;
+        height: 40px;
+        border-radius: 10px;
     }
 
     .form-actions{
@@ -532,8 +644,8 @@ body.auth-page{
     }
 
     #calendar{
-        min-width: 840px;
-        min-height: 640px;
+        min-width: 680px;
+        min-height: 520px;
     }
 
     .fc .fc-toolbar{
@@ -561,13 +673,35 @@ body.auth-page{
     }
 
     .fc .fc-event{
-        font-size: .75rem;
-        padding: 1px 3px;
+        font-size: .78rem;
+        padding: 2px 4px;
+    }
+
+    .fc .fc-timegrid-event{
+        min-height: 26px;
     }
 
     .modal-dialog{
         margin: .5rem;
     }
+
+    .calendar-gcal-page .page-header-row{
+        flex-direction: row;
+        align-items: center;
+        gap: .6rem;
+    }
+
+    .calendar-gcal-page .page-header-row .btn{
+        width: auto;
+    }
+
+    .calendar-gcal-page .calendar-add-btn{
+        min-width: 88px;
+        height: 40px;
+        padding: 0 14px;
+        border-radius: 20px;
+    }
+
 }
 
 /* testi generici */
@@ -623,6 +757,119 @@ body.auth-page{
 
 .fc-timegrid-slot{
     background: rgba(0,0,0,.01);
+}
+
+/* =========================
+   APP LAYOUT SYSTEM
+   ========================= */
+
+.app-shell{
+    max-width: 1200px;
+}
+
+.section-card{
+    border-radius: 12px;
+}
+
+.section-action-btn{
+    border-radius: 20px;
+    font-weight: 600;
+    min-height: 38px;
+    padding: .45rem .95rem;
+}
+
+.empty-state p{
+    color: var(--text-muted);
+}
+
+.table{
+    --bs-table-bg: transparent;
+}
+
+.table thead th{
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .35px;
+    color: #5f6368;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table td{
+    border-bottom: 1px solid #edf0f2;
+}
+
+/* =========================
+   LANDING PAGE
+   ========================= */
+
+body.landing-page{
+    background: #ffffff;
+}
+
+.landing-navbar{
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.landing-brand-dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-right: .45rem;
+    background: #1a73e8;
+}
+
+.landing-hero{
+    min-height: 62vh;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    background: #ffffff;
+}
+
+.landing-hero-title{
+    font-size: clamp(2rem, 4.7vw, 3rem);
+    line-height: 1.15;
+    font-weight: 700;
+}
+
+.landing-hero-subtitle{
+    font-size: 1.02rem;
+    color: var(--text-muted);
+    max-width: 760px;
+}
+
+.landing-soft-section{
+    background: #fbfcfd;
+}
+
+.landing-feature-card{
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    height: 100%;
+}
+
+.landing-feature-title{
+    color: #1a73e8;
+    font-size: 1.03rem;
+    font-weight: 600;
+}
+
+.landing-feature-text{
+    color: var(--text-muted);
+    margin: 0;
+}
+
+@media (max-width: 767.98px){
+    .landing-hero{
+        min-height: 66vh;
+    }
+
+    .landing-hero .btn{
+        width: 100%;
+    }
 }
 
 

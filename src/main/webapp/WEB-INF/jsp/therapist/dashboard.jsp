@@ -11,15 +11,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
       <!-- Custom CSS -->
-       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css">
+       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 </head>
 
-<body>
+<body class="app-page">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container mt-5">
+<div class="container app-shell mt-4">
 
     <!-- HEADER DASHBOARD -->
     <div class="mb-4">
@@ -33,21 +33,21 @@
     <div class="row g-4 mb-5">
 
         <div class="col-md-4">
-            <div class="glass-card p-4">
+            <div class="glass-card section-card p-4">
                 <div class="kpi-value">12</div>
                 <div class="kpi-label">Appuntamenti oggi</div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card p-4">
+            <div class="glass-card section-card p-4">
                 <div class="kpi-value">86</div>
                 <div class="kpi-label">Pazienti totali</div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card p-4">
+            <div class="glass-card section-card p-4">
                 <div class="kpi-value">5</div>
                 <div class="kpi-label">Trattamenti questa settimana</div>
             </div>
@@ -59,9 +59,9 @@
     <div class="row g-4">
 
         <div class="col-md-4">
-            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/calendar">
-                <div class="icon mb-3">📅</div>
+                <div class="kpi-label mb-2">Calendario</div>
                 <h5>Calendario</h5>
                 <p class="page-subtitle">
                     Visualizza e gestisci gli appuntamenti
@@ -70,9 +70,9 @@
         </div>
 
         <div class="col-md-4">
-            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/address-book">
-                <div class="icon mb-3">👤</div>
+                <div class="kpi-label mb-2">Rubrica</div>
                 <h5>Rubrica Pazienti</h5>
                 <p class="page-subtitle">
                     Consulta l’elenco dei pazienti
@@ -81,9 +81,9 @@
         </div>
 
         <div class="col-md-4">
-            <a class="glass-card p-4 action-card h-100 d-block text-decoration-none"
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/treatment-history">
-                <div class="icon mb-3">🧾</div>
+                <div class="kpi-label mb-2">Storico</div>
                 <h5>Storico Trattamenti</h5>
                 <p class="page-subtitle">
                     Visualizza le sedute effettuate
@@ -95,7 +95,7 @@
 
     <!-- CTA -->
     <div class="mt-5">
-        <div class="glass-card p-4 dashboard-cta">
+        <div class="glass-card section-card p-4 dashboard-cta">
             <div>
                 <h5 class="mb-1">Nuovo appuntamento</h5>
                 <p class="page-subtitle mb-0">
@@ -103,8 +103,8 @@
                 </p>
             </div>
             <a href="<%= request.getContextPath() %>/calendar"
-               class="btn btn-primary">
-                ➕ Crea
+               class="btn btn-primary section-action-btn">
+                Crea
             </a>
         </div>
     </div>

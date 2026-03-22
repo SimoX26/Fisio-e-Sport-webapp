@@ -42,7 +42,10 @@ public class Patient {
     }
 
     public String getFullName() {
-        return firstName + " " + lastName;
+        String first = firstName == null ? "" : firstName.trim();
+        String last = lastName == null ? "" : lastName.trim();
+        String fullName = (first + " " + last).trim();
+        return fullName.isEmpty() ? "Paziente" : fullName;
     }
 
     public void setLastName(String lastName) {
@@ -73,4 +76,3 @@ public class Patient {
         this.state = state;
     }
 }
-

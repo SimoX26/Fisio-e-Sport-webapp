@@ -31,7 +31,7 @@ public class CalendarController {
     }
 
     public List<Appointment> getAppointmentsInPeriod(LocalDateTime start, LocalDateTime end) {
-        validateTimeRange(start, end);
+        validatePeriodRange(start, end);
         return appointmentDAO.findInPeriod(start, end);
     }
 
@@ -99,7 +99,7 @@ public class CalendarController {
         Patient newPatient = new Patient();
         String[] parts = patientName.trim().split("\\s+", 2);
         newPatient.setFirstName(parts[0]);
-        newPatient.setLastName(parts.length > 1 ? parts[1] : "Paziente");
+        newPatient.setLastName(parts.length > 1 ? parts[1] : "");
         newPatient.setEmail(null);
         newPatient.setPhone(null);
         newPatient.setState(PatientState.ACTIVE);
@@ -117,6 +117,12 @@ public class CalendarController {
                 .orElseThrow(() -> new IllegalArgumentException("L'utente loggato non e un terapista attivo"));
     }
 
+    public String resolvePatientFullName(long patientId) {
+        return patientDAO.findById(patientId)
+                .map(Patient::getFullName)
+                .orElse("Paziente #" + patientId);
+    }
+
     private void validateTimeRange(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null || !start.isBefore(end)) {
             throw new IllegalArgumentException("Invalid time range");
@@ -129,6 +135,12 @@ public class CalendarController {
         long durationHours = ChronoUnit.HOURS.between(start, end);
         if (durationHours != APPOINTMENT_DURATION_HOURS) {
             throw new IllegalArgumentException("La durata dell'appuntamento deve essere di 1 ora");
+        }
+    }
+
+    private void validatePeriodRange(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null || !start.isBefore(end)) {
+            throw new IllegalArgumentException("Invalid period range");
         }
     }
 
