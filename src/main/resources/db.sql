@@ -1,11 +1,11 @@
--- Drop and recreate database
+/* Drop and recreate database */
 DROP DATABASE IF EXISTS fisio_e_sport;
 
 CREATE DATABASE fisio_e_sport
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
--- Optional local DB user bootstrap
+/* Optional local DB user bootstrap */
 CREATE USER IF NOT EXISTS 'fisio_e_sport'@'localhost'
 IDENTIFIED BY 'password_123';
 
@@ -14,9 +14,9 @@ FLUSH PRIVILEGES;
 
 USE fisio_e_sport;
 
--- =========================
--- USERS
--- =========================
+/* =========================
+   USERS
+   ========================= */
 CREATE TABLE users (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
@@ -26,9 +26,9 @@ CREATE TABLE users (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
--- REMEMBER ME TOKENS
--- =========================
+/* =========================
+   REMEMBER ME TOKENS
+   ========================= */
 CREATE TABLE remember_me_tokens (
   user_id BIGINT PRIMARY KEY,
   token_hash CHAR(64) NOT NULL UNIQUE,
@@ -41,9 +41,9 @@ CREATE TABLE remember_me_tokens (
     ON UPDATE CASCADE
 );
 
--- =========================
--- PATIENTS
--- =========================
+/* =========================
+   PATIENTS
+   ========================= */
 CREATE TABLE patients (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(100) NOT NULL,
@@ -54,9 +54,9 @@ CREATE TABLE patients (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
--- APPOINTMENTS
--- =========================
+/* =========================
+   APPOINTMENTS
+   ========================= */
 CREATE TABLE appointments (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   patient_id BIGINT NOT NULL,
@@ -78,9 +78,9 @@ CREATE TABLE appointments (
     ON UPDATE CASCADE
 );
 
--- =========================
--- TREATMENT SESSIONS
--- =========================
+/* =========================
+   TREATMENT SESSIONS
+   ========================= */
 CREATE TABLE treatment_sessions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   appointment_id BIGINT NOT NULL,
