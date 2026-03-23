@@ -22,8 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-3">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-3" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-4">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-4" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">

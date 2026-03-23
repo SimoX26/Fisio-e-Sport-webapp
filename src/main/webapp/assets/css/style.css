@@ -676,6 +676,11 @@ body.calendar-gcal-page{
         min-height: 520px;
     }
 
+    /* In vista "giorno" riduciamo drasticamente la larghezza minima su mobile */
+    body.calendar-view-day #calendar{
+        min-width: 320px;
+    }
+
     .fc .fc-toolbar{
         flex-direction: column;
         align-items: stretch;

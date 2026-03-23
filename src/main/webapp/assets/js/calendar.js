@@ -55,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let editingAppointmentId = null;
     let currentHeightMode = 'auto';
 
+    function applyViewClass(calendarInstance) {
+        const viewType = calendarInstance.view ? calendarInstance.view.type : '';
+        document.body.classList.toggle('calendar-view-day', viewType === 'timeGridDay');
+        document.body.classList.toggle('calendar-view-week', viewType === 'timeGridWeek');
+        document.body.classList.toggle('calendar-view-month', viewType === 'dayGridMonth');
+    }
+
     function applyDesktopWeekFillMode(calendarInstance) {
         const isDesktop = window.innerWidth >= 992;
         const isWeekView = calendarInstance.view && calendarInstance.view.type === 'timeGridWeek';
@@ -127,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             info.el.style.boxShadow = 'none';
         },
         datesSet() {
+            applyViewClass(calendar);
             applyDesktopWeekFillMode(calendar);
         },
         events: {
@@ -182,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     calendar.render();
+    applyViewClass(calendar);
     applyDesktopWeekFillMode(calendar);
     window.addEventListener('resize', () => applyDesktopWeekFillMode(calendar));
 
