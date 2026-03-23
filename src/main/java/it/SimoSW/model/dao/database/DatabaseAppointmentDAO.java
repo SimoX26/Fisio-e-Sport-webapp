@@ -176,6 +176,53 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         }
     }
 
+    @Override
+    public List<Appointment> findCancelledByTherapist(long therapistId) {
+        String sql = """
+            SELECT * FROM appointments
+            WHERE therapist_id = ?
+              AND state = 'CANCELLED'
+            ORDER BY start_time DESC
+        """;
+
+        List<Appointment> result = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, therapistId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapRow(rs));
+                }
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore caricamento appuntamenti cancellati", e);
+        }
+    }
+
+    @Override
+    public void deleteById(long appointmentId) {
+        String sql = "DELETE FROM appointments WHERE id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, appointmentId);
+            int deletedRows = ps.executeUpdate();
+
+            if (deletedRows == 0) {
+                throw new RuntimeException("Nessun appuntamento eliminato, id non trovato: " + appointmentId);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante eliminazione appuntamento", e);
+        }
+    }
+
     private Appointment mapRow(ResultSet rs) throws SQLException {
         Appointment a = new Appointment();
         a.setId(rs.getLong("id"));

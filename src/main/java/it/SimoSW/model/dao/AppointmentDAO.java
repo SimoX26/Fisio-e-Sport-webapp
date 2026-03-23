@@ -17,4 +17,8 @@ public interface AppointmentDAO {
     List<Appointment> findInPeriod(LocalDateTime start, LocalDateTime end);
 
     List<Appointment> findByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end);
+
+    List<Appointment> findCancelledByTherapist(long therapistId);
+
+    void deleteById(long appointmentId);
 }

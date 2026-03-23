@@ -113,6 +113,18 @@ body.calendar-gcal-page{
     min-height: 760px;
 }
 
+@media (min-width: 992px){
+    body.calendar-week-fill .calendar-scroll-shell{
+        height: calc(100vh - 170px);
+        max-height: none;
+    }
+
+    body.calendar-week-fill #calendar{
+        height: 100%;
+        min-height: 0;
+    }
+}
+
 .glass-card{
     background: var(--bg-card);
     border: 1px solid var(--border-color);

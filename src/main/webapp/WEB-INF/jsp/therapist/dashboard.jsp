@@ -29,34 +29,8 @@
         </p>
     </div>
 
-    <!-- KPI -->
-    <div class="row g-4 mb-5">
-
-        <div class="col-md-4">
-            <div class="glass-card section-card p-4">
-                <div class="kpi-value">12</div>
-                <div class="kpi-label">Appuntamenti oggi</div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="glass-card section-card p-4">
-                <div class="kpi-value">86</div>
-                <div class="kpi-label">Pazienti totali</div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="glass-card section-card p-4">
-                <div class="kpi-value">5</div>
-                <div class="kpi-label">Trattamenti questa settimana</div>
-            </div>
-        </div>
-
-    </div>
-
     <!-- AZIONI PRINCIPALI -->
-    <div class="row g-4">
+    <div class="row g-4 mt-1">
 
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"

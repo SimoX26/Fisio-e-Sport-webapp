@@ -14,6 +14,7 @@ import it.SimoSW.model.dao.UserDAO;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,6 +34,12 @@ public class CalendarController {
     public List<Appointment> getAppointmentsInPeriod(LocalDateTime start, LocalDateTime end) {
         validatePeriodRange(start, end);
         return appointmentDAO.findInPeriod(start, end);
+    }
+
+    public List<Appointment> getAppointmentsForTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end) {
+        validatePeriodRange(start, end);
+        checkTherapistUserExists(therapistId);
+        return appointmentDAO.findByTherapistInPeriod(therapistId, start, end);
     }
 
     public Appointment scheduleAppointment(Appointment appointment) {
@@ -87,6 +94,61 @@ public class CalendarController {
 
         appointment.setState(AppointmentState.CANCELLED);
         appointmentDAO.update(appointment);
+    }
+
+    public List<CancelledAppointmentView> getCancelledAppointmentsForTherapist(long therapistId) {
+        checkTherapistUserExists(therapistId);
+
+        List<Appointment> cancelled = appointmentDAO.findCancelledByTherapist(therapistId);
+        List<CancelledAppointmentView> result = new ArrayList<>(cancelled.size());
+
+        for (Appointment appointment : cancelled) {
+            result.add(new CancelledAppointmentView(
+                    appointment.getId(),
+                    resolvePatientFullName(appointment.getPatientId()),
+                    appointment.getStart(),
+                    appointment.getEnd(),
+                    appointment.getNotes()
+            ));
+        }
+
+        return result;
+    }
+
+    public void restoreAppointment(long appointmentId, long therapistId) {
+        checkTherapistUserExists(therapistId);
+
+        Appointment appointment = appointmentDAO.findById(appointmentId)
+                .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+
+        if (appointment.getTherapistId() != therapistId) {
+            throw new IllegalArgumentException("Appuntamento non autorizzato per questo terapista");
+        }
+
+        if (appointment.getState() != AppointmentState.CANCELLED) {
+            throw new InvalidAppointmentStateException("Solo gli appuntamenti cancellati possono essere ripristinati");
+        }
+
+        appointment.setState(AppointmentState.SCHEDULED);
+        checkForConflicts(appointment);
+        appointmentDAO.update(appointment);
+    }
+
+    public void deleteCancelledAppointment(long appointmentId, long therapistId) {
+        checkTherapistUserExists(therapistId);
+
+        Appointment appointment = appointmentDAO.findById(appointmentId)
+                .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+
+        if (appointment.getTherapistId() != therapistId) {
+            throw new IllegalArgumentException("Appuntamento non autorizzato per questo terapista");
+        }
+
+        if (appointment.getState() != AppointmentState.CANCELLED) {
+            throw new InvalidAppointmentStateException("Solo gli appuntamenti cancellati possono essere eliminati definitivamente");
+        }
+
+        appointmentDAO.deleteById(appointmentId);
     }
 
     public long resolveOrCreatePatientId(String patientName) {
@@ -201,5 +263,41 @@ public class CalendarController {
         }
         String normalized = notes.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    public static class CancelledAppointmentView {
+        private final long id;
+        private final String patientFullName;
+        private final LocalDateTime start;
+        private final LocalDateTime end;
+        private final String notes;
+
+        public CancelledAppointmentView(long id, String patientFullName, LocalDateTime start, LocalDateTime end, String notes) {
+            this.id = id;
+            this.patientFullName = patientFullName;
+            this.start = start;
+            this.end = end;
+            this.notes = notes;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public String getPatientFullName() {
+            return patientFullName;
+        }
+
+        public LocalDateTime getStart() {
+            return start;
+        }
+
+        public LocalDateTime getEnd() {
+            return end;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
     }
 }

@@ -53,10 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteModal = confirmDeleteModalEl ? new bootstrap.Modal(confirmDeleteModalEl) : null;
     let selectedEvent = null;
     let editingAppointmentId = null;
+    let currentHeightMode = 'auto';
+
+    function applyDesktopWeekFillMode(calendarInstance) {
+        const isDesktop = window.innerWidth >= 992;
+        const isWeekView = calendarInstance.view && calendarInstance.view.type === 'timeGridWeek';
+        const shouldFillHeight = isDesktop && isWeekView;
+        const desiredHeight = shouldFillHeight ? '100%' : 'auto';
+
+        if (desiredHeight !== currentHeightMode) {
+            currentHeightMode = desiredHeight;
+            calendarInstance.setOption('height', desiredHeight);
+        }
+
+        document.body.classList.toggle('calendar-week-fill', shouldFillHeight);
+    }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'it',
-        allDayText: 'Tutto il \ngiorno',
+        allDayText: 'Tutto il giorno',
         buttonText: {
             today: 'oggi',
             day: 'giorno',
@@ -65,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         firstDay: 1,
         height: 'auto',
+        expandRows: true,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -109,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             info.el.style.border = '1px solid var(--calendar-event-border)';
             info.el.style.color = '#1f2d3d';
             info.el.style.boxShadow = 'none';
+        },
+        datesSet() {
+            applyDesktopWeekFillMode(calendar);
         },
         events: {
             url: contextPath + '/calendar',
@@ -163,6 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     calendar.render();
+    applyDesktopWeekFillMode(calendar);
+    window.addEventListener('resize', () => applyDesktopWeekFillMode(calendar));
 
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {
