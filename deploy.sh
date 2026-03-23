@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  cat <<'EOF'
+  cat <<'EOT'
 Usage:
   ./deploy.sh [options]
 
@@ -10,6 +10,7 @@ Options:
   --war <path>            Local path del file .war da trasferire (default: ultimo .war in target/)
   --key <path.pem>        Chiave privata SSH (opzionale, equivalente a -i)
   --port <port>           Porta SSH (default: 22)
+  --ssh-timeout <sec>     Timeout connessione SSH in secondi (default: 15)
   --method <scp|rsync>    Metodo trasferimento (default: scp)
   --skip-tests            Esegue Maven con -DskipTests
   --promote               Tenta la copia da ~ a /opt/tomcat (richiede permessi)
@@ -21,7 +22,7 @@ Example:
     --key ~/Documenti/Fisio-e-Sport-keys.pem \
     --skip-tests \
     --method scp
-EOF
+EOT
 }
 
 require_cmd() {
@@ -31,8 +32,24 @@ require_cmd() {
   fi
 }
 
+expand_tilde_path() {
+  local path="$1"
+  case "$path" in
+    "~")
+      echo "$HOME"
+      ;;
+    "~/"*)
+      echo "$HOME/${path#~/}"
+      ;;
+    *)
+      echo "$path"
+      ;;
+  esac
+}
+
 WAR_PATH=""
 SSH_PORT="22"
+SSH_TIMEOUT="15"
 TRANSFER_METHOD="scp"
 SKIP_TESTS="false"
 SSH_KEY_PATH=""
@@ -41,7 +58,7 @@ TRANSFER_SQL="true"
 
 # Configurazione hardcoded richiesta
 REMOTE_USER="ubuntu"
-REMOTE_HOST="ec2-13-48-104-157.eu-north-1.compute.amazonaws.com"
+REMOTE_HOST="ec2-51-21-247-183.eu-north-1.compute.amazonaws.com"
 REMOTE_TOMCAT_DIR="/opt/tomcat"
 REMOTE_STAGING_DIR="/home/ubuntu"
 LOCAL_SQL_DIR="src/main/resources"
@@ -57,6 +74,8 @@ while [[ $# -gt 0 ]]; do
       SSH_KEY_PATH="${2:-}"; shift 2 ;;
     --method)
       TRANSFER_METHOD="${2:-}"; shift 2 ;;
+    --ssh-timeout)
+      SSH_TIMEOUT="${2:-}"; shift 2 ;;
     --skip-tests)
       SKIP_TESTS="true"; shift ;;
     --promote)
@@ -75,6 +94,15 @@ done
 if [[ "$TRANSFER_METHOD" != "scp" && "$TRANSFER_METHOD" != "rsync" ]]; then
   echo "Errore: --method deve essere 'scp' oppure 'rsync'." >&2
   exit 1
+fi
+
+if ! [[ "$SSH_TIMEOUT" =~ ^[0-9]+$ ]] || [[ "$SSH_TIMEOUT" -le 0 ]]; then
+  echo "Errore: --ssh-timeout deve essere un intero positivo." >&2
+  exit 1
+fi
+
+if [[ -n "$SSH_KEY_PATH" ]]; then
+  SSH_KEY_PATH="$(expand_tilde_path "$SSH_KEY_PATH")"
 fi
 
 if [[ -n "$SSH_KEY_PATH" && ! -f "$SSH_KEY_PATH" ]]; then
@@ -111,9 +139,25 @@ fi
 
 WAR_NAME="$(basename "$WAR_PATH")"
 REMOTE_STAGE_WAR_PATH="${REMOTE_STAGING_DIR}/${WAR_NAME}"
-SSH_OPTS=(-p "$SSH_PORT")
+
+SSH_OPTS=(
+  -p "$SSH_PORT"
+  -o BatchMode=yes
+  -o ConnectTimeout="$SSH_TIMEOUT"
+  -o ServerAliveInterval=10
+  -o ServerAliveCountMax=2
+  -o StrictHostKeyChecking=accept-new
+  -o PreferredAuthentications=publickey
+)
 if [[ -n "$SSH_KEY_PATH" ]]; then
   SSH_OPTS+=(-i "$SSH_KEY_PATH")
+fi
+
+echo "[STEP] Verifica connettivita SSH..."
+if ! ssh "${SSH_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}" "echo ok >/dev/null"; then
+  echo "Errore: impossibile aprire sessione SSH verso ${REMOTE_USER}@${REMOTE_HOST}." >&2
+  echo "Controlla: chiave PEM, Security Group, IP/host, permessi file chiave (chmod 600)." >&2
+  exit 1
 fi
 
 echo "[STEP] Verifica directory remota..."
@@ -121,17 +165,30 @@ ssh "${SSH_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}" "mkdir -p '$REMOTE_STAGING_
 
 echo "[STEP] Trasferimento WAR con $TRANSFER_METHOD..."
 if [[ "$TRANSFER_METHOD" == "scp" ]]; then
-  SCP_OPTS=(-P "$SSH_PORT")
+  SCP_OPTS=(
+    -P "$SSH_PORT"
+    -o BatchMode=yes
+    -o ConnectTimeout="$SSH_TIMEOUT"
+    -o StrictHostKeyChecking=accept-new
+    -o PreferredAuthentications=publickey
+  )
   if [[ -n "$SSH_KEY_PATH" ]]; then
     SCP_OPTS+=(-i "$SSH_KEY_PATH")
   fi
   scp "${SCP_OPTS[@]}" "$WAR_PATH" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_STAGE_WAR_PATH}"
 else
-  RSYNC_RSH="ssh -p $SSH_PORT"
+  RSYNC_RSH=(
+    ssh
+    -p "$SSH_PORT"
+    -o BatchMode=yes
+    -o ConnectTimeout="$SSH_TIMEOUT"
+    -o StrictHostKeyChecking=accept-new
+    -o PreferredAuthentications=publickey
+  )
   if [[ -n "$SSH_KEY_PATH" ]]; then
-    RSYNC_RSH+=" -i $SSH_KEY_PATH"
+    RSYNC_RSH+=(-i "$SSH_KEY_PATH")
   fi
-  rsync -avz --progress -e "$RSYNC_RSH" "$WAR_PATH" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_STAGE_WAR_PATH}"
+  rsync -avz --progress -e "${RSYNC_RSH[*]}" "$WAR_PATH" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_STAGE_WAR_PATH}"
 fi
 
 if [[ "$TRANSFER_SQL" == "true" ]]; then
@@ -142,18 +199,32 @@ if [[ "$TRANSFER_SQL" == "true" ]]; then
   if [[ ${#SQL_FILES[@]} -gt 0 ]]; then
     echo "[STEP] Trasferimento script SQL..."
     ssh "${SSH_OPTS[@]}" "${REMOTE_USER}@${REMOTE_HOST}" "mkdir -p '$REMOTE_SQL_DIR'"
+
     if [[ "$TRANSFER_METHOD" == "scp" ]]; then
-      SCP_OPTS=(-P "$SSH_PORT")
+      SCP_OPTS=(
+        -P "$SSH_PORT"
+        -o BatchMode=yes
+        -o ConnectTimeout="$SSH_TIMEOUT"
+        -o StrictHostKeyChecking=accept-new
+        -o PreferredAuthentications=publickey
+      )
       if [[ -n "$SSH_KEY_PATH" ]]; then
         SCP_OPTS+=(-i "$SSH_KEY_PATH")
       fi
       scp "${SCP_OPTS[@]}" "${SQL_FILES[@]}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_SQL_DIR}/"
     else
-      RSYNC_RSH="ssh -p $SSH_PORT"
+      RSYNC_RSH=(
+        ssh
+        -p "$SSH_PORT"
+        -o BatchMode=yes
+        -o ConnectTimeout="$SSH_TIMEOUT"
+        -o StrictHostKeyChecking=accept-new
+        -o PreferredAuthentications=publickey
+      )
       if [[ -n "$SSH_KEY_PATH" ]]; then
-        RSYNC_RSH+=" -i $SSH_KEY_PATH"
+        RSYNC_RSH+=(-i "$SSH_KEY_PATH")
       fi
-      rsync -avz --progress -e "$RSYNC_RSH" "${LOCAL_SQL_DIR}/"*.sql "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_SQL_DIR}/"
+      rsync -avz --progress -e "${RSYNC_RSH[*]}" "${LOCAL_SQL_DIR}/"*.sql "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_SQL_DIR}/"
     fi
   else
     echo "Nessun file .sql trovato in ${LOCAL_SQL_DIR}, salto trasferimento SQL."
