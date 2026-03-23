@@ -59,6 +59,7 @@ public class DashboardServlet extends HttpServlet {
                 List<Appointment> weekAppointments = calendarController
                         .getAppointmentsForTherapistInPeriod(therapistId, weekStart, weekEnd);
                 bookedHoursThisWeek = weekAppointments.stream()
+                        .filter(a -> !a.isAllDay())
                         .mapToLong(a -> ChronoUnit.HOURS.between(a.getStart(), a.getEnd()))
                         .sum();
 

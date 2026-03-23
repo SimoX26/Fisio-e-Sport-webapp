@@ -5,20 +5,26 @@ import java.time.LocalDateTime;
 public class TreatmentSession {
 
     private long id;
-    private long appointmentId;
+    private long treatmentPlanId;
+    private Long appointmentId;
     private long patientId;
     private long therapistId;
     private LocalDateTime start;
     private LocalDateTime end;
+    private Integer painScorePre;
+    private Integer painScorePost;
+    private String sessionOutcome;
+    private String homeExercises;
     private String notes;
     private TreatmentSessionState state;
 
     public TreatmentSession() {
     }
 
-    public TreatmentSession(long id, long appointmentId,
+    public TreatmentSession(long id, long treatmentPlanId, Long appointmentId,
                             long patientId, long therapistId) {
         this.id = id;
+        this.treatmentPlanId = treatmentPlanId;
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.therapistId = therapistId;
@@ -32,11 +38,19 @@ public class TreatmentSession {
         this.id = id;
     }
 
-    public long getAppointmentId() {
+    public long getTreatmentPlanId() {
+        return treatmentPlanId;
+    }
+
+    public void setTreatmentPlanId(long treatmentPlanId) {
+        this.treatmentPlanId = treatmentPlanId;
+    }
+
+    public Long getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(long appointmentId) {
+    public void setAppointmentId(Long appointmentId) {
         this.appointmentId = appointmentId;
     }
 
@@ -70,6 +84,38 @@ public class TreatmentSession {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public Integer getPainScorePre() {
+        return painScorePre;
+    }
+
+    public void setPainScorePre(Integer painScorePre) {
+        this.painScorePre = painScorePre;
+    }
+
+    public Integer getPainScorePost() {
+        return painScorePost;
+    }
+
+    public void setPainScorePost(Integer painScorePost) {
+        this.painScorePost = painScorePost;
+    }
+
+    public String getSessionOutcome() {
+        return sessionOutcome;
+    }
+
+    public void setSessionOutcome(String sessionOutcome) {
+        this.sessionOutcome = sessionOutcome;
+    }
+
+    public String getHomeExercises() {
+        return homeExercises;
+    }
+
+    public void setHomeExercises(String homeExercises) {
+        this.homeExercises = homeExercises;
     }
 
     public String getNotes() {

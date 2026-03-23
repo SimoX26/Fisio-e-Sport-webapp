@@ -794,6 +794,23 @@ body.calendar-gcal-page{
     opacity: .75;
 }
 
+/* =========================
+   ADDRESS BOOK – ANAMNESI MODAL SCROLL
+   ========================= */
+
+#editPatientModal .modal-dialog {
+    max-height: calc(100vh - 2rem);
+}
+
+#editPatientModal .modal-content {
+    max-height: calc(100vh - 2rem);
+}
+
+#editPatientModal .modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .fc-timegrid-slot{
     background: rgba(0,0,0,.01);
 }

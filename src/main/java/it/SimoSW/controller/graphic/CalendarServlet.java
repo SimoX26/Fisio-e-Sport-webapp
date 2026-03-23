@@ -2,6 +2,7 @@ package it.SimoSW.controller.graphic;
 
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.CalendarController;
+import it.SimoSW.controller.application.TreatmentController;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 public class CalendarServlet extends HttpServlet {
 
     private CalendarController calendarController;
+    private TreatmentController treatmentController;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -31,6 +33,7 @@ public class CalendarServlet extends HttpServlet {
         ApplicationInitializer initializer = (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
 
         this.calendarController = initializer.getCalendarController();
+        this.treatmentController = initializer.getTreatmentController();
     }
 
     /* =========================
@@ -74,6 +77,7 @@ public class CalendarServlet extends HttpServlet {
                 case "create" -> createAppointment(request);
                 case "reschedule" -> rescheduleAppointment(request);
                 case "cancel" -> cancelAppointment(request);
+                case "complete" -> completeAppointmentAndCreateTreatment(request);
                 default -> throw new IllegalArgumentException("Unknown action");
             }
 
@@ -116,7 +120,9 @@ public class CalendarServlet extends HttpServlet {
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());
             extendedProps.put("notes", appointment.getNotes());
+            extendedProps.put("allDay", appointment.isAllDay());
             event.put("extendedProps", extendedProps);
+            event.put("allDay", appointment.isAllDay());
 
             events.add(event);
         }
@@ -143,14 +149,18 @@ public class CalendarServlet extends HttpServlet {
             throw new IllegalArgumentException("Sessione non valida: utente non autenticato");
         }
 
+        boolean allDay = parseBooleanParameter(request.getParameter("allDay"));
         String patientName = request.getParameter("patientName");
-        long patientId = calendarController.resolveOrCreatePatientId(patientName);
+        long patientId = allDay
+                ? calendarController.resolveExistingPatientId(patientName)
+                : calendarController.resolveOrCreatePatientId(patientName);
         long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
         Appointment a = new Appointment();
         a.setPatientId(patientId);
         a.setStart(parseDateTime(request.getParameter("start")));
         a.setEnd(parseDateTime(request.getParameter("end")));
+        a.setAllDay(allDay);
         a.setNotes(normalizeNotes(request.getParameter("notes")));
         a.setTherapistId(therapistId);
 
@@ -165,6 +175,7 @@ public class CalendarServlet extends HttpServlet {
         String patientName = request.getParameter("patientName");
         LocalDateTime newStart = parseDateTime(request.getParameter("start"));
         LocalDateTime newEnd = parseDateTime(request.getParameter("end"));
+        boolean allDay = parseBooleanParameter(request.getParameter("allDay"));
         String notes = normalizeNotes(request.getParameter("notes"));
 
         calendarController.rescheduleAppointment(
@@ -172,6 +183,7 @@ public class CalendarServlet extends HttpServlet {
                 patientName,
                 newStart,
                 newEnd,
+                allDay,
                 notes
         );
     }
@@ -181,6 +193,14 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId = Long.parseLong(request.getParameter("id"));
 
         calendarController.cancelAppointment(appointmentId);
+    }
+
+    private void completeAppointmentAndCreateTreatment(HttpServletRequest request) {
+        long appointmentId = Long.parseLong(request.getParameter("id"));
+        Appointment completed = calendarController.completeAppointment(appointmentId);
+        if (!completed.isAllDay()) {
+            treatmentController.ensureTreatmentForCompletedAppointment(appointmentId);
+        }
     }
 
     private LocalDateTime parseDateTime(String value) {
@@ -207,6 +227,10 @@ public class CalendarServlet extends HttpServlet {
 
         String normalized = notes.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private boolean parseBooleanParameter(String value) {
+        return value != null && ("true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value) || "1".equals(value));
     }
 
     private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {

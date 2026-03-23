@@ -15,5 +15,10 @@ public interface TreatmentSessionDAO {
     Optional<TreatmentSession> findByAppointmentId(long appointmentId);
 
     List<TreatmentSession> findByPatientId(long patientId);
-}
 
+    List<TreatmentSession> findByPatientIdAndTherapistId(long patientId, long therapistId);
+
+    List<TreatmentSession> findByTreatmentPlanId(long treatmentPlanId);
+
+    List<TreatmentSession> findStartedHistoryForTherapistWithMultiSessionPlans(long therapistId);
+}

@@ -25,12 +25,16 @@ public class LogoutServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/logoutConfirm.jsp").forward(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        performLogout(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        performLogout(request, response);
+    }
+
+    private void performLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String rememberMeToken = SessionCookieService.extractRememberMeToken(request.getCookies());
         if (rememberMeToken != null && !rememberMeToken.isBlank()) {
             authenticationController.revokeRememberMeToken(rememberMeToken);
@@ -42,6 +46,6 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        response.sendRedirect(request.getContextPath() + "/");
     }
 }

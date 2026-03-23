@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Storico Trattamenti • Fisio e Sport</title>
+    <title><c:out value="${not empty historyTitle ? historyTitle : 'Storico trattamenti'}" /> • Fisio e Sport</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -33,16 +33,10 @@
     <!-- HEADER PAGINA -->
     <div class="page-header-row mb-4">
         <div>
-            <h2 class="page-title">Storico Trattamenti</h2>
-            <p class="page-subtitle mb-0">
-                Visualizza e consulta le sedute effettuate
-            </p>
+            <h2 class="page-title">
+                <c:out value="${not empty historyTitle ? historyTitle : 'Storico trattamenti'}" />
+            </h2>
         </div>
-
-        <a href="<%= request.getContextPath() %>/calendar"
-           class="btn btn-primary section-action-btn">
-            Nuovo trattamento
-        </a>
     </div>
 
     <!-- LISTA TRATTAMENTI -->
@@ -60,12 +54,8 @@
             <div class="text-center py-5 empty-state">
                 <h5>Nessun trattamento registrato</h5>
                 <p class="mb-3">
-                    Inizia aggiungendo una nuova seduta
+                    Nessuna sessione avviata trovata per piani multi-trattamento.
                 </p>
-                <a href="<%= request.getContextPath() %>/calendar"
-                   class="btn btn-soft">
-                    Aggiungi trattamento
-                </a>
             </div>
 
             </c:when>
@@ -78,28 +68,39 @@
                     <tr>
                         <th>Data</th>
                         <th>Paziente</th>
-                        <th>Tipo trattamento</th>
+                        <th>Piano terapeutico</th>
+                        <th>Dolore pre/post</th>
+                        <th>Esito</th>
                         <th>Stato</th>
-                        <th class="text-end">Azioni</th>
                     </tr>
                     </thead>
                     <tbody>
 
                     <c:forEach var="session" items="${sessions}">
                         <tr>
-                            <td><c:out value="${session.start}" /></td>
-                            <td><c:out value="${session.patientId}" /></td>
-                            <td><c:out value="${session.appointmentId}" /></td>
+                            <td><c:out value="${session.sessionDateLabel}" /></td>
+                            <td><c:out value="${session.patientName}" /></td>
+                            <td><c:out value="${session.planTitle}" /></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${empty session.painScorePre and empty session.painScorePost}">
+                                        -
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:out value="${session.painScorePre}" /> / <c:out value="${session.painScorePost}" />
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${empty session.outcome}">-</c:when>
+                                    <c:otherwise><c:out value="${session.outcome}" /></c:otherwise>
+                                </c:choose>
+                            </td>
                             <td>
                                 <span class="badge-state state-completed">
-                                    <c:out value="${session.state}" />
+                                    <c:out value="${session.stateLabel}" />
                                 </span>
-                            </td>
-                            <td class="text-end">
-                                <a href="#"
-                                   class="btn btn-sm btn-soft">
-                                    Dettagli
-                                </a>
                             </td>
                         </tr>
                     </c:forEach>

@@ -10,6 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Date(date.getTime() + minutes * 60 * 1000);
     }
 
+    function startOfDay(date) {
+        const dayStart = new Date(date);
+        dayStart.setHours(0, 0, 0, 0);
+        return dayStart;
+    }
+
+    function nextDay(date) {
+        const next = new Date(date);
+        next.setDate(next.getDate() + 1);
+        return next;
+    }
+
     function ceilToHour(date) {
         const rounded = new Date(date);
         const minutes = rounded.getMinutes();
@@ -35,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const endInput = document.getElementById('end');
     const notesInput = document.getElementById('notes');
     const patientNameInput = document.getElementById('patientName');
+    const allDayInput = document.getElementById('allDay');
     const appointmentModalTitleEl = document.getElementById('appointmentModalTitle');
     const modalTitleEl = document.getElementById('modalTitle');
     const modalPatientEl = document.getElementById('modalPatient');
@@ -42,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTimeEl = document.getElementById('modalTime');
     const editAppointmentBtn = document.getElementById('editAppointmentBtn');
     const deleteAppointmentBtn = document.getElementById('deleteAppointmentBtn');
+    const completeAppointmentBtn = document.getElementById('completeAppointmentBtn');
     const confirmDeleteAppointmentBtn = document.getElementById('confirmDeleteAppointmentBtn');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
@@ -154,6 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            if (allDayInput) {
+                allDayInput.checked = false;
+            }
             startInput.value = toLocalDateTimeInputValue(startDate);
             endInput.value = toLocalDateTimeInputValue(defaultEndDate);
             if (notesInput) {
@@ -166,6 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
             info.jsEvent.preventDefault();
             const event = info.event;
             selectedEvent = event;
+            const state = (event.extendedProps.state || '').toUpperCase();
+            const isCompleted = state === 'COMPLETED';
+            const isAllDay = Boolean(event.allDay || event.extendedProps.allDay);
 
             if (modalTitleEl) {
                 modalTitleEl.innerText = event.title || '';
@@ -181,6 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const end = event.end ? event.end.toLocaleString('it-IT') : '';
             if (modalTimeEl) {
                 modalTimeEl.innerText = end ? `${start} – ${end}` : start;
+            }
+
+            if (completeAppointmentBtn) {
+                completeAppointmentBtn.classList.toggle('d-none', isCompleted || isAllDay);
+            }
+            if (editAppointmentBtn) {
+                editAppointmentBtn.classList.toggle('d-none', isCompleted);
+            }
+            if (deleteAppointmentBtn) {
+                deleteAppointmentBtn.classList.toggle('d-none', isCompleted);
             }
 
             if (eventModal) {
@@ -208,6 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            if (allDayInput) {
+                allDayInput.checked = false;
+            }
             startInput.value = toLocalDateTimeInputValue(rounded);
             endInput.value = toLocalDateTimeInputValue(end);
             if (notesInput) {
@@ -229,7 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Impossibile modificare questo appuntamento.');
                 return;
             }
-            const endDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+            const eventIsAllDay = Boolean(selectedEvent.allDay || selectedEvent.extendedProps.allDay);
+            const normalizedStart = eventIsAllDay ? startOfDay(startDate) : startDate;
+            const endDate = eventIsAllDay ? nextDay(normalizedStart) : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             editingAppointmentId = selectedEvent.id;
             if (appointmentModalTitleEl) {
@@ -244,7 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 notesInput.readOnly = false;
             }
 
-            startInput.value = toLocalDateTimeInputValue(startDate);
+            if (allDayInput) {
+                allDayInput.checked = eventIsAllDay;
+            }
+
+            startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(endDate);
             if (eventModal) {
                 eventModal.hide();
@@ -305,14 +344,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (completeAppointmentBtn) {
+        completeAppointmentBtn.addEventListener('click', () => {
+            if (!selectedEvent) {
+                return;
+            }
+
+            const data = new URLSearchParams();
+            data.append('action', 'complete');
+            data.append('id', String(selectedEvent.id));
+
+            fetch(contextPath + '/calendar', {
+                method: 'POST',
+                body: data
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        return res.text().then((text) => {
+                            let message = '';
+                            try {
+                                const parsed = JSON.parse(text);
+                                message = parsed?.error || '';
+                            } catch (e) {
+                                message = text || '';
+                            }
+                            throw new Error(message || 'Errore durante completamento appuntamento');
+                        });
+                    }
+                    return res.text();
+                })
+                .then(() => {
+                    if (eventModal) {
+                        eventModal.hide();
+                    }
+                    selectedEvent = null;
+                    calendar.refetchEvents();
+                })
+                .catch((err) => alert(err.message));
+        });
+    }
+
     if (startInput && endInput) {
         startInput.addEventListener('change', () => {
             if (!startInput.value) {
                 return;
             }
 
-            const normalizedStart = ceilToHour(new Date(startInput.value));
-            const normalizedEnd = addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+            const selectedDate = new Date(startInput.value);
+            const normalizedStart = allDayInput?.checked ? startOfDay(selectedDate) : ceilToHour(selectedDate);
+            const normalizedEnd = allDayInput?.checked
+                ? nextDay(normalizedStart)
+                : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+
+            startInput.value = toLocalDateTimeInputValue(normalizedStart);
+            endInput.value = toLocalDateTimeInputValue(normalizedEnd);
+        });
+    }
+
+    if (allDayInput && startInput && endInput) {
+        allDayInput.addEventListener('change', () => {
+            if (!startInput.value) {
+                return;
+            }
+
+            const selectedDate = new Date(startInput.value);
+            const normalizedStart = allDayInput.checked ? startOfDay(selectedDate) : ceilToHour(selectedDate);
+            const normalizedEnd = allDayInput.checked
+                ? nextDay(normalizedStart)
+                : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(normalizedEnd);
@@ -326,8 +425,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = new URLSearchParams();
-        const startDate = ceilToHour(new Date(startInput.value));
-        const endDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+        const isAllDay = Boolean(allDayInput?.checked);
+        const selectedDate = new Date(startInput.value);
+        const startDate = isAllDay ? startOfDay(selectedDate) : ceilToHour(selectedDate);
+        const endDate = isAllDay ? nextDay(startDate) : addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
         const normalizedStart = toLocalDateTimeInputValue(startDate);
         const normalizedEnd = toLocalDateTimeInputValue(endDate);
 
@@ -337,6 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editingAppointmentId) {
             data.append('action', 'reschedule');
             data.append('id', String(editingAppointmentId));
+            data.append('patientName', patientNameInput ? patientNameInput.value.trim() : '');
+            data.append('notes', notesInput ? notesInput.value.trim() : '');
         } else {
             const patientName = patientNameInput?.value?.trim() || '';
             if (!patientName) {
@@ -350,6 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         data.append('start', normalizedStart);
         data.append('end', normalizedEnd);
+        data.append('allDay', String(isAllDay));
 
         fetch(contextPath + '/calendar', {
             method: 'POST',

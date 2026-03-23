@@ -2,22 +2,21 @@ package it.SimoSW.controller.graphic;
 
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.CalendarController;
-import it.SimoSW.controller.application.TreatmentHistoryController;
-import it.SimoSW.model.TreatmentSession;
+import it.SimoSW.controller.application.TreatmentController;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/treatment-history")
 public class TreatmentHistoryServlet extends HttpServlet {
 
-    private TreatmentHistoryController treatmentHistoryController;
+    private TreatmentController treatmentController;
     private CalendarController calendarController;
 
     @Override
@@ -26,116 +25,54 @@ public class TreatmentHistoryServlet extends HttpServlet {
                 (ApplicationInitializer) getServletContext()
                         .getAttribute("appInitializer");
 
-        this.treatmentHistoryController =
-                initializer.getTreatmentHistoryController();
+        this.treatmentController = initializer.getTreatmentController();
         this.calendarController = initializer.getCalendarController();
     }
 
     /* =========================
-       GET → storico sedute
+       GET → cronologia sedute avviate
+             (solo piani multi-trattamento)
        ========================= */
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        String patientIdParam = request.getParameter("patientId");
-        if (patientIdParam == null || patientIdParam.isBlank()) {
-            request.setAttribute("sessions", Collections.emptyList());
-            request.getRequestDispatcher("/WEB-INF/jsp/therapist/treatmenthistory.jsp")
-                    .forward(request, response);
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        if (loggedUser == null || loggedUser.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        long patientId = Long.parseLong(patientIdParam);
+        long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
+        String patientIdParam = request.getParameter("patientId");
 
-        List<TreatmentSession> sessions =
-                treatmentHistoryController
-                        .getTreatmentHistoryForPatient(patientId);
+        List<TreatmentController.TreatmentHistoryEntry> sessions;
+        String historyTitle;
+        String historySubtitle;
+
+        if (patientIdParam != null && !patientIdParam.isBlank()) {
+            try {
+                long patientId = Long.parseLong(patientIdParam);
+                sessions = treatmentController.getTreatmentChronologyForPatient(therapistId, patientId);
+                historyTitle = "Cronologia trattamenti paziente";
+                historySubtitle = "Cronologia completa sessioni (singole e multi-trattamento)";
+            } catch (NumberFormatException ex) {
+                sessions = treatmentController.getStartedHistoryForTherapistWithMultiSessionPlans(therapistId);
+                historyTitle = "Storico trattamenti";
+                historySubtitle = "Parametro patientId non valido: visualizzo lo storico generale";
+            }
+        } else {
+            sessions = treatmentController.getStartedHistoryForTherapistWithMultiSessionPlans(therapistId);
+            historyTitle = "Storico trattamenti";
+            historySubtitle = "Cronologia delle sessioni avviate (singole e multi-trattamento)";
+        }
 
         request.setAttribute("sessions", sessions);
-        request.setAttribute("patientId", patientId);
+        request.setAttribute("historyTitle", historyTitle);
+        request.setAttribute("historySubtitle", historySubtitle);
 
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/treatmenthistory.jsp")
                 .forward(request, response);
-    }
-
-    /* =========================
-       POST → azioni
-       ========================= */
-    @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String action = request.getParameter("action");
-
-        try {
-            switch (action) {
-
-                case "create" -> createSession(request);
-                case "finalize" -> finalizeSession(request);
-                default -> throw new IllegalArgumentException("Unknown action");
-            }
-
-            long patientId =
-                    Long.parseLong(request.getParameter("patientId"));
-
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/treatment-history?patientId=" + patientId
-            );
-
-        } catch (RuntimeException ex) {
-            request.setAttribute("error", ex.getMessage());
-            doGet(request, response);
-        }
-    }
-
-    /* =========================
-       Support methods
-       ========================= */
-
-    private void createSession(HttpServletRequest request) {
-        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
-        if (loggedUser == null || loggedUser.isBlank()) {
-            throw new IllegalArgumentException("Sessione non valida: utente non autenticato");
-        }
-
-        long therapistUserId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
-
-        TreatmentSession session = new TreatmentSession();
-
-        session.setId(
-                Long.parseLong(request.getParameter("id"))
-        );
-        session.setAppointmentId(
-                Long.parseLong(request.getParameter("appointmentId"))
-        );
-        session.setPatientId(
-                Long.parseLong(request.getParameter("patientId"))
-        );
-        session.setTherapistId(therapistUserId);
-        session.setStart(
-                LocalDateTime.parse(request.getParameter("start"))
-        );
-        session.setEnd(
-                LocalDateTime.parse(request.getParameter("end"))
-        );
-        session.setNotes(
-                request.getParameter("notes")
-        );
-
-        treatmentHistoryController
-                .recordTreatmentSession(session);
-    }
-
-    private void finalizeSession(HttpServletRequest request) {
-
-        long sessionId =
-                Long.parseLong(request.getParameter("sessionId"));
-
-        treatmentHistoryController
-                .finalizeTreatment(sessionId);
     }
 }

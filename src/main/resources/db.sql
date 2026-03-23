@@ -176,6 +176,7 @@ CREATE TABLE appointments (
   therapist_id BIGINT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
+  all_day BOOLEAN NOT NULL DEFAULT FALSE,
   notes TEXT,
   state ENUM('SCHEDULED', 'CANCELLED', 'COMPLETED') NOT NULL DEFAULT 'SCHEDULED',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -192,23 +193,62 @@ CREATE TABLE appointments (
 );
 
 /* =========================
+   TREATMENT PLANS
+   ========================= */
+CREATE TABLE treatment_plans (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  patient_id BIGINT NOT NULL,
+  therapist_id BIGINT NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  goals TEXT,
+  frequency_per_week TINYINT UNSIGNED,
+  start_date DATE NOT NULL,
+  expected_end_date DATE,
+  total_sessions_planned SMALLINT UNSIGNED NOT NULL,
+  state ENUM('ACTIVE', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  INDEX idx_treatment_plans_therapist_state (therapist_id, state),
+  INDEX idx_treatment_plans_patient (patient_id),
+
+  CONSTRAINT fk_treatment_plans_patient
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_treatment_plans_therapist
+    FOREIGN KEY (therapist_id) REFERENCES users(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+);
+
+/* =========================
    TREATMENT SESSIONS
    ========================= */
 CREATE TABLE treatment_sessions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  appointment_id BIGINT NOT NULL,
+  treatment_plan_id BIGINT NOT NULL,
+  appointment_id BIGINT NULL,
   patient_id BIGINT NOT NULL,
   therapist_id BIGINT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
+  pain_score_pre TINYINT UNSIGNED,
+  pain_score_post TINYINT UNSIGNED,
+  session_outcome VARCHAR(255),
+  home_exercises TEXT,
   notes TEXT,
-  state ENUM('IN_PROGRESS', 'COMPLETED') NOT NULL DEFAULT 'IN_PROGRESS',
+  state ENUM('PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PLANNED',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-  CONSTRAINT uq_treatment_sessions_appointment UNIQUE (appointment_id),
 
   CONSTRAINT fk_treatment_sessions_appointment
     FOREIGN KEY (appointment_id) REFERENCES appointments(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_treatment_sessions_plan
+    FOREIGN KEY (treatment_plan_id) REFERENCES treatment_plans(id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
 
@@ -220,5 +260,10 @@ CREATE TABLE treatment_sessions (
   CONSTRAINT fk_treatment_sessions_therapist
     FOREIGN KEY (therapist_id) REFERENCES users(id)
     ON DELETE RESTRICT
-    ON UPDATE CASCADE
+    ON UPDATE CASCADE,
+
+  -- Gli indici aiutano storico e timeline
+  INDEX idx_treatment_sessions_plan_start (treatment_plan_id, start_time),
+  INDEX idx_treatment_sessions_therapist_start (therapist_id, start_time),
+  INDEX idx_treatment_sessions_patient_start (patient_id, start_time)
 );

@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-4">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-4" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-6" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -82,14 +82,14 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="completeAppointmentBtn">
+                    Completa e crea trattamento
+                </button>
                 <button type="button" class="btn btn-outline-primary" id="editAppointmentBtn">
                     Modifica
                 </button>
                 <button type="button" class="btn btn-outline-danger" id="deleteAppointmentBtn">
                     Elimina
-                </button>
-                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Chiudi
                 </button>
             </div>
 
@@ -131,6 +131,15 @@
                         <div class="col-12 col-md-6">
                             <label class="form-label">Fine</label>
                             <input type="datetime-local" class="form-control" id="end" step="3600" readonly required>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allDay">
+                            <label class="form-check-label" for="allDay">
+                                Tutto il giorno (evento non collegato ai trattamenti)
+                            </label>
                         </div>
                     </div>
 

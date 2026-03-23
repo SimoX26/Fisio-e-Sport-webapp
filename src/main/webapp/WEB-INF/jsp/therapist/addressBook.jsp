@@ -80,7 +80,6 @@
                     <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Email</th>
                         <th>Telefono</th>
                         <th class="text-end">Azioni</th>
                     </tr>
@@ -90,11 +89,14 @@
                     <c:forEach var="patient" items="${patients}">
                         <tr>
                             <td>
-                                <strong><c:out value="${patient.fullName}" /></strong>
+                                <c:out value="${patient.fullName}" />
                             </td>
-                            <td><c:out value="${patient.email}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
                             <td class="text-end">
+                                <a href="${pageContext.request.contextPath}/treatment-history?patientId=${patient.id}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    Cronologia Trattamenti
+                                </a>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-primary js-edit-patient"
                                         data-id="<c:out value='${patient.id}'/>"

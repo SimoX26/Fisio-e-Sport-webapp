@@ -125,7 +125,14 @@
                             <tr>
                                 <td><c:out value="${req.username}" /></td>
                                 <td><c:out value="${req.email}" /></td>
-                                <td><c:out value="${req.status}" /></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${req.status == 'PENDING'}">In attesa</c:when>
+                                        <c:when test="${req.status == 'APPROVED'}">Approvata</c:when>
+                                        <c:when test="${req.status == 'REJECTED'}">Rifiutata</c:when>
+                                        <c:otherwise><c:out value="${req.status}" /></c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td><c:out value="${req.createdAt}" /></td>
                                 <td><c:out value="${req.reviewedAt}" /></td>
                             </tr>

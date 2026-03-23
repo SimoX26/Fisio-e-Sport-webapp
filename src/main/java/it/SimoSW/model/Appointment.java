@@ -9,6 +9,7 @@ public class Appointment {
     private long therapistId;
     private LocalDateTime start;
     private LocalDateTime end;
+    private boolean allDay;
     private String notes;
     private AppointmentState state;
 
@@ -63,6 +64,14 @@ public class Appointment {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public boolean isAllDay() {
+        return allDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        this.allDay = allDay;
     }
 
     public AppointmentState getState() {

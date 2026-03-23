@@ -13,6 +13,7 @@ import it.SimoSW.model.dao.PatientDAO;
 import it.SimoSW.model.dao.UserDAO;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CalendarController {
             throw new IllegalArgumentException("Appointment cannot be null");
         }
 
-        validateTimeRange(appointment.getStart(), appointment.getEnd());
+        validateTimeRange(appointment.getStart(), appointment.getEnd(), appointment.isAllDay());
         checkPatientExists(appointment.getPatientId());
         checkTherapistUserExists(appointment.getTherapistId());
         checkForConflicts(appointment);
@@ -56,7 +57,7 @@ public class CalendarController {
         return appointmentDAO.save(appointment);
     }
 
-    public Appointment rescheduleAppointment(long appointmentId, String patientName, LocalDateTime newStart, LocalDateTime newEnd, String notes) {
+    public Appointment rescheduleAppointment(long appointmentId, String patientName, LocalDateTime newStart, LocalDateTime newEnd, boolean allDay, String notes) {
         Appointment existing = appointmentDAO.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
 
@@ -64,15 +65,18 @@ public class CalendarController {
             throw new InvalidAppointmentStateException("Only scheduled appointments can be rescheduled");
         }
 
-        validateTimeRange(newStart, newEnd);
+        validateTimeRange(newStart, newEnd, allDay);
 
         if (patientName != null && !patientName.isBlank()) {
-            long patientId = resolveOrCreatePatientId(patientName);
+            long patientId = allDay
+                    ? resolveExistingPatientId(patientName)
+                    : resolveOrCreatePatientId(patientName);
             checkPatientExists(patientId);
             existing.setPatientId(patientId);
         }
         existing.setStart(newStart);
         existing.setEnd(newEnd);
+        existing.setAllDay(allDay);
         existing.setNotes(normalizeNotes(notes));
 
         checkForConflicts(existing);
@@ -94,6 +98,22 @@ public class CalendarController {
 
         appointment.setState(AppointmentState.CANCELLED);
         appointmentDAO.update(appointment);
+    }
+
+    public Appointment completeAppointment(long appointmentId) {
+        Appointment appointment = appointmentDAO.findById(appointmentId)
+                .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+
+        if (appointment.getState() == AppointmentState.CANCELLED) {
+            throw new InvalidAppointmentStateException("Cancelled appointment cannot be completed");
+        }
+
+        if (appointment.getState() == AppointmentState.COMPLETED) {
+            return appointment;
+        }
+
+        appointment.setState(AppointmentState.COMPLETED);
+        return appointmentDAO.update(appointment);
     }
 
     public List<CancelledAppointmentView> getCancelledAppointmentsForTherapist(long therapistId) {
@@ -175,6 +195,22 @@ public class CalendarController {
         return patientDAO.save(newPatient).getId();
     }
 
+    public long resolveExistingPatientId(String patientName) {
+        String normalizedInput = normalize(patientName);
+        if (normalizedInput.isBlank()) {
+            throw new IllegalArgumentException("Per un evento tutto il giorno inserisci un paziente esistente");
+        }
+
+        List<Patient> matches = patientDAO.search(patientName);
+        for (Patient existing : matches) {
+            if (normalize(existing.getFullName()).equals(normalizedInput)) {
+                return existing.getId();
+            }
+        }
+
+        throw new IllegalArgumentException("Paziente non trovato: per eventi tutto il giorno non viene creato automaticamente");
+    }
+
     public long resolveTherapistUserIdFromUsername(String username) {
         String normalizedUsername = normalize(username);
         if (normalizedUsername.isBlank()) {
@@ -191,9 +227,20 @@ public class CalendarController {
                 .orElse("Paziente #" + patientId);
     }
 
-    private void validateTimeRange(LocalDateTime start, LocalDateTime end) {
+    private void validateTimeRange(LocalDateTime start, LocalDateTime end, boolean allDay) {
         if (start == null || end == null || !start.isBefore(end)) {
             throw new IllegalArgumentException("Invalid time range");
+        }
+
+        if (allDay) {
+            if (!start.toLocalTime().equals(LocalTime.MIDNIGHT) || !end.toLocalTime().equals(LocalTime.MIDNIGHT)) {
+                throw new IllegalArgumentException("Gli eventi tutto il giorno devono iniziare e finire a mezzanotte");
+            }
+            long durationDays = ChronoUnit.DAYS.between(start, end);
+            if (durationDays < 1) {
+                throw new IllegalArgumentException("La durata minima per un evento tutto il giorno e di 1 giorno");
+            }
+            return;
         }
 
         if (!isOnHourBoundary(start) || !isOnHourBoundary(end)) {

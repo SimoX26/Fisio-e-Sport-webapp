@@ -17,8 +17,8 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
 
         String sql = """
             INSERT INTO appointments
-            (patient_id, therapist_id, start_time, end_time, notes, state)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (patient_id, therapist_id, start_time, end_time, all_day, notes, state)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -28,8 +28,9 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
             ps.setLong(2, appointment.getTherapistId());
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getStart()));
             ps.setTimestamp(4, Timestamp.valueOf(appointment.getEnd()));
-            ps.setString(5, appointment.getNotes());
-            ps.setString(6, appointment.getState().name());
+            ps.setBoolean(5, appointment.isAllDay());
+            ps.setString(6, appointment.getNotes());
+            ps.setString(7, appointment.getState().name());
 
             ps.executeUpdate();
 
@@ -56,6 +57,7 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                 therapist_id = ?,
                 start_time = ?,
                 end_time = ?,
+                all_day = ?,
                 notes = ?,
                 state = ?
             WHERE id = ?
@@ -68,9 +70,10 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
             ps.setLong(2, appointment.getTherapistId());
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getStart()));
             ps.setTimestamp(4, Timestamp.valueOf(appointment.getEnd()));
-            ps.setString(5, appointment.getNotes());
-            ps.setString(6, appointment.getState().name());
-            ps.setLong(7, appointment.getId());
+            ps.setBoolean(5, appointment.isAllDay());
+            ps.setString(6, appointment.getNotes());
+            ps.setString(7, appointment.getState().name());
+            ps.setLong(8, appointment.getId());
 
             int updatedRows = ps.executeUpdate();
 
@@ -230,6 +233,7 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         a.setTherapistId(rs.getLong("therapist_id"));
         a.setStart(rs.getTimestamp("start_time").toLocalDateTime());
         a.setEnd(rs.getTimestamp("end_time").toLocalDateTime());
+        a.setAllDay(rs.getBoolean("all_day"));
         a.setNotes(rs.getString("notes"));
         a.setState(AppointmentState.valueOf(rs.getString("state")));
         return a;
