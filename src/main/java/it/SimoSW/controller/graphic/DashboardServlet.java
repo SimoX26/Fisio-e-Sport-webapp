@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @WebServlet("/dashboard")
@@ -35,13 +37,16 @@ public class DashboardServlet extends HttpServlet {
         int appointmentsToday = 0;
         int patientsThisMonth = 0;
         long bookedHoursThisWeek = 0;
+        LocalDate today = LocalDate.now();
+        String todayLabel = formatFullDateLabel(today);
+        String patientsMonthYearLabel = formatMonthYearLabel(today);
+        String weekRangeLabel = formatWeekRangeLabel(today);
 
         try {
             String loggedUser = (String) request.getSession().getAttribute("loggedUser");
             if (loggedUser != null && !loggedUser.isBlank()) {
                 long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
-                LocalDate today = LocalDate.now();
                 LocalDateTime todayStart = today.atStartOfDay();
                 LocalDateTime tomorrowStart = today.plusDays(1).atStartOfDay();
                 appointmentsToday = calendarController
@@ -73,8 +78,35 @@ public class DashboardServlet extends HttpServlet {
         }
 
         request.setAttribute("appointmentsToday", appointmentsToday);
+        request.setAttribute("todayLabel", todayLabel);
         request.setAttribute("patientsThisMonth", patientsThisMonth);
         request.setAttribute("bookedHoursThisWeek", bookedHoursThisWeek);
+        request.setAttribute("patientsMonthYearLabel", patientsMonthYearLabel);
+        request.setAttribute("weekRangeLabel", weekRangeLabel);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/dashboard.jsp").forward(request, response);
+    }
+
+    private String formatFullDateLabel(LocalDate date) {
+        String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+        return date.getDayOfMonth() + " - " + month + " - " + date.getYear();
+    }
+
+    private String formatMonthYearLabel(LocalDate date) {
+        String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+        return month + " " + date.getYear();
+    }
+
+    private String formatWeekRangeLabel(LocalDate date) {
+        LocalDate weekStart = date.with(DayOfWeek.MONDAY);
+        LocalDate weekEnd = weekStart.plusDays(6);
+
+        String startMonth = weekStart.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+        String endMonth = weekEnd.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+
+        if (weekStart.getMonth() == weekEnd.getMonth()) {
+            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + startMonth;
+        }
+
+        return weekStart.getDayOfMonth() + " " + startMonth + " - " + weekEnd.getDayOfMonth() + " " + endMonth;
     }
 }
