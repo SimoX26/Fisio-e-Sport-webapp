@@ -63,6 +63,13 @@
                                 Rubrica
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/treatment-history">
+                                Storico Trattamenti
+                            </a>
+                        </li>
                     </c:otherwise>
                 </c:choose>
 

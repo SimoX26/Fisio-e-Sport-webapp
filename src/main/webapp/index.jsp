@@ -34,10 +34,10 @@
 <header class="landing-hero">
     <div class="container py-5">
         <div class="landing-hero-content">
-            <h1 class="landing-hero-title mb-3">Centro di fisioterapia e riabilitazione</h1>
+            <h1 class="landing-hero-title mb-3">Fisio e Sport: recupero, performance e continuita atletica</h1>
             <p class="landing-hero-subtitle mb-4">
-                Supportiamo il recupero funzionale con percorsi personalizzati: valutazione clinica,
-                pianificazione trattamenti e monitoraggio progressi in un flusso semplice e chiaro.
+                Accompagniamo atleti e persone attive dal post-infortunio al ritorno in campo:
+                fisioterapia personalizzata, supporto al recupero e pianificazione degli allenamenti in sicurezza.
             </p>
 
             <div class="d-flex flex-column flex-sm-row gap-2">
@@ -53,20 +53,20 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <div class="landing-feature-card p-4">
-                    <h3 class="landing-feature-title mb-2">Agenda sedute</h3>
-                    <p class="landing-feature-text">Gestione appuntamenti e disponibilita terapisti con vista chiara settimanale.</p>
+                    <h3 class="landing-feature-title mb-2">Recupero Sportivo</h3>
+                    <p class="landing-feature-text">Percorsi mirati per prevenzione infortuni, recupero funzionale e ritorno progressivo alla performance.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="landing-feature-card p-4">
-                    <h3 class="landing-feature-title mb-2">Schede paziente</h3>
-                    <p class="landing-feature-text">Anagrafica, stato clinico e storico sedute ordinati e consultabili rapidamente.</p>
+                    <h3 class="landing-feature-title mb-2">Supporto agli Allenamenti</h3>
+                    <p class="landing-feature-text">Integrazione tra trattamento fisioterapico e carichi di lavoro per allenarsi con continuita e controllo.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="landing-feature-card p-4">
-                    <h3 class="landing-feature-title mb-2">Continuita terapeutica</h3>
-                    <p class="landing-feature-text">Tracciamento del percorso riabilitativo per seguire i progressi nel tempo.</p>
+                    <h3 class="landing-feature-title mb-2">Monitoraggio Atleta</h3>
+                    <p class="landing-feature-text">Valutazioni, sedute e progressi sempre tracciati per decisioni cliniche rapide e obiettive.</p>
                 </div>
             </div>
         </div>
