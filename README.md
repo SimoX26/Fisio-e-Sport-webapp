@@ -28,7 +28,7 @@ Applicazione web Java per la gestione di un centro di fisioterapia e riabilitazi
 
 ```bash
 mysql -u root -p < src/main/resources/db.sql
-mysql -u root -p < src/main/resources/seed_test_users.sql
+mysql -u root -p < src/main/resources/users.sql
 ```
 
 ## Avvio Progetto

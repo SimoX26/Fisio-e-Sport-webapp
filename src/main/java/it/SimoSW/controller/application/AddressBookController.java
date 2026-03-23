@@ -2,9 +2,15 @@ package it.SimoSW.controller.application;
 
 import it.SimoSW.exception.InvalidPatientStateException;
 import it.SimoSW.exception.PatientNotFoundException;
+import it.SimoSW.model.PatientAnamnesis;
+import it.SimoSW.model.PatientCondition;
 import it.SimoSW.model.Patient;
 import it.SimoSW.model.PatientState;
+import it.SimoSW.model.UserRole;
+import it.SimoSW.model.dao.PatientAnamnesisDAO;
+import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
+import it.SimoSW.model.dao.UserDAO;
 
 import java.util.List;
 
@@ -26,6 +32,9 @@ public class AddressBookController {
      * Data Access Object used to persist and retrieve Patient entities.
      */
     private final PatientDAO patientDAO;
+    private final PatientAnamnesisDAO patientAnamnesisDAO;
+    private final PatientConditionDAO patientConditionDAO;
+    private final UserDAO userDAO;
 
 
     /**
@@ -33,8 +42,16 @@ public class AddressBookController {
      *
      * @param patientDAO the DAO responsible for patient persistence
      */
-    public AddressBookController(PatientDAO patientDAO) {
+    public AddressBookController(
+            PatientDAO patientDAO,
+            PatientAnamnesisDAO patientAnamnesisDAO,
+            PatientConditionDAO patientConditionDAO,
+            UserDAO userDAO
+    ) {
         this.patientDAO = patientDAO;
+        this.patientAnamnesisDAO = patientAnamnesisDAO;
+        this.patientConditionDAO = patientConditionDAO;
+        this.userDAO = userDAO;
     }
 
 
@@ -178,6 +195,36 @@ public class AddressBookController {
     public void deletePatient(long patientId) {
         getPatientById(patientId);
         patientDAO.deleteById(patientId);
+    }
+
+    public void savePatientAnamnesis(
+            long patientId,
+            String therapistUsername,
+            PatientAnamnesis anamnesis,
+            List<PatientCondition> conditions
+    ) {
+        Patient existing = getPatientById(patientId);
+
+        if (existing.getState() == PatientState.ARCHIVED) {
+            throw new InvalidPatientStateException("Archived patient cannot be modified");
+        }
+
+        long therapistId = userDAO.findIdByUsernameAndRole(therapistUsername, UserRole.THERAPIST)
+                .orElseThrow(() -> new IllegalArgumentException("Terapista non valido"));
+
+        anamnesis.setPatientId(patientId);
+        anamnesis.setTherapistId(therapistId);
+
+        PatientAnamnesis saved = patientAnamnesisDAO.save(anamnesis);
+
+        if (conditions == null || conditions.isEmpty()) {
+            return;
+        }
+
+        for (PatientCondition condition : conditions) {
+            condition.setAnamnesisId(saved.getId());
+        }
+        patientConditionDAO.saveAll(saved.getId(), conditions);
     }
 
 }

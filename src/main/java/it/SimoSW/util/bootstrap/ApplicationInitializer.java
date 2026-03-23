@@ -6,11 +6,15 @@ import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.controller.application.UserController;
 import it.SimoSW.model.dao.AppointmentDAO;
+import it.SimoSW.model.dao.PatientAnamnesisDAO;
+import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
 import it.SimoSW.model.dao.RememberMeTokenDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
+import it.SimoSW.model.dao.database.DatabasePatientAnamnesisDAO;
+import it.SimoSW.model.dao.database.DatabasePatientConditionDAO;
 import it.SimoSW.model.dao.database.DatabasePatientDAO;
 import it.SimoSW.model.dao.database.DatabaseRememberMeTokenDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
@@ -30,22 +34,39 @@ public class ApplicationInitializer {
 
     private void initDatabasePersistence() {
         PatientDAO patientDAO = new DatabasePatientDAO();
+        PatientAnamnesisDAO patientAnamnesisDAO = new DatabasePatientAnamnesisDAO();
+        PatientConditionDAO patientConditionDAO = new DatabasePatientConditionDAO();
         AppointmentDAO appointmentDAO = new DatabaseAppointmentDAO();
         TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
 
-        wireControllers(patientDAO, appointmentDAO, treatmentSessionDAO, userDAO, rememberMeTokenDAO);
+        wireControllers(
+                patientDAO,
+                patientAnamnesisDAO,
+                patientConditionDAO,
+                appointmentDAO,
+                treatmentSessionDAO,
+                userDAO,
+                rememberMeTokenDAO
+        );
     }
 
     private void wireControllers(
             PatientDAO patientDAO,
+            PatientAnamnesisDAO patientAnamnesisDAO,
+            PatientConditionDAO patientConditionDAO,
             AppointmentDAO appointmentDAO,
             TreatmentSessionDAO treatmentSessionDAO,
             UserDAO userDAO,
             RememberMeTokenDAO rememberMeTokenDAO
     ) {
-        addressBookController = new AddressBookController(patientDAO);
+        addressBookController = new AddressBookController(
+                patientDAO,
+                patientAnamnesisDAO,
+                patientConditionDAO,
+                userDAO
+        );
         calendarController = new CalendarController(appointmentDAO, patientDAO, userDAO);
         treatmentHistoryController = new TreatmentHistoryController(
                 treatmentSessionDAO,

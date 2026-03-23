@@ -127,7 +127,7 @@
 
 <!-- MODALE MODIFICA PAZIENTE -->
 <div class="modal fade" id="editPatientModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content glass-card">
             <div class="modal-header">
                 <h5 class="modal-title">Modifica paziente</h5>
@@ -156,6 +156,295 @@
                     <div class="mb-3">
                         <label class="form-label">Telefono</label>
                         <input type="text" class="form-control" name="phone" id="editPatientPhone">
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="mb-3">Scheda anamnesi</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data anamnesi</label>
+                        <input type="date" class="form-control" name="assessmentDate">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Motivo del consulto</label>
+                        <textarea class="form-control" name="chiefComplaint" rows="2"></textarea>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Localizzazione dolore</label>
+                            <input type="text" class="form-control" name="painLocation">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipologia dolore</label>
+                            <input type="text" class="form-control" name="painQuality">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Sintomi associati</label>
+                            <textarea class="form-control" name="associatedSymptoms" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label">Esordio</label>
+                            <select class="form-select" name="onsetType">
+                                <option value="">-</option>
+                                <option value="ACUTE">Acuto</option>
+                                <option value="SUBACUTE">Subacuto</option>
+                                <option value="CHRONIC">Cronico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Contesto esordio</label>
+                            <input type="text" class="form-control" name="onsetContext" placeholder="Trauma, stress, casuale...">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label">Dolore invalidante</label>
+                            <select class="form-select" name="isDisabling">
+                                <option value="">-</option>
+                                <option value="si">Si</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Frequenza dolore</label>
+                            <select class="form-select" name="painFrequency">
+                                <option value="">-</option>
+                                <option value="LOW">Bassa</option>
+                                <option value="MEDIUM">Media</option>
+                                <option value="HIGH">Alta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Progressione dolore</label>
+                            <select class="form-select" name="painProgression">
+                                <option value="">-</option>
+                                <option value="CONSTANT">Costante</option>
+                                <option value="WORSE">Peggiorato</option>
+                                <option value="BETTER">Migliorato</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label">Con movimento</label>
+                            <select class="form-select" name="painWithMovement">
+                                <option value="">-</option>
+                                <option value="WORSE">Peggiora</option>
+                                <option value="BETTER">Migliora</option>
+                                <option value="UNCHANGED">Invariato</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Con riposo</label>
+                            <select class="form-select" name="painWithRest">
+                                <option value="">-</option>
+                                <option value="WORSE">Peggiora</option>
+                                <option value="BETTER">Migliora</option>
+                                <option value="UNCHANGED">Invariato</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Intensita dolore (0-10)</label>
+                            <input type="number" class="form-control" name="painIntensity" min="0" max="10">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-3">
+                            <label class="form-label">Dolore notturno</label>
+                            <select class="form-select" name="nightPain">
+                                <option value="">-</option>
+                                <option value="si">Si</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Dolore al risveglio</label>
+                            <select class="form-select" name="morningPain">
+                                <option value="">-</option>
+                                <option value="si">Si</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Farmaci dolore</label>
+                            <select class="form-select" name="usesPainMeds">
+                                <option value="">-</option>
+                                <option value="si">Si</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Efficacia farmaco</label>
+                            <select class="form-select" name="painMedsEffect">
+                                <option value="">-</option>
+                                <option value="YES">Si</option>
+                                <option value="NO">No</option>
+                                <option value="PARTIAL">Poco</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label">Esami strumentali</label>
+                            <textarea class="form-control" name="clinicalTests" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Visite specialistiche</label>
+                            <textarea class="form-control" name="specialistVisits" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Trattamenti precedenti</label>
+                            <textarea class="form-control" name="previousTreatments" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Patologie pregresse</label>
+                            <textarea class="form-control" name="pathologyHistory" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Farmaci regolari</label>
+                            <textarea class="form-control" name="currentRegularDrugs" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label">Interventi chirurgici</label>
+                            <textarea class="form-control" name="surgeryHistory" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Traumi</label>
+                            <textarea class="form-control" name="traumaHistory" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Dispositivi usati</label>
+                            <textarea class="form-control" name="devicesHistory" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-3">
+                            <label class="form-label">Disturbi masticazione</label>
+                            <select class="form-select" name="chewingDisorders">
+                                <option value="">-</option>
+                                <option value="si">Si</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Infezioni/infiammazioni importanti</label>
+                            <textarea class="form-control" name="majorInfectionsHistory" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Familiarita malattie</label>
+                            <textarea class="form-control" name="familyHistory" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-2">
+                            <label class="form-label">Altezza (cm)</label>
+                            <input type="number" step="0.01" class="form-control" name="heightCm">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" step="0.01" class="form-control" name="weightKg">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Stile vita</label>
+                            <select class="form-select" name="lifestyle">
+                                <option value="">-</option>
+                                <option value="SPORTY">Sportivo</option>
+                                <option value="SEDENTARY">Sedentario</option>
+                                <option value="MIXED">Misto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Sport praticato</label>
+                            <input type="text" class="form-control" name="sportPractice">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fumo/alcol/sostanze</label>
+                            <input type="text" class="form-control" name="substanceUse">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-2">
+                            <label class="form-label">Qualita sonno (0-4)</label>
+                            <input type="number" class="form-control" name="sleepQuality" min="0" max="4">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Stress (0-4)</label>
+                            <input type="number" class="form-control" name="stressLevel" min="0" max="4">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Alimentazione</label>
+                            <select class="form-select" name="dietQuality">
+                                <option value="">-</option>
+                                <option value="HEALTHY">Sana</option>
+                                <option value="IMBALANCED">Squilibrata</option>
+                                <option value="MIXED">Mista</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Note ciclo/andrologiche-ginecologiche</label>
+                            <input type="text" class="form-control" name="femaleCycleNotes">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Condizioni patologiche (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsPathology" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sintomi rilevanti (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsSymptom" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Familiarita (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsFamilyHistory" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Allergie/intolleranze (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsAllergy" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Farmaci rilevanti (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsDrug" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Revisione sistemica (virgola / nuova riga)</label>
+                            <textarea class="form-control" name="conditionsSystemReview" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">Altre condizioni (virgola / nuova riga)</label>
+                        <textarea class="form-control" name="conditionsOther" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Note libere JSON</label>
+                        <textarea class="form-control" name="freeNotesJson" rows="2" placeholder='{"extra":"valore"}'></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

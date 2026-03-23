@@ -93,7 +93,7 @@ Implicazione architetturale: wiring centralizzato e semplice, ma senza DI contai
 ## Persistenza e dati
 - Modalita attiva: MySQL
 - Script schema disponibile: `src/main/resources/db.sql`
-- Seed utenti test disponibile: `src/main/resources/seed_test_users.sql`
+- Seed utenti test disponibile: `src/main/resources/users.sql`
 - Entita terapista gestita tramite tabella `users` (role-based), senza tabella `therapists`
 
 ## Sicurezza e sessione
