@@ -119,6 +119,8 @@ public class AuthenticationFilter implements Filter {
 
     private boolean isStaticOrTechnicalPath(String path) {
         return path.startsWith("/assets/")
+                || "/manifest.webmanifest".equals(path)
+                || "/site.webmanifest".equals(path)
                 || path.startsWith("/favicon")
                 || path.startsWith("/javax.faces.resource/");
     }
