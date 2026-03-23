@@ -340,6 +340,13 @@ body.calendar-gcal-page{
     color: #1a73e8 !important;
 }
 
+.fc .fc-timegrid-allday .fc-timegrid-axis-cushion{
+    white-space: pre-line;
+    line-height: 1.05;
+    text-align: center;
+    display: inline-block;
+}
+
 
 
 
@@ -461,6 +468,15 @@ body.calendar-gcal-page{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.fc .fc-daygrid-event .fc-event-time-inline{
+    margin-right: 6px;
+    font-weight: 600;
+}
+
+.fc .fc-daygrid-event .fc-event-title-inline{
+    font-weight: 500;
 }
 
 
@@ -678,7 +694,7 @@ body.calendar-gcal-page{
     }
 
     .fc .fc-timegrid-event{
-        min-height: 26px;
+        min-height: 36px;
     }
 
     .modal-dialog{
@@ -840,6 +856,20 @@ body.landing-page{
     max-width: 760px;
 }
 
+.landing-hero-media{
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.landing-hero-img{
+    width: 100%;
+    height: clamp(220px, 32vw, 360px);
+    object-fit: cover;
+    display: block;
+}
+
 .landing-soft-section{
     background: #fbfcfd;
 }
@@ -865,6 +895,14 @@ body.landing-page{
 @media (max-width: 767.98px){
     .landing-hero{
         min-height: 66vh;
+    }
+
+    .landing-hero-media{
+        margin-top: .5rem;
+    }
+
+    .landing-hero-img{
+        height: 220px;
     }
 
     .landing-hero .btn{

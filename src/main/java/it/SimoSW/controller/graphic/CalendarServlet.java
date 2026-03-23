@@ -162,13 +162,17 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId =
                 Long.parseLong(request.getParameter("id"));
 
+        String patientName = request.getParameter("patientName");
         LocalDateTime newStart = parseDateTime(request.getParameter("start"));
         LocalDateTime newEnd = parseDateTime(request.getParameter("end"));
+        String notes = normalizeNotes(request.getParameter("notes"));
 
         calendarController.rescheduleAppointment(
                 appointmentId,
+                patientName,
                 newStart,
-                newEnd
+                newEnd,
+                notes
         );
     }
 

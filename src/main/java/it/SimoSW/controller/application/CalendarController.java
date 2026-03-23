@@ -49,7 +49,7 @@ public class CalendarController {
         return appointmentDAO.save(appointment);
     }
 
-    public Appointment rescheduleAppointment(long appointmentId, LocalDateTime newStart, LocalDateTime newEnd) {
+    public Appointment rescheduleAppointment(long appointmentId, String patientName, LocalDateTime newStart, LocalDateTime newEnd, String notes) {
         Appointment existing = appointmentDAO.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
 
@@ -59,8 +59,14 @@ public class CalendarController {
 
         validateTimeRange(newStart, newEnd);
 
+        if (patientName != null && !patientName.isBlank()) {
+            long patientId = resolveOrCreatePatientId(patientName);
+            checkPatientExists(patientId);
+            existing.setPatientId(patientId);
+        }
         existing.setStart(newStart);
         existing.setEnd(newEnd);
+        existing.setNotes(normalizeNotes(notes));
 
         checkForConflicts(existing);
 
@@ -187,5 +193,13 @@ public class CalendarController {
                 .trim()
                 .toLowerCase(Locale.ROOT)
                 .replaceAll("\\s+", " ");
+    }
+
+    private String normalizeNotes(String notes) {
+        if (notes == null) {
+            return null;
+        }
+        String normalized = notes.trim();
+        return normalized.isEmpty() ? null : normalized;
     }
 }

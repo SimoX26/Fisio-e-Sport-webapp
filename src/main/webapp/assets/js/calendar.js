@@ -56,7 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'it',
-        allDayText: 'giornalieri',
+        allDayText: 'Tutto il \ngiorno',
+        buttonText: {
+            today: 'oggi',
+            day: 'giorno',
+            week: 'settimana',
+            month: 'mese'
+        },
+        firstDay: 1,
         height: 'auto',
         headerToolbar: {
             left: 'prev,next today',
@@ -81,6 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
         eventContent(arg) {
             const timeText = arg.timeText || '';
             const title = arg.event.title || '';
+            if (arg.view && arg.view.type === 'dayGridMonth') {
+                return {
+                    html: `
+                        <span class="fc-event-time-inline">${timeText}</span>
+                        <span class="fc-event-title-inline">${title}</span>
+                    `
+                };
+            }
             return {
                 html: `
                     <div class="fc-event-time-line">${timeText}</div>
@@ -192,11 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (patientNameInput) {
                 patientNameInput.value = selectedEvent.extendedProps.patient || '';
-                patientNameInput.readOnly = true;
+                patientNameInput.readOnly = false;
             }
             if (notesInput) {
                 notesInput.value = selectedEvent.extendedProps.notes || '';
-                notesInput.readOnly = true;
+                notesInput.readOnly = false;
             }
 
             startInput.value = toLocalDateTimeInputValue(startDate);

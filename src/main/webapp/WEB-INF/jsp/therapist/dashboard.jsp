@@ -23,7 +23,7 @@
 
     <!-- HEADER DASHBOARD -->
     <div class="mb-4">
-        <h2 class="page-title">Dashboard</h2>
+        <h2 class="page-title">Home</h2>
         <p class="page-subtitle">
             Panoramica generale dello studio
         </p>
@@ -91,22 +91,6 @@
             </a>
         </div>
 
-    </div>
-
-    <!-- CTA -->
-    <div class="mt-5">
-        <div class="glass-card section-card p-4 dashboard-cta">
-            <div>
-                <h5 class="mb-1">Nuovo appuntamento</h5>
-                <p class="page-subtitle mb-0">
-                    Inserisci rapidamente una nuova seduta
-                </p>
-            </div>
-            <a href="<%= request.getContextPath() %>/calendar"
-               class="btn btn-primary section-action-btn">
-                Crea
-            </a>
-        </div>
     </div>
 
 </div>
