@@ -9,6 +9,12 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/assets/img/logo.png">
+    <link rel="apple-touch-icon" href="<%= request.getContextPath() %>/assets/img/logo-192.png">
+    <link rel="manifest" href="<%= request.getContextPath() %>/manifest.webmanifest">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="FisioSport">
 
       <!-- Custom CSS -->
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
