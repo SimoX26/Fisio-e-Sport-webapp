@@ -88,7 +88,7 @@ public class DashboardServlet extends HttpServlet {
 
     private String formatFullDateLabel(LocalDate date) {
         String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
-        return date.getDayOfMonth() + " - " + month + " - " + date.getYear();
+        return date.getDayOfMonth() + " " + month + " " + date.getYear();
     }
 
     private String formatMonthYearLabel(LocalDate date) {
