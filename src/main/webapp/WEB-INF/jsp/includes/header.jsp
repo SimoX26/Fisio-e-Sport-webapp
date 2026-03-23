@@ -2,6 +2,14 @@
 
 <nav class="navbar navbar-expand-lg px-3 px-lg-5 app-navbar">
     <div class="container-fluid">
+        <c:choose>
+            <c:when test="${sessionScope.userRole == 'ADMIN'}">
+                <c:set var="searchAction" value="/admin/search" />
+            </c:when>
+            <c:otherwise>
+                <c:set var="searchAction" value="/search" />
+            </c:otherwise>
+        </c:choose>
 
         <!-- BRAND -->
         <a class="navbar-brand fw-bold"
@@ -25,7 +33,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <form class="d-flex mt-3 mt-lg-0 ms-lg-3 me-lg-3"
                   method="get"
-                  action="${pageContext.request.contextPath}<c:choose><c:when test='${sessionScope.userRole == \"ADMIN\"}'>/admin/search</c:when><c:otherwise>/search</c:otherwise></c:choose>">
+                  action="${pageContext.request.contextPath}${searchAction}">
                 <input class="form-control form-control-sm"
                        type="search"
                        name="q"

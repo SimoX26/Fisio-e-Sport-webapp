@@ -506,7 +506,6 @@ body.calendar-gcal-page{
    ========================= */
 
 /* forza ereditarietà corretta */
-.modal,
 .modal-content,
 .modal-header,
 .modal-body,
@@ -518,6 +517,23 @@ body.calendar-gcal-page{
 /* titolo */
 .modal-title {
     color: var(--text-main);
+}
+
+/* Calendar event modal: translucent panel over calendar */
+body.calendar-gcal-page .modal-backdrop.show {
+    opacity: .12;
+}
+
+#eventModal .modal-content {
+    background: rgba(255, 255, 255, .95);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 26px rgba(31, 45, 61, .12);
+}
+
+#eventModal .modal-header,
+#eventModal .modal-body,
+#eventModal .modal-footer {
+    background: transparent;
 }
 
 /* =========================
@@ -803,10 +819,34 @@ body.calendar-gcal-page{
 }
 
 #editPatientModal .modal-content {
+    display: flex;
+    flex-direction: column;
     max-height: calc(100vh - 2rem);
 }
 
+#editPatientModal form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+}
+
 #editPatientModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#completeTreatmentModal .modal-dialog {
+    max-height: calc(100vh - 2rem);
+}
+
+#completeTreatmentModal .modal-content {
+    max-height: calc(100vh - 2rem);
+}
+
+#completeTreatmentModal .modal-body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }

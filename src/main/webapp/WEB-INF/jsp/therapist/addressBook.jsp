@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-title" content="FisioSport">
 
    <!-- Custom CSS -->
-   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
+   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-9">
 
 </head>
 
@@ -140,24 +140,23 @@
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" name="id" id="editPatientId">
 
-                    <div class="mb-3">
-                        <label class="form-label">Nome</label>
-                        <input type="text" class="form-control" name="firstName" id="editPatientFirstName" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Cognome</label>
-                        <input type="text" class="form-control" name="lastName" id="editPatientLastName">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="editPatientEmail">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Telefono</label>
-                        <input type="text" class="form-control" name="phone" id="editPatientPhone">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Nome</label>
+                            <input type="text" class="form-control" name="firstName" id="editPatientFirstName" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Cognome</label>
+                            <input type="text" class="form-control" name="lastName" id="editPatientLastName">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="editPatientEmail">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Telefono</label>
+                            <input type="text" class="form-control" name="phone" id="editPatientPhone">
+                        </div>
                     </div>
 
                     <hr class="my-4">

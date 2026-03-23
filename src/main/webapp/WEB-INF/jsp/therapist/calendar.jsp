@@ -22,8 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-4">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-6" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-10">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260323-8" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -82,8 +82,9 @@
             </div>
 
             <div class="modal-footer">
+                <span id="eventModalStateHint" class="me-auto text-muted small d-none"></span>
                 <button type="button" class="btn btn-success" id="completeAppointmentBtn">
-                    Completa e crea trattamento
+                    Completa trattamento
                 </button>
                 <button type="button" class="btn btn-outline-primary" id="editAppointmentBtn">
                     Modifica
@@ -93,6 +94,80 @@
                 </button>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+     MODALE COMPLETAMENTO CON DATI TRATTAMENTO
+     ========================= -->
+<div class="modal fade" id="completeTreatmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Completa trattamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="completeTreatmentForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="treatmentPlanTitle">Titolo piano terapeutico</label>
+                        <input type="text" class="form-control" id="treatmentPlanTitle" required>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="treatmentTotalSessionsPlanned">Sedute pianificate</label>
+                            <input type="number" min="1" class="form-control" id="treatmentTotalSessionsPlanned" value="1" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="treatmentFrequencyPerWeek">Frequenza settimanale</label>
+                            <input type="number" min="1" class="form-control" id="treatmentFrequencyPerWeek" placeholder="Es. 2">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="treatmentExpectedEndDate">Fine prevista piano</label>
+                            <input type="date" class="form-control" id="treatmentExpectedEndDate">
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="treatmentPainScorePre">Dolore pre (0-10)</label>
+                            <input type="number" min="0" max="10" class="form-control" id="treatmentPainScorePre">
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="treatmentPainScorePost">Dolore post (0-10)</label>
+                            <input type="number" min="0" max="10" class="form-control" id="treatmentPainScorePost">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label" for="treatmentGoals">Obiettivi trattamento</label>
+                        <textarea class="form-control" id="treatmentGoals" rows="2"></textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label" for="treatmentSessionOutcome">Esito sessione</label>
+                        <textarea class="form-control" id="treatmentSessionOutcome" rows="2" placeholder="Descrivi l'esito della seduta"></textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label" for="treatmentHomeExercises">Esercizi domiciliari</label>
+                        <textarea class="form-control" id="treatmentHomeExercises" rows="2"></textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label" for="treatmentNotes">Note trattamento</label>
+                        <textarea class="form-control" id="treatmentNotes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-success" id="confirmCompleteTreatmentBtn">Conferma completamento</button>
+            </div>
         </div>
     </div>
 </div>

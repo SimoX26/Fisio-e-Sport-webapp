@@ -174,6 +174,69 @@ public class TreatmentController {
                 .orElseGet(() -> createAutomaticTreatmentFromAppointment(appointment));
     }
 
+    public TreatmentSession createTreatmentForCompletedAppointment(long appointmentId,
+                                                                   String planTitle,
+                                                                   String goals,
+                                                                   Integer frequencyPerWeek,
+                                                                   LocalDate expectedEndDate,
+                                                                   Integer totalSessionsPlanned,
+                                                                   Integer painScorePre,
+                                                                   Integer painScorePost,
+                                                                   String sessionOutcome,
+                                                                   String homeExercises,
+                                                                   String notes) {
+        Appointment appointment = appointmentDAO.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appuntamento non trovato: " + appointmentId));
+
+        if (appointment.getState() != AppointmentState.COMPLETED) {
+            throw new IllegalStateException("Il trattamento richiede un appuntamento completato");
+        }
+        if (appointment.isAllDay()) {
+            throw new IllegalStateException("Gli eventi tutto il giorno non sono collegati ai trattamenti");
+        }
+        if (treatmentSessionDAO.findByAppointmentId(appointmentId).isPresent()) {
+            throw new IllegalStateException("Esiste gia un trattamento associato a questo appuntamento");
+        }
+
+        String normalizedPlanTitle = normalizeRequired(planTitle, "Titolo piano terapeutico obbligatorio");
+        Integer normalizedTotalSessions = totalSessionsPlanned == null ? 1 : totalSessionsPlanned;
+        if (normalizedTotalSessions < 1) {
+            throw new IllegalArgumentException("Il piano deve prevedere almeno una seduta");
+        }
+        if (frequencyPerWeek != null && frequencyPerWeek < 1) {
+            throw new IllegalArgumentException("La frequenza settimanale deve essere almeno 1");
+        }
+
+        validatePainScores(painScorePre, painScorePost);
+
+        TreatmentPlan plan = new TreatmentPlan();
+        plan.setPatientId(appointment.getPatientId());
+        plan.setTherapistId(appointment.getTherapistId());
+        plan.setTitle(normalizedPlanTitle);
+        plan.setGoals(normalizeOptional(goals));
+        plan.setFrequencyPerWeek(frequencyPerWeek);
+        plan.setStartDate(appointment.getStart().toLocalDate());
+        plan.setExpectedEndDate(expectedEndDate);
+        plan.setTotalSessionsPlanned(normalizedTotalSessions);
+        plan.setState(normalizedTotalSessions > 1 ? TreatmentPlanState.ACTIVE : TreatmentPlanState.COMPLETED);
+        TreatmentPlan savedPlan = treatmentPlanDAO.save(plan);
+
+        TreatmentSession session = new TreatmentSession();
+        session.setTreatmentPlanId(savedPlan.getId());
+        session.setAppointmentId(appointment.getId());
+        session.setPatientId(appointment.getPatientId());
+        session.setTherapistId(appointment.getTherapistId());
+        session.setStart(appointment.getStart());
+        session.setEnd(appointment.getEnd());
+        session.setPainScorePre(painScorePre);
+        session.setPainScorePost(painScorePost);
+        session.setSessionOutcome(normalizeOptional(sessionOutcome));
+        session.setHomeExercises(normalizeOptional(homeExercises));
+        session.setNotes(normalizeOptional(notes));
+        session.setState(TreatmentSessionState.COMPLETED);
+        return treatmentSessionDAO.save(session);
+    }
+
     public List<TreatmentHistoryEntry> getStartedHistoryForTherapistWithMultiSessionPlans(long therapistId) {
         List<TreatmentSession> sessions = treatmentSessionDAO
                 .findStartedHistoryForTherapistWithMultiSessionPlans(therapistId);
@@ -221,30 +284,35 @@ public class TreatmentController {
     }
 
     private TreatmentSession createAutomaticTreatmentFromAppointment(Appointment appointment) {
-        TreatmentPlan plan = new TreatmentPlan();
-        plan.setPatientId(appointment.getPatientId());
-        plan.setTherapistId(appointment.getTherapistId());
-        plan.setTitle("Trattamento da appuntamento " + TITLE_DATE_FORMATTER.format(appointment.getStart().toLocalDate()));
-        plan.setGoals("Creato automaticamente dal completamento appuntamento");
-        plan.setFrequencyPerWeek(null);
-        plan.setStartDate(appointment.getStart().toLocalDate());
-        plan.setExpectedEndDate(appointment.getEnd().toLocalDate());
-        plan.setTotalSessionsPlanned(1);
-        plan.setState(TreatmentPlanState.COMPLETED);
-        TreatmentPlan savedPlan = treatmentPlanDAO.save(plan);
+        return createTreatmentForCompletedAppointment(
+                appointment.getId(),
+                "Trattamento da appuntamento " + TITLE_DATE_FORMATTER.format(appointment.getStart().toLocalDate()),
+                "Creato automaticamente dal completamento appuntamento",
+                null,
+                appointment.getEnd().toLocalDate(),
+                1,
+                null,
+                null,
+                "Sessione registrata automaticamente da appuntamento completato",
+                null,
+                appointment.getNotes()
+        );
+    }
 
-        TreatmentSession session = new TreatmentSession();
-        session.setTreatmentPlanId(savedPlan.getId());
-        session.setAppointmentId(appointment.getId());
-        session.setPatientId(appointment.getPatientId());
-        session.setTherapistId(appointment.getTherapistId());
-        session.setStart(appointment.getStart());
-        session.setEnd(appointment.getEnd());
-        session.setSessionOutcome("Sessione registrata automaticamente da appuntamento completato");
-        session.setHomeExercises(null);
-        session.setNotes(appointment.getNotes());
-        session.setState(TreatmentSessionState.COMPLETED);
-        return treatmentSessionDAO.save(session);
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.isEmpty() ? null : normalized;
+    }
+
+    private String normalizeRequired(String value, String errorMessage) {
+        String normalized = normalizeOptional(value);
+        if (normalized == null) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return normalized;
     }
 
     private void validatePainScores(Integer pre, Integer post) {

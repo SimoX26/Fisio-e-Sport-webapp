@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openModalButton = document.getElementById('openAppointmentModalBtn');
     const appointmentModalEl = document.getElementById('appointmentModal');
     const eventModalEl = document.getElementById('eventModal');
+    const completeTreatmentModalEl = document.getElementById('completeTreatmentModal');
     const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
@@ -56,6 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const editAppointmentBtn = document.getElementById('editAppointmentBtn');
     const deleteAppointmentBtn = document.getElementById('deleteAppointmentBtn');
     const completeAppointmentBtn = document.getElementById('completeAppointmentBtn');
+    const eventModalStateHintEl = document.getElementById('eventModalStateHint');
+    const treatmentPlanTitleInput = document.getElementById('treatmentPlanTitle');
+    const treatmentGoalsInput = document.getElementById('treatmentGoals');
+    const treatmentFrequencyPerWeekInput = document.getElementById('treatmentFrequencyPerWeek');
+    const treatmentTotalSessionsPlannedInput = document.getElementById('treatmentTotalSessionsPlanned');
+    const treatmentExpectedEndDateInput = document.getElementById('treatmentExpectedEndDate');
+    const treatmentPainScorePreInput = document.getElementById('treatmentPainScorePre');
+    const treatmentPainScorePostInput = document.getElementById('treatmentPainScorePost');
+    const treatmentSessionOutcomeInput = document.getElementById('treatmentSessionOutcome');
+    const treatmentHomeExercisesInput = document.getElementById('treatmentHomeExercises');
+    const treatmentNotesInput = document.getElementById('treatmentNotes');
+    const confirmCompleteTreatmentBtn = document.getElementById('confirmCompleteTreatmentBtn');
     const confirmDeleteAppointmentBtn = document.getElementById('confirmDeleteAppointmentBtn');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
@@ -64,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const appointmentModal = new bootstrap.Modal(appointmentModalEl);
     const eventModal = eventModalEl ? new bootstrap.Modal(eventModalEl) : null;
+    const completeTreatmentModal = completeTreatmentModalEl ? new bootstrap.Modal(completeTreatmentModalEl) : null;
     const confirmDeleteModal = confirmDeleteModalEl ? new bootstrap.Modal(confirmDeleteModalEl) : null;
     let selectedEvent = null;
     let editingAppointmentId = null;
@@ -88,6 +102,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.body.classList.toggle('calendar-week-fill', shouldFillHeight);
+    }
+
+    function toIsoDateValue(date) {
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function toItalianDateLabel(date) {
+        return date.toLocaleDateString('it-IT');
+    }
+
+    function normalizeOptionalText(value) {
+        const normalized = (value || '').trim();
+        return normalized || null;
+    }
+
+    function parseOptionalInteger(value, fieldLabel) {
+        const normalized = (value || '').trim();
+        if (!normalized) {
+            return null;
+        }
+        const parsed = Number.parseInt(normalized, 10);
+        if (!Number.isFinite(parsed)) {
+            throw new Error(`${fieldLabel} non valido`);
+        }
+        return parsed;
     }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -211,6 +251,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (deleteAppointmentBtn) {
                 deleteAppointmentBtn.classList.toggle('d-none', isCompleted);
+            }
+            if (eventModalStateHintEl) {
+                const stateHints = [];
+                if (isCompleted) {
+                    stateHints.push('Appuntamento completato: azioni non disponibili.');
+                }
+                if (isAllDay) {
+                    stateHints.push('Evento tutto il giorno: non collegato ai trattamenti.');
+                }
+                const hintText = stateHints.join(' ');
+                eventModalStateHintEl.textContent = hintText;
+                eventModalStateHintEl.classList.toggle('d-none', !hintText);
             }
 
             if (eventModal) {
@@ -350,37 +402,150 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const data = new URLSearchParams();
-            data.append('action', 'complete');
-            data.append('id', String(selectedEvent.id));
+            const startDate = selectedEvent.start ? new Date(selectedEvent.start) : new Date();
+            const endDate = selectedEvent.end ? new Date(selectedEvent.end) : startDate;
+            const defaultTitle = `Trattamento da appuntamento ${toItalianDateLabel(startDate)}`;
 
-            fetch(contextPath + '/calendar', {
-                method: 'POST',
-                body: data
-            })
-                .then((res) => {
-                    if (!res.ok) {
-                        return res.text().then((text) => {
-                            let message = '';
-                            try {
-                                const parsed = JSON.parse(text);
-                                message = parsed?.error || '';
-                            } catch (e) {
-                                message = text || '';
-                            }
-                            throw new Error(message || 'Errore durante completamento appuntamento');
-                        });
-                    }
-                    return res.text();
+            if (treatmentPlanTitleInput) {
+                treatmentPlanTitleInput.value = defaultTitle;
+            }
+            if (treatmentGoalsInput) {
+                treatmentGoalsInput.value = '';
+            }
+            if (treatmentFrequencyPerWeekInput) {
+                treatmentFrequencyPerWeekInput.value = '';
+            }
+            if (treatmentTotalSessionsPlannedInput) {
+                treatmentTotalSessionsPlannedInput.value = '1';
+            }
+            if (treatmentExpectedEndDateInput) {
+                treatmentExpectedEndDateInput.value = toIsoDateValue(endDate);
+            }
+            if (treatmentPainScorePreInput) {
+                treatmentPainScorePreInput.value = '';
+            }
+            if (treatmentPainScorePostInput) {
+                treatmentPainScorePostInput.value = '';
+            }
+            if (treatmentSessionOutcomeInput) {
+                treatmentSessionOutcomeInput.value = 'Sessione completata da appuntamento';
+            }
+            if (treatmentHomeExercisesInput) {
+                treatmentHomeExercisesInput.value = '';
+            }
+            if (treatmentNotesInput) {
+                treatmentNotesInput.value = selectedEvent.extendedProps.notes || '';
+            }
+
+            if (eventModal) {
+                eventModal.hide();
+            }
+            if (completeTreatmentModal) {
+                completeTreatmentModal.show();
+            }
+        });
+    }
+
+    if (confirmCompleteTreatmentBtn) {
+        confirmCompleteTreatmentBtn.addEventListener('click', () => {
+            if (!selectedEvent) {
+                return;
+            }
+
+            try {
+                const totalSessionsPlanned = parseOptionalInteger(
+                    treatmentTotalSessionsPlannedInput ? treatmentTotalSessionsPlannedInput.value : '',
+                    'Numero sedute pianificate'
+                );
+                if (!totalSessionsPlanned || totalSessionsPlanned < 1) {
+                    throw new Error('Numero sedute pianificate deve essere almeno 1');
+                }
+
+                const frequencyPerWeek = parseOptionalInteger(
+                    treatmentFrequencyPerWeekInput ? treatmentFrequencyPerWeekInput.value : '',
+                    'Frequenza settimanale'
+                );
+                const painScorePre = parseOptionalInteger(
+                    treatmentPainScorePreInput ? treatmentPainScorePreInput.value : '',
+                    'Dolore pre'
+                );
+                const painScorePost = parseOptionalInteger(
+                    treatmentPainScorePostInput ? treatmentPainScorePostInput.value : '',
+                    'Dolore post'
+                );
+
+                const planTitle = normalizeOptionalText(treatmentPlanTitleInput ? treatmentPlanTitleInput.value : '');
+                if (!planTitle) {
+                    throw new Error('Titolo piano terapeutico obbligatorio');
+                }
+
+                const data = new URLSearchParams();
+                data.append('action', 'complete');
+                data.append('id', String(selectedEvent.id));
+                data.append('planTitle', planTitle);
+                data.append('totalSessionsPlanned', String(totalSessionsPlanned));
+
+                const goals = normalizeOptionalText(treatmentGoalsInput ? treatmentGoalsInput.value : '');
+                const expectedEndDate = normalizeOptionalText(treatmentExpectedEndDateInput ? treatmentExpectedEndDateInput.value : '');
+                const sessionOutcome = normalizeOptionalText(treatmentSessionOutcomeInput ? treatmentSessionOutcomeInput.value : '');
+                const homeExercises = normalizeOptionalText(treatmentHomeExercisesInput ? treatmentHomeExercisesInput.value : '');
+                const notes = normalizeOptionalText(treatmentNotesInput ? treatmentNotesInput.value : '');
+
+                if (goals) {
+                    data.append('goals', goals);
+                }
+                if (frequencyPerWeek !== null) {
+                    data.append('frequencyPerWeek', String(frequencyPerWeek));
+                }
+                if (expectedEndDate) {
+                    data.append('expectedEndDate', expectedEndDate);
+                }
+                if (painScorePre !== null) {
+                    data.append('painScorePre', String(painScorePre));
+                }
+                if (painScorePost !== null) {
+                    data.append('painScorePost', String(painScorePost));
+                }
+                if (sessionOutcome) {
+                    data.append('sessionOutcome', sessionOutcome);
+                }
+                if (homeExercises) {
+                    data.append('homeExercises', homeExercises);
+                }
+                if (notes) {
+                    data.append('notes', notes);
+                }
+
+                fetch(contextPath + '/calendar', {
+                    method: 'POST',
+                    body: data
                 })
-                .then(() => {
-                    if (eventModal) {
-                        eventModal.hide();
-                    }
-                    selectedEvent = null;
-                    calendar.refetchEvents();
-                })
-                .catch((err) => alert(err.message));
+                    .then((res) => {
+                        if (!res.ok) {
+                            return res.text().then((text) => {
+                                let message = '';
+                                try {
+                                    const parsed = JSON.parse(text);
+                                    message = parsed?.error || '';
+                                } catch (e) {
+                                    message = text || '';
+                                }
+                                throw new Error(message || 'Errore durante completamento appuntamento');
+                            });
+                        }
+                        return res.text();
+                    })
+                    .then(() => {
+                        if (completeTreatmentModal) {
+                            completeTreatmentModal.hide();
+                        }
+                        selectedEvent = null;
+                        calendar.refetchEvents();
+                    })
+                    .catch((err) => alert(err.message));
+            } catch (err) {
+                alert(err.message || 'Dati trattamento non validi');
+            }
         });
     }
 

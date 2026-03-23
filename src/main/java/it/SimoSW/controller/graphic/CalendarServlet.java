@@ -13,6 +13,7 @@ import javax.servlet.http.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -199,7 +200,19 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId = Long.parseLong(request.getParameter("id"));
         Appointment completed = calendarController.completeAppointment(appointmentId);
         if (!completed.isAllDay()) {
-            treatmentController.ensureTreatmentForCompletedAppointment(appointmentId);
+            treatmentController.createTreatmentForCompletedAppointment(
+                    appointmentId,
+                    normalizeRequired(request.getParameter("planTitle"), "Titolo piano terapeutico obbligatorio"),
+                    normalizeNotes(request.getParameter("goals")),
+                    parseOptionalInteger(request.getParameter("frequencyPerWeek"), "Frequenza settimanale non valida"),
+                    parseOptionalDate(request.getParameter("expectedEndDate"), "Fine prevista non valida"),
+                    parseOptionalInteger(request.getParameter("totalSessionsPlanned"), "Numero sedute pianificate non valido"),
+                    parseOptionalInteger(request.getParameter("painScorePre"), "Dolore pre non valido"),
+                    parseOptionalInteger(request.getParameter("painScorePost"), "Dolore post non valido"),
+                    normalizeNotes(request.getParameter("sessionOutcome")),
+                    normalizeNotes(request.getParameter("homeExercises")),
+                    normalizeNotes(request.getParameter("notes"))
+            );
         }
     }
 
@@ -227,6 +240,36 @@ public class CalendarServlet extends HttpServlet {
 
         String normalized = notes.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private String normalizeRequired(String value, String errorMessage) {
+        String normalized = normalizeNotes(value);
+        if (normalized == null) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        return normalized;
+    }
+
+    private Integer parseOptionalInteger(String value, String errorMessage) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    private LocalDate parseOptionalDate(String value, String errorMessage) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     private boolean parseBooleanParameter(String value) {
