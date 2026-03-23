@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -29,8 +30,38 @@
         </p>
     </div>
 
+    <c:if test="${not empty error}">
+        <div class="alert alert-warning" role="alert">
+            <c:out value="${error}" />
+        </div>
+    </c:if>
+
+    <!-- KPI -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="glass-card section-card p-4">
+                <div class="kpi-value"><c:out value="${appointmentsToday}" /></div>
+                <div class="kpi-label">Appuntamenti oggi</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card section-card p-4">
+                <div class="kpi-value"><c:out value="${totalPatients}" /></div>
+                <div class="kpi-label">Pazienti totali</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="glass-card section-card p-4">
+                <div class="kpi-value"><c:out value="${treatmentsThisWeek}" /></div>
+                <div class="kpi-label">Trattamenti questa settimana</div>
+            </div>
+        </div>
+    </div>
+
     <!-- AZIONI PRINCIPALI -->
-    <div class="row g-4 mt-1">
+    <div class="row g-4">
 
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"

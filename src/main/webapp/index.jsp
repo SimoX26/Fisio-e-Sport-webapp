@@ -26,25 +26,16 @@
 
 <header class="landing-hero">
     <div class="container py-5">
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-7">
-                <h1 class="landing-hero-title mb-3">Centro di fisioterapia e riabilitazione</h1>
-                <p class="landing-hero-subtitle mb-4">
-                    Supportiamo il recupero funzionale con percorsi personalizzati: valutazione clinica,
-                    pianificazione trattamenti e monitoraggio progressi in un flusso semplice e chiaro.
-                </p>
+        <div class="landing-hero-content">
+            <h1 class="landing-hero-title mb-3">Centro di fisioterapia e riabilitazione</h1>
+            <p class="landing-hero-subtitle mb-4">
+                Supportiamo il recupero funzionale con percorsi personalizzati: valutazione clinica,
+                pianificazione trattamenti e monitoraggio progressi in un flusso semplice e chiaro.
+            </p>
 
-                <div class="d-flex flex-column flex-sm-row gap-2">
-                    <a href="<%= request.getContextPath() %>/login" class="btn btn-primary section-action-btn">Accedi al gestionale</a>
-                    <a href="<%= request.getContextPath() %>/register" class="btn btn-outline-secondary section-action-btn">Richiedi accesso</a>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="landing-hero-media">
-                    <img src="<%= request.getContextPath() %>/assets/img/hero-fisioterapia.jpg"
-                         alt="Fisioterapista durante una sessione di trattamento"
-                         class="landing-hero-img">
-                </div>
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a href="<%= request.getContextPath() %>/login" class="btn btn-primary section-action-btn">Accedi al gestionale</a>
+                <a href="<%= request.getContextPath() %>/register" class="btn btn-outline-light section-action-btn">Richiedi accesso</a>
             </div>
         </div>
     </div>

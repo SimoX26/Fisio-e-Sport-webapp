@@ -853,33 +853,26 @@ body.landing-page{
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
-    background: #ffffff;
+    background:
+        linear-gradient(rgba(17, 24, 39, .55), rgba(17, 24, 39, .55)),
+        url('../img/hero-fisioterapia.jpg') center/cover no-repeat;
 }
 
 .landing-hero-title{
     font-size: clamp(2rem, 4.7vw, 3rem);
     line-height: 1.15;
     font-weight: 700;
+    color: #ffffff;
 }
 
 .landing-hero-subtitle{
     font-size: 1.02rem;
-    color: var(--text-muted);
+    color: rgba(255,255,255,.92);
     max-width: 760px;
 }
 
-.landing-hero-media{
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    overflow: hidden;
-    background: #ffffff;
-}
-
-.landing-hero-img{
-    width: 100%;
-    height: clamp(220px, 32vw, 360px);
-    object-fit: cover;
-    display: block;
+.landing-hero-content{
+    max-width: 780px;
 }
 
 .landing-soft-section{
@@ -907,14 +900,6 @@ body.landing-page{
 @media (max-width: 767.98px){
     .landing-hero{
         min-height: 66vh;
-    }
-
-    .landing-hero-media{
-        margin-top: .5rem;
-    }
-
-    .landing-hero-img{
-        height: 220px;
     }
 
     .landing-hero .btn{
