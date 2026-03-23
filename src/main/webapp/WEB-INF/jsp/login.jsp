@@ -59,7 +59,7 @@
 
                 <div class="text-center mt-4 small">
                     Non hai un account?
-                    <a href="<%= request.getContextPath() %>/register">Registrati</a>
+                    <a href="<%= request.getContextPath() %>/register">Richiedi accesso</a>
                 </div>
 
                 <div class="text-center mt-3 small">

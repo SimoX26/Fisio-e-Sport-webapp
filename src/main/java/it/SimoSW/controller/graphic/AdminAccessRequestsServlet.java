@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/admin")
-public class AdminDashboardServlet extends HttpServlet {
+@WebServlet("/admin/access-requests")
+public class AdminAccessRequestsServlet extends HttpServlet {
 
     private AccessRequestController accessRequestController;
 
@@ -25,7 +25,9 @@ public class AdminDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setAttribute("pendingCount", accessRequestController.getPendingRequests().size());
-        request.getRequestDispatcher("/WEB-INF/jsp/admin/adminDashboard.jsp").forward(request, response);
+
+        request.setAttribute("pendingRequests", accessRequestController.getPendingRequests());
+        request.setAttribute("recentRequests", accessRequestController.getRecentRequests());
+        request.getRequestDispatcher("/WEB-INF/jsp/admin/accessRequests.jsp").forward(request, response);
     }
 }

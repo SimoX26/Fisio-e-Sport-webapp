@@ -26,7 +26,7 @@
 
     <div class="mb-4">
         <h2 class="page-title">Dashboard amministrativa</h2>
-        <p class="page-subtitle mb-0">Gestione utenti e configurazione operativa</p>
+        <p class="page-subtitle mb-0">Gestione richieste di accesso e approvazioni</p>
     </div>
 
     <!-- =========================
@@ -34,15 +34,15 @@
          ========================= -->
     <div class="glass-card section-card p-4">
 
-        <h5 class="mb-3">Gestione utenti</h5>
+        <h5 class="mb-3">Richieste di accesso</h5>
 
         <p class="page-subtitle">
-            Da questa sezione è possibile creare nuovi utenti del sistema.
+            Utenti in attesa di approvazione: <strong>${pendingCount}</strong>
         </p>
 
-        <a href="${pageContext.request.contextPath}/admin/new-user"
+        <a href="${pageContext.request.contextPath}/admin/access-requests"
            class="btn btn-primary section-action-btn">
-            Aggiungi nuovo utente
+            Gestisci richieste
         </a>
 
     </div>

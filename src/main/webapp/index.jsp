@@ -26,7 +26,7 @@
 
         <div class="d-flex gap-2">
             <a href="<%= request.getContextPath() %>/login" class="btn btn-outline-primary btn-sm">Login</a>
-            <a href="<%= request.getContextPath() %>/register" class="btn btn-primary btn-sm">Registrati</a>
+            <a href="<%= request.getContextPath() %>/register" class="btn btn-primary btn-sm">Richiedi accesso</a>
         </div>
     </div>
 </nav>

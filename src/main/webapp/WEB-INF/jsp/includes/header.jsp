@@ -25,26 +25,46 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="<%= request.getContextPath() %>/dashboard">
-                        Home
-                    </a>
-                </li>
+                <c:choose>
+                    <c:when test="${sessionScope.userRole == 'ADMIN'}">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/admin">
+                                Dashboard Admin
+                            </a>
+                        </li>
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="<%= request.getContextPath() %>/calendar">
-                        Calendario
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/admin/access-requests">
+                                Richieste Accesso
+                            </a>
+                        </li>
+                    </c:when>
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="<%= request.getContextPath() %>/address-book">
-                        Rubrica
-                    </a>
-                </li>
+                    <c:otherwise>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/dashboard">
+                                Home
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/calendar">
+                                Calendario
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/address-book">
+                                Rubrica
+                            </a>
+                        </li>
+                    </c:otherwise>
+                </c:choose>
 
                 <li class="nav-item d-none d-lg-block mx-2">
                     <span class="nav-link disabled nav-separator">|</span>

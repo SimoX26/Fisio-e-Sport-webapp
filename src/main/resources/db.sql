@@ -27,6 +27,32 @@ CREATE TABLE users (
 );
 
 /* =========================
+   ACCESS REQUESTS
+   ========================= */
+CREATE TABLE access_requests (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(150) NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  password_hash CHAR(64) NOT NULL,
+  requested_role ENUM('THERAPIST', 'ADMIN') NOT NULL DEFAULT 'THERAPIST',
+  status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+  reviewed_by_user_id BIGINT NULL,
+  reviewed_at DATETIME NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  INDEX idx_access_requests_status_created (status, created_at),
+  INDEX idx_access_requests_username (username),
+  INDEX idx_access_requests_email (email),
+
+  CONSTRAINT fk_access_requests_reviewer
+    FOREIGN KEY (reviewed_by_user_id) REFERENCES users(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);
+
+/* =========================
    REMEMBER ME TOKENS
    ========================= */
 CREATE TABLE remember_me_tokens (

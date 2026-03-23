@@ -1,11 +1,13 @@
 package it.SimoSW.util.bootstrap;
 
 import it.SimoSW.controller.application.AddressBookController;
+import it.SimoSW.controller.application.AccessRequestController;
 import it.SimoSW.controller.application.AuthenticationController;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentHistoryController;
 import it.SimoSW.controller.application.UserController;
 import it.SimoSW.model.dao.AppointmentDAO;
+import it.SimoSW.model.dao.AccessRequestDAO;
 import it.SimoSW.model.dao.PatientAnamnesisDAO;
 import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
@@ -13,6 +15,7 @@ import it.SimoSW.model.dao.RememberMeTokenDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
+import it.SimoSW.model.dao.database.DatabaseAccessRequestDAO;
 import it.SimoSW.model.dao.database.DatabasePatientAnamnesisDAO;
 import it.SimoSW.model.dao.database.DatabasePatientConditionDAO;
 import it.SimoSW.model.dao.database.DatabasePatientDAO;
@@ -27,6 +30,7 @@ public class ApplicationInitializer {
     private TreatmentHistoryController treatmentHistoryController;
     private AuthenticationController authenticationController;
     private UserController userController;
+    private AccessRequestController accessRequestController;
 
     public void init() {
         initDatabasePersistence();
@@ -40,6 +44,7 @@ public class ApplicationInitializer {
         TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
+        AccessRequestDAO accessRequestDAO = new DatabaseAccessRequestDAO();
 
         wireControllers(
                 patientDAO,
@@ -48,7 +53,8 @@ public class ApplicationInitializer {
                 appointmentDAO,
                 treatmentSessionDAO,
                 userDAO,
-                rememberMeTokenDAO
+                rememberMeTokenDAO,
+                accessRequestDAO
         );
     }
 
@@ -59,7 +65,8 @@ public class ApplicationInitializer {
             AppointmentDAO appointmentDAO,
             TreatmentSessionDAO treatmentSessionDAO,
             UserDAO userDAO,
-            RememberMeTokenDAO rememberMeTokenDAO
+            RememberMeTokenDAO rememberMeTokenDAO,
+            AccessRequestDAO accessRequestDAO
     ) {
         addressBookController = new AddressBookController(
                 patientDAO,
@@ -75,6 +82,7 @@ public class ApplicationInitializer {
         );
         authenticationController = new AuthenticationController(userDAO, rememberMeTokenDAO);
         userController = new UserController(userDAO);
+        accessRequestController = new AccessRequestController(accessRequestDAO, userDAO);
     }
 
     public AddressBookController getAddressBookController() {
@@ -95,5 +103,9 @@ public class ApplicationInitializer {
 
     public AuthenticationController getAuthenticationController() {
         return authenticationController;
+    }
+
+    public AccessRequestController getAccessRequestController() {
+        return accessRequestController;
     }
 }

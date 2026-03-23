@@ -13,6 +13,6 @@ public class AdminNewUserPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/admin/insertNewUser.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/admin/access-requests");
     }
 }

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -28,26 +29,44 @@
 
                 <div class="text-center mb-4">
                     <h2 class="brand">Fisio e Sport</h2>
-                    <p class="text-muted">Crea il tuo account</p>
+                    <p class="text-muted">Richiedi accesso: l'account verra attivato da un amministratore</p>
                 </div>
+
+                <c:if test="${not empty success}">
+                    <div class="alert alert-success" role="alert">
+                        <c:out value="${success}" />
+                    </div>
+                </c:if>
+
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger" role="alert">
+                        <c:out value="${error}" />
+                    </div>
+                </c:if>
 
                 <form action="<%= request.getContextPath() %>/register" method="post">
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="nome"
-                               name="nome" placeholder="nome" required>
+                               name="nome" placeholder="nome" value="<c:out value='${nome}' />" required>
                         <label for="nome">Nome</label>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="cognome"
-                               name="cognome" placeholder="cognome" required>
+                               name="cognome" placeholder="cognome" value="<c:out value='${cognome}' />" required>
                         <label for="cognome">Cognome</label>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" id="email"
-                               name="email" placeholder="email" required>
+                               name="email" placeholder="email" value="<c:out value='${email}' />" required>
                         <label for="email">Email</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="username"
+                               name="username" placeholder="username" value="<c:out value='${username}' />" required>
+                        <label for="username">Username</label>
                     </div>
 
                     <div class="form-floating mb-4">
@@ -57,7 +76,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2">
-                        Registrati
+                        Invia richiesta
                     </button>
                 </form>
 
