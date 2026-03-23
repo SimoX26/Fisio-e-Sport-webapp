@@ -1,7 +1,7 @@
 package it.SimoSW.controller.graphic;
 
-import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.controller.application.CalendarController;
+import it.SimoSW.model.Appointment;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 
 import javax.servlet.ServletException;
@@ -13,26 +13,28 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
     private CalendarController calendarController;
-    private AddressBookController addressBookController;
 
     @Override
     public void init() {
         ApplicationInitializer initializer = (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
         this.calendarController = initializer.getCalendarController();
-        this.addressBookController = initializer.getAddressBookController();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int appointmentsToday = 0;
-        int totalPatients = 0;
-        int treatmentsThisWeek = 0;
+        int patientsThisMonth = 0;
+        long bookedHoursThisWeek = 0;
 
         try {
             String loggedUser = (String) request.getSession().getAttribute("loggedUser");
@@ -49,19 +51,30 @@ public class DashboardServlet extends HttpServlet {
                 LocalDate weekStartDate = today.with(DayOfWeek.MONDAY);
                 LocalDateTime weekStart = weekStartDate.atStartOfDay();
                 LocalDateTime weekEnd = weekStart.plusDays(7);
-                treatmentsThisWeek = calendarController
-                        .getAppointmentsForTherapistInPeriod(therapistId, weekStart, weekEnd)
-                        .size();
-            }
+                List<Appointment> weekAppointments = calendarController
+                        .getAppointmentsForTherapistInPeriod(therapistId, weekStart, weekEnd);
+                bookedHoursThisWeek = weekAppointments.stream()
+                        .mapToLong(a -> ChronoUnit.HOURS.between(a.getStart(), a.getEnd()))
+                        .sum();
 
-            totalPatients = addressBookController.searchPatients("").size();
+                LocalDate monthStartDate = today.withDayOfMonth(1);
+                LocalDateTime monthStart = monthStartDate.atStartOfDay();
+                LocalDateTime monthEnd = monthStart.plusMonths(1);
+                List<Appointment> monthAppointments = calendarController
+                        .getAppointmentsForTherapistInPeriod(therapistId, monthStart, monthEnd);
+                Set<Long> patientIds = new HashSet<>();
+                for (Appointment appointment : monthAppointments) {
+                    patientIds.add(appointment.getPatientId());
+                }
+                patientsThisMonth = patientIds.size();
+            }
         } catch (RuntimeException ex) {
             request.setAttribute("error", "Impossibile caricare i dati panoramici in questo momento.");
         }
 
         request.setAttribute("appointmentsToday", appointmentsToday);
-        request.setAttribute("totalPatients", totalPatients);
-        request.setAttribute("treatmentsThisWeek", treatmentsThisWeek);
+        request.setAttribute("patientsThisMonth", patientsThisMonth);
+        request.setAttribute("bookedHoursThisWeek", bookedHoursThisWeek);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/dashboard.jsp").forward(request, response);
     }
 }

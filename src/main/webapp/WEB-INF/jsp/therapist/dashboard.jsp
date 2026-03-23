@@ -48,15 +48,15 @@
 
         <div class="col-md-4">
             <div class="glass-card section-card p-4">
-                <div class="kpi-value"><c:out value="${totalPatients}" /></div>
-                <div class="kpi-label">Pazienti totali</div>
+                <div class="kpi-value"><c:out value="${patientsThisMonth}" /></div>
+                <div class="kpi-label">Pazienti mese</div>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="glass-card section-card p-4">
-                <div class="kpi-value"><c:out value="${treatmentsThisWeek}" /></div>
-                <div class="kpi-label">Trattamenti questa settimana</div>
+                <div class="kpi-value"><c:out value="${bookedHoursThisWeek}" /></div>
+                <div class="kpi-label">Ore prenotate</div>
             </div>
         </div>
     </div>
