@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-10">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260325-1" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260325-2" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -31,9 +31,7 @@
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
-<div class="container-fluid calendar-gcal-wrap mt-4">
-
-    <!-- HEADER PAGINA -->
+<div class="container app-shell calendar-gcal-header-shell mt-4">
     <div class="page-header-row calendar-gcal-head mb-3">
         <div>
             <h2 class="page-title mb-0">Calendario</h2>
@@ -52,8 +50,9 @@
             </button>
         </div>
     </div>
+</div>
 
-    <!-- CALENDAR -->
+<div class="container-fluid calendar-gcal-wrap">
     <div class="calendar-host">
         <div class="calendar-scroll-shell">
             <div id="calendar"></div>

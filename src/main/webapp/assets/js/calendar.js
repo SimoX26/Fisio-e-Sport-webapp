@@ -174,7 +174,13 @@ document.addEventListener('DOMContentLoaded', () => {
             center: 'title',
             right: 'timeGridDay,timeGridWeek,dayGridMonth'
         },
+        titleRangeSeparator: ' - ',
         initialView,
+        views: {
+            timeGridWeek: {
+                titleFormat: { day: 'numeric', month: 'long', year: 'numeric' }
+            }
+        },
         slotDuration: '01:00:00',
         snapDuration: '01:00:00',
         nowIndicator: true,
