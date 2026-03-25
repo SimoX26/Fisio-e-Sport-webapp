@@ -130,7 +130,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return parsed;
     }
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    function resolveInitialCalendarConfig() {
+        const searchParams = new URLSearchParams(window.location.search);
+        const supportedViews = ['timeGridDay', 'timeGridWeek', 'dayGridMonth'];
+        const requestedView = searchParams.get('view');
+        const requestedDate = searchParams.get('date');
+
+        let initialView = 'timeGridWeek';
+        let initialDate = null;
+
+        if (supportedViews.includes(requestedView)) {
+            initialView = requestedView;
+        }
+
+        if (requestedDate === 'today') {
+            initialDate = new Date();
+        } else if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate || '')) {
+            const parsedDate = new Date(`${requestedDate}T00:00:00`);
+            if (!Number.isNaN(parsedDate.getTime())) {
+                initialDate = parsedDate;
+            }
+        }
+
+        return { initialView, initialDate };
+    }
+
+    const { initialView, initialDate } = resolveInitialCalendarConfig();
+
+    const calendarConfig = {
         locale: 'it',
         allDayText: 'Tutto il giorno',
         buttonText: {
@@ -147,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             center: 'title',
             right: 'timeGridDay,timeGridWeek,dayGridMonth'
         },
-        initialView: 'timeGridWeek',
+        initialView,
         slotDuration: '01:00:00',
         snapDuration: '01:00:00',
         nowIndicator: true,
@@ -269,7 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 eventModal.show();
             }
         }
-    });
+    };
+
+    if (initialDate) {
+        calendarConfig.initialDate = initialDate;
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, calendarConfig);
 
     calendar.render();
     applyViewClass(calendar);

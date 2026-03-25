@@ -46,30 +46,33 @@
     <!-- KPI -->
     <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <div class="glass-card section-card p-4">
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
                 <div class="kpi-value"><c:out value="${appointmentsToday}" /></div>
                 <div class="kpi-label">
                     Appuntamenti oggi <c:out value="${todayLabel}" />
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card section-card p-4">
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/address-book">
                 <div class="kpi-value"><c:out value="${patientsThisMonth}" /></div>
                 <div class="kpi-label">
                     Pazienti trattati a <c:out value="${patientsMonthYearLabel}" />
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="glass-card section-card p-4">
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/calendar?view=timeGridWeek&date=today">
                 <div class="kpi-value"><c:out value="${bookedHoursThisWeek}" /></div>
                 <div class="kpi-label">
                     Ore prenotate nella settimana <c:out value="${weekRangeLabel}" />
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
