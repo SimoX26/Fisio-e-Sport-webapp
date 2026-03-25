@@ -90,6 +90,26 @@ detect_ssh_key_path() {
   return 1
 }
 
+resolve_ipv4() {
+  local host="$1"
+  local ip=""
+
+  if [[ "$host" == "localhost" || "$host" == "127.0.0.1" ]]; then
+    ip="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
+    if [[ -z "$ip" ]]; then
+      ip="127.0.0.1"
+    fi
+    echo "$ip"
+    return 0
+  fi
+
+  ip="$(getent ahostsv4 "$host" 2>/dev/null | awk '{print $1; exit}' || true)"
+  if [[ -z "$ip" ]]; then
+    ip="$host"
+  fi
+  echo "$ip"
+}
+
 MODE=""
 WAR_PATH=""
 SSH_PORT="22"
@@ -183,6 +203,7 @@ if [[ -z "$WAR_PATH" || ! -f "$WAR_PATH" ]]; then
 fi
 
 WAR_NAME="$(basename "$WAR_PATH")"
+APP_CONTEXT="${WAR_NAME%.war}"
 echo ">> WAR selezionato: $WAR_PATH"
 
 if [[ "$MODE" == "locale" ]]; then
@@ -194,6 +215,14 @@ if [[ "$MODE" == "locale" ]]; then
   echo ">> Deploy locale in: $LOCAL_PATH"
   cp -f "$WAR_PATH" "$LOCAL_PATH/"
   echo ">> Deploy locale completato."
+
+  LOCAL_IP="$(resolve_ipv4 "localhost")"
+  if [[ "$APP_CONTEXT" == "ROOT" ]]; then
+    APP_URL="http://${LOCAL_IP}:8080/"
+  else
+    APP_URL="http://${LOCAL_IP}:8080/${APP_CONTEXT}/"
+  fi
+  echo ">> Avvio applicativo: $APP_URL"
   exit 0
 fi
 
@@ -247,3 +276,10 @@ if [[ "$TRANSFER_SQL" == "true" ]]; then
 fi
 
 echo ">> Deploy remoto completato con successo."
+REMOTE_IP="$(resolve_ipv4 "$REMOTE_HOST")"
+if [[ "$APP_CONTEXT" == "ROOT" ]]; then
+  APP_URL="http://${REMOTE_IP}:8080/"
+else
+  APP_URL="http://${REMOTE_IP}:8080/${APP_CONTEXT}/"
+fi
+echo ">> Avvio applicativo: $APP_URL"
