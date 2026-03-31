@@ -27,6 +27,10 @@ public class RegisterPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (PostSubmitNavigationGuard.redirectIfBlocked(request, response, "/register")) {
+            return;
+        }
+
         request.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(request, response);
     }
 
@@ -41,8 +45,8 @@ public class RegisterPageServlet extends HttpServlet {
 
         try {
             accessRequestController.submitAccessRequest(firstName, lastName, email, username, password);
-            request.setAttribute("success", "Richiesta inviata. Un admin la valutera prima di abilitare l'account.");
-            request.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(request, response);
+            PostSubmitNavigationGuard.blockFormPageOnce(request, "/register", "/?lockBack=1");
+            response.sendRedirect(request.getContextPath() + "/?lockBack=1");
         } catch (InvalidUserDataException | UsernameAlreadyExistsException ex) {
             request.setAttribute("error", ex.getMessage());
             request.setAttribute("nome", firstName);

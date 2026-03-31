@@ -13,6 +13,14 @@ public class AddressBookCreatePageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        if (PostSubmitNavigationGuard.redirectIfBlocked(request, response, "/address-book/create")) {
+            return;
+        }
+
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/addressBookCreate.jsp").forward(request, response);
     }
 }

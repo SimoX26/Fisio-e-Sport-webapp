@@ -77,5 +77,30 @@
     © <%= java.time.Year.now() %> Fisio e Sport • Fisioterapia e riabilitazione
 </footer>
 
+<script>
+(function () {
+    const lockKey = 'lockBackLanding';
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('lockBack') === '1') {
+        sessionStorage.setItem(lockKey, '1');
+        params.delete('lockBack');
+        const cleanUrl = window.location.pathname
+            + (params.toString() ? '?' + params.toString() : '')
+            + window.location.hash;
+        history.replaceState(null, '', cleanUrl);
+    }
+
+    if (sessionStorage.getItem(lockKey) !== '1') {
+        return;
+    }
+
+    history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, '', window.location.href);
+    });
+})();
+</script>
+
 </body>
 </html>

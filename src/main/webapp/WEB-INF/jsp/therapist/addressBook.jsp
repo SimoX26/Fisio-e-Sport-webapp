@@ -480,6 +480,37 @@
     </div>
 </div>
 
+<c:if test="${param.created == '1'}">
+<script>
+sessionStorage.setItem('addressBookCreateSubmitted', '1');
+</script>
+</c:if>
+
+<script>
+(function () {
+    const lockKey = 'lockBackAddressBook';
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('lockBack') === '1') {
+        sessionStorage.setItem(lockKey, '1');
+        params.delete('lockBack');
+        const cleanUrl = window.location.pathname
+            + (params.toString() ? '?' + params.toString() : '')
+            + window.location.hash;
+        history.replaceState(null, '', cleanUrl);
+    }
+
+    if (sessionStorage.getItem(lockKey) !== '1') {
+        return;
+    }
+
+    history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, '', window.location.href);
+    });
+})();
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const editModalEl = document.getElementById('editPatientModal');

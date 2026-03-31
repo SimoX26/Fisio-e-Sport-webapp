@@ -102,5 +102,32 @@
 
 </div>
 
+<script>
+(function () {
+    const guardKey = 'addressBookCreateSubmitted';
+    const isCreateFormBackNavigation = function () {
+        const navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        if (navEntries && navEntries.length > 0 && navEntries[0].type === 'back_forward') {
+            return true;
+        }
+
+        return false;
+    };
+
+    window.addEventListener('pageshow', function (event) {
+        if (!sessionStorage.getItem(guardKey)) {
+            return;
+        }
+
+        if (!event.persisted && !isCreateFormBackNavigation()) {
+            return;
+        }
+
+        sessionStorage.removeItem(guardKey);
+        window.location.replace('<%= request.getContextPath() %>/address-book');
+    });
+})();
+</script>
+
 </body>
 </html>

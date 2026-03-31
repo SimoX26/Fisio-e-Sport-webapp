@@ -68,11 +68,16 @@ public class AddressBookServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+        String redirectPath = "/address-book";
 
         try {
             switch (action) {
 
-                case "create" -> createPatient(request);
+                case "create" -> {
+                    createPatient(request);
+                    PostSubmitNavigationGuard.blockFormPageOnce(request, "/address-book/create", "/address-book?lockBack=1");
+                    redirectPath = "/address-book?created=1&lockBack=1";
+                }
                 case "update" -> updatePatient(request);
                 case "delete" -> deletePatient(request);
                 case "activate" -> changeState(request, "activate");
@@ -82,7 +87,7 @@ public class AddressBookServlet extends HttpServlet {
                 default -> throw new IllegalArgumentException("Unknown action");
             }
 
-            response.sendRedirect(request.getContextPath() + "/address-book");
+            response.sendRedirect(request.getContextPath() + redirectPath);
 
         } catch (RuntimeException ex) {
             request.setAttribute("error", ex.getMessage());
