@@ -25,12 +25,19 @@ public class LogoutServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        performLogout(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        request.getRequestDispatcher("/WEB-INF/jsp/logoutConfirm.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!"1".equals(request.getParameter("confirmLogout"))) {
+            response.sendRedirect(request.getContextPath() + "/logout?error=confirm_required");
+            return;
+        }
         performLogout(request, response);
     }
 

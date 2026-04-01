@@ -26,7 +26,20 @@
                 <h2 class="page-title mb-2">Conferma logout</h2>
                 <p class="page-subtitle mb-4">Vuoi davvero uscire dall'applicazione?</p>
 
+                <c:if test="${param.error == 'confirm_required'}">
+                    <div class="alert alert-warning" role="alert">
+                        Conferma di sicurezza richiesta prima del logout.
+                    </div>
+                </c:if>
+
                 <form method="post" action="<%= request.getContextPath() %>/logout" class="form-actions d-flex justify-content-between">
+                    <input type="hidden" name="confirmLogout" value="1">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="confirmLogoutCheck" required>
+                        <label class="form-check-label" for="confirmLogoutCheck">
+                            Confermo di voler terminare la sessione
+                        </label>
+                    </div>
                     <c:choose>
                         <c:when test="${sessionScope.userRole == 'ADMIN'}">
                             <a href="<%= request.getContextPath() %>/admin" class="btn btn-outline-secondary">Annulla</a>
@@ -35,7 +48,7 @@
                             <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-outline-secondary">Annulla</a>
                         </c:otherwise>
                     </c:choose>
-                    <button type="submit" class="btn btn-danger">Logout</button>
+                    <button type="submit" class="btn btn-danger">Logout sicuro</button>
                 </form>
             </div>
         </div>
