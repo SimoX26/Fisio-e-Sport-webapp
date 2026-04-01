@@ -61,8 +61,8 @@
                         <c:forEach var="row" items="${cancelledAppointments}">
                             <tr>
                                 <td><strong><c:out value="${row.patientFullName}" /></strong></td>
-                                <td><c:out value="${row.start}" /></td>
-                                <td><c:out value="${row.end}" /></td>
+                                <td><c:out value="${row.startLabel}" /></td>
+                                <td><c:out value="${row.endLabel}" /></td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${empty row.notes}">

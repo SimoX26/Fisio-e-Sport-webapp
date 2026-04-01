@@ -14,6 +14,7 @@ import it.SimoSW.model.dao.UserDAO;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Locale;
 
 public class CalendarController {
     private static final int APPOINTMENT_DURATION_HOURS = 1;
+    private static final DateTimeFormatter TRASH_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final AppointmentDAO appointmentDAO;
     private final PatientDAO patientDAO;
@@ -339,8 +341,16 @@ public class CalendarController {
             return start;
         }
 
+        public String getStartLabel() {
+            return start == null ? "-" : start.format(TRASH_DATE_TIME_FORMATTER);
+        }
+
         public LocalDateTime getEnd() {
             return end;
+        }
+
+        public String getEndLabel() {
+            return end == null ? "-" : end.format(TRASH_DATE_TIME_FORMATTER);
         }
 
         public String getNotes() {
