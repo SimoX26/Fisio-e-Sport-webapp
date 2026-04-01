@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventModalEl = document.getElementById('eventModal');
     const completeTreatmentModalEl = document.getElementById('completeTreatmentModal');
     const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
+    const reminderModalEl = document.getElementById('reminderModal');
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     const notesInput = document.getElementById('notes');
@@ -71,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const treatmentNotesInput = document.getElementById('treatmentNotes');
     const confirmCompleteTreatmentBtn = document.getElementById('confirmCompleteTreatmentBtn');
     const confirmDeleteAppointmentBtn = document.getElementById('confirmDeleteAppointmentBtn');
+    const reminderDayLabelEl = document.getElementById('reminderDayLabel');
+    const reminderDateInput = document.getElementById('reminderDate');
+    const reminderTemplateInput = document.getElementById('reminderTemplate');
+    const reminderPreviewListEl = document.getElementById('reminderPreviewList');
+    const reminderPreviewEmptyEl = document.getElementById('reminderPreviewEmpty');
+    const sendReminderBtn = document.getElementById('sendReminderBtn');
+    const refreshReminderPreviewBtn = document.getElementById('refreshReminderPreviewBtn');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
         return;
@@ -80,12 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventModal = eventModalEl ? new bootstrap.Modal(eventModalEl) : null;
     const completeTreatmentModal = completeTreatmentModalEl ? new bootstrap.Modal(completeTreatmentModalEl) : null;
     const confirmDeleteModal = confirmDeleteModalEl ? new bootstrap.Modal(confirmDeleteModalEl) : null;
+    const reminderModal = reminderModalEl ? new bootstrap.Modal(reminderModalEl) : null;
     let selectedEvent = null;
     let editingAppointmentId = null;
     let currentHeightMode = 'auto';
     let patientSuggestionDebounce = null;
     let patientSuggestionItems = [];
     let highlightedSuggestionIndex = -1;
+    let reminderPreviewData = [];
 
     function applyViewClass(calendarInstance) {
         const viewType = calendarInstance.view ? calendarInstance.view.type : '';
@@ -125,6 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function toReminderDayLabel(date) {
+        return date.toLocaleDateString('it-IT', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+
     function normalizeOptionalText(value) {
         const normalized = (value || '').trim();
         return normalized || null;
@@ -140,6 +159,138 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`${fieldLabel} non valido`);
         }
         return parsed;
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function defaultReminderTemplate() {
+        return "Gentile {nome paziente}, le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
+    }
+
+    function renderReminderMessage(template, recipient) {
+        const rawTemplate = (template || defaultReminderTemplate()).trim();
+        const message = rawTemplate || defaultReminderTemplate();
+        return message
+            .replaceAll('{nome paziente}', recipient.patientName || '')
+            .replaceAll('{giorno}', recipient.dayLabel || '')
+            .replaceAll('{ora inizio}', recipient.startTime || '')
+            .replaceAll('{ora fine}', recipient.endTime || '')
+            .replaceAll('{ora inizio - ora fine}', recipient.timeRange || '');
+    }
+
+    function renderReminderPreview(template) {
+        if (!reminderPreviewListEl || !reminderPreviewEmptyEl) {
+            return;
+        }
+
+        reminderPreviewListEl.innerHTML = '';
+        if (!Array.isArray(reminderPreviewData) || reminderPreviewData.length === 0) {
+            reminderPreviewEmptyEl.classList.remove('d-none');
+            return;
+        }
+
+        reminderPreviewEmptyEl.classList.add('d-none');
+        reminderPreviewData.forEach((recipient) => {
+            const item = document.createElement('div');
+            item.className = 'reminder-preview-item';
+            const message = renderReminderMessage(template, recipient);
+            item.innerHTML = `
+                <div class="reminder-preview-head">
+                    <strong>${escapeHtml(recipient.patientName || '-')}</strong>
+                    <span>${escapeHtml(recipient.timeRange || '-')}</span>
+                </div>
+                <div class="reminder-preview-msg">${escapeHtml(message)}</div>
+            `;
+            reminderPreviewListEl.appendChild(item);
+        });
+    }
+
+    async function loadReminderPreview() {
+        if (!reminderDateInput || !reminderDateInput.value) {
+            return;
+        }
+        const dateValue = reminderDateInput.value;
+        const templateValue = reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate();
+
+        try {
+            const response = await fetch(
+                `${contextPath}/calendar?reminderPreview=true&date=${encodeURIComponent(dateValue)}&template=${encodeURIComponent(templateValue)}`,
+                { headers: { Accept: 'application/json' } }
+            );
+            if (!response.ok) {
+                throw new Error('Impossibile caricare i destinatari del reminder');
+            }
+            const payload = await response.json();
+            reminderPreviewData = Array.isArray(payload?.recipients) ? payload.recipients : [];
+            if (reminderTemplateInput && !reminderTemplateInput.value.trim()) {
+                reminderTemplateInput.value = payload?.defaultTemplate || defaultReminderTemplate();
+            }
+            renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
+        } catch (error) {
+            reminderPreviewData = [];
+            renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
+            alert(error.message || 'Errore durante il caricamento dei reminder');
+        }
+    }
+
+    function openReminderModalForDate(dateIso) {
+        if (!reminderModal || !reminderDateInput) {
+            return;
+        }
+        reminderDateInput.value = dateIso;
+        const selectedDate = new Date(`${dateIso}T00:00:00`);
+        if (reminderDayLabelEl) {
+            reminderDayLabelEl.textContent = Number.isNaN(selectedDate.getTime()) ? dateIso : toReminderDayLabel(selectedDate);
+        }
+        if (reminderTemplateInput && !reminderTemplateInput.value.trim()) {
+            reminderTemplateInput.value = defaultReminderTemplate();
+        }
+        reminderPreviewData = [];
+        renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
+        loadReminderPreview();
+        reminderModal.show();
+    }
+
+    function renderReminderButtons(calendarInstance) {
+        if (!calendarInstance || !calendarInstance.view || calendarInstance.view.type !== 'timeGridWeek') {
+            return;
+        }
+
+        const headerCells = calendarEl.querySelectorAll('.fc-timegrid .fc-col-header-cell[data-date]');
+        headerCells.forEach((cell) => {
+            if (cell.querySelector('.calendar-reminder-btn')) {
+                return;
+            }
+            const dateIso = cell.getAttribute('data-date');
+            const anchor = cell.querySelector('.fc-col-header-cell-cushion');
+            if (!dateIso || !anchor) {
+                return;
+            }
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'calendar-reminder-btn';
+            button.title = 'Invia reminder del giorno';
+            button.setAttribute('aria-label', `Invia reminder per ${dateIso}`);
+            button.innerHTML = `
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M12 3a5 5 0 0 0-5 5v2.8l-1.7 2.8a1 1 0 0 0 .85 1.5h11.7a1 1 0 0 0 .85-1.5L17 10.8V8a5 5 0 0 0-5-5Zm0 18a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 21Z"></path>
+                </svg>
+            `;
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openReminderModalForDate(dateIso);
+            });
+            anchor.appendChild(button);
+        });
     }
 
     function hidePatientSuggestions() {
@@ -331,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
         datesSet() {
             applyViewClass(calendar);
             applyDesktopWeekFillMode(calendar);
+            renderReminderButtons(calendar);
         },
         events: {
             url: contextPath + '/calendar',
@@ -433,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calendar.render();
     applyViewClass(calendar);
     applyDesktopWeekFillMode(calendar);
+    renderReminderButtons(calendar);
     window.addEventListener('resize', () => applyDesktopWeekFillMode(calendar));
 
     if (openModalButton) {
@@ -792,6 +945,60 @@ document.addEventListener('DOMContentLoaded', () => {
     if (appointmentModalEl) {
         appointmentModalEl.addEventListener('hidden.bs.modal', () => {
             hidePatientSuggestions();
+        });
+    }
+
+    if (reminderTemplateInput) {
+        reminderTemplateInput.addEventListener('input', () => {
+            renderReminderPreview(reminderTemplateInput.value);
+        });
+    }
+
+    if (refreshReminderPreviewBtn) {
+        refreshReminderPreviewBtn.addEventListener('click', () => {
+            loadReminderPreview();
+        });
+    }
+
+    if (sendReminderBtn) {
+        sendReminderBtn.addEventListener('click', async () => {
+            const dateValue = reminderDateInput ? reminderDateInput.value : '';
+            if (!dateValue) {
+                alert('Seleziona prima un giorno dal calendario.');
+                return;
+            }
+            const templateValue = reminderTemplateInput && reminderTemplateInput.value.trim()
+                ? reminderTemplateInput.value.trim()
+                : defaultReminderTemplate();
+            try {
+                const data = new URLSearchParams();
+                data.append('action', 'send-reminders');
+                data.append('date', dateValue);
+                data.append('template', templateValue);
+
+                const response = await fetch(contextPath + '/calendar', {
+                    method: 'POST',
+                    body: data
+                });
+                if (!response.ok) {
+                    const text = await response.text();
+                    let message = '';
+                    try {
+                        const parsed = JSON.parse(text);
+                        message = parsed?.error || '';
+                    } catch (e) {
+                        message = text || '';
+                    }
+                    throw new Error(message || 'Errore durante l\'invio dei reminder');
+                }
+                const payload = await response.json();
+                alert(`Reminder elaborati: ${payload.processedCount || 0} destinatari.`);
+                if (reminderModal) {
+                    reminderModal.hide();
+                }
+            } catch (error) {
+                alert(error.message || 'Errore durante l\'invio dei reminder');
+            }
         });
     }
 

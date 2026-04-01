@@ -114,6 +114,64 @@ body.calendar-gcal-page{
     min-height: 760px;
 }
 
+.calendar-reminder-btn {
+    margin-left: 6px;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: all .18s ease;
+}
+
+.calendar-reminder-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}
+
+.calendar-reminder-btn:hover {
+    color: var(--brand-primary);
+    border-color: rgba(13, 110, 253, .45);
+    background: rgba(13, 110, 253, .08);
+}
+
+.reminder-preview-list {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reminder-preview-item {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px 12px;
+}
+
+.reminder-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: .95rem;
+}
+
+.reminder-preview-msg {
+    color: var(--text-muted);
+    white-space: pre-wrap;
+    line-height: 1.4;
+    font-size: .92rem;
+}
+
 @media (min-width: 992px){
     body.calendar-week-fill .calendar-scroll-shell{
         height: calc(100vh - 170px);

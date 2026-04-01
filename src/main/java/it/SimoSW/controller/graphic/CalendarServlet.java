@@ -16,14 +16,20 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @WebServlet("/calendar")
 public class CalendarServlet extends HttpServlet {
+
+    private static final DateTimeFormatter REMINDER_DAY_LABEL_FORMATTER = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.ITALIAN);
+    private static final DateTimeFormatter REMINDER_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final String DEFAULT_REMINDER_TEMPLATE = "Gentile {nome paziente}, le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
 
     private CalendarController calendarController;
     private TreatmentController treatmentController;
@@ -42,6 +48,11 @@ public class CalendarServlet extends HttpServlet {
        ========================= */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        if ("true".equals(request.getParameter("reminderPreview"))) {
+            loadReminderPreview(request, response);
+            return;
+        }
 
         if ("true".equals(request.getParameter("patients"))) {
             loadPatientSuggestions(request, response);
@@ -84,10 +95,13 @@ public class CalendarServlet extends HttpServlet {
                 case "reschedule" -> rescheduleAppointment(request);
                 case "cancel" -> cancelAppointment(request);
                 case "complete" -> completeAppointmentAndCreateTreatment(request);
+                case "send-reminders" -> sendReminders(request, response);
                 default -> throw new IllegalArgumentException("Unknown action");
             }
 
-            response.setStatus(HttpServletResponse.SC_OK);
+            if (!"send-reminders".equals(action)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
 
         } catch (RuntimeException ex) {
             sendClientError(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
@@ -143,6 +157,27 @@ public class CalendarServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), names);
+    }
+
+    private void loadReminderPreview(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        resolveTherapistIdFromSession(request);
+        LocalDate targetDate = parseRequiredDate(request.getParameter("date"));
+        String template = normalizeNotes(request.getParameter("template"));
+        if (template == null) {
+            template = DEFAULT_REMINDER_TEMPLATE;
+        }
+
+        List<Map<String, Object>> recipients = buildReminderRecipients(targetDate, template);
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("date", targetDate.toString());
+        payload.put("dayLabel", formatReminderDayLabel(targetDate));
+        payload.put("template", template);
+        payload.put("defaultTemplate", DEFAULT_REMINDER_TEMPLATE);
+        payload.put("recipients", recipients);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        mapper.writeValue(response.getWriter(), payload);
     }
 
 /*
@@ -207,6 +242,35 @@ public class CalendarServlet extends HttpServlet {
         long appointmentId = Long.parseLong(request.getParameter("id"));
 
         calendarController.cancelAppointment(appointmentId);
+    }
+
+    private void sendReminders(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        resolveTherapistIdFromSession(request);
+        LocalDate targetDate = parseRequiredDate(request.getParameter("date"));
+        String template = normalizeNotes(request.getParameter("template"));
+        if (template == null) {
+            template = DEFAULT_REMINDER_TEMPLATE;
+        }
+
+        List<Map<String, Object>> recipients = buildReminderRecipients(targetDate, template);
+        for (Map<String, Object> recipient : recipients) {
+            String patientName = String.valueOf(recipient.get("patientName"));
+            String email = String.valueOf(recipient.get("patientEmail"));
+            String message = String.valueOf(recipient.get("message"));
+            getServletContext().log("[REMINDER] date=" + targetDate + " patient=" + patientName + " email=" + email + " message=" + message);
+        }
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("date", targetDate.toString());
+        payload.put("dayLabel", formatReminderDayLabel(targetDate));
+        payload.put("processedCount", recipients.size());
+        payload.put("channel", "LOG");
+        payload.put("note", "Promemoria elaborati e registrati nel log applicativo.");
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        mapper.writeValue(response.getWriter(), payload);
     }
 
     private void completeAppointmentAndCreateTreatment(HttpServletRequest request) {
@@ -287,6 +351,73 @@ public class CalendarServlet extends HttpServlet {
 
     private boolean parseBooleanParameter(String value) {
         return value != null && ("true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value) || "1".equals(value));
+    }
+
+    private long resolveTherapistIdFromSession(HttpServletRequest request) {
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        if (loggedUser == null || loggedUser.isBlank()) {
+            throw new IllegalArgumentException("Sessione non valida: utente non autenticato");
+        }
+        return calendarController.resolveTherapistUserIdFromUsername(loggedUser);
+    }
+
+    private LocalDate parseRequiredDate(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Data reminder mancante");
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Data reminder non valida: " + value);
+        }
+    }
+
+    private List<Map<String, Object>> buildReminderRecipients(LocalDate targetDate, String template) {
+        LocalDateTime start = targetDate.atStartOfDay();
+        LocalDateTime end = targetDate.plusDays(1).atStartOfDay();
+        List<Appointment> appointments = calendarController.getAppointmentsInPeriod(start, end);
+        List<Map<String, Object>> recipients = new ArrayList<>();
+        String dayLabel = formatReminderDayLabel(targetDate);
+
+        for (Appointment appointment : appointments) {
+            if (appointment.getState() != AppointmentState.SCHEDULED) {
+                continue;
+            }
+            String patientName = calendarController.resolvePatientFullName(appointment.getPatientId());
+            String startTime = appointment.getStart() == null ? "-" : appointment.getStart().toLocalTime().format(REMINDER_TIME_FORMATTER);
+            String endTime = appointment.getEnd() == null ? "-" : appointment.getEnd().toLocalTime().format(REMINDER_TIME_FORMATTER);
+            String timeRange = startTime + " - " + endTime;
+            String renderedMessage = renderReminderMessage(template, patientName, dayLabel, startTime, endTime, timeRange);
+
+            Map<String, Object> row = new HashMap<>();
+            row.put("appointmentId", appointment.getId());
+            row.put("patientName", patientName);
+            row.put("patientEmail", calendarController.resolvePatientEmail(appointment.getPatientId()));
+            row.put("dayLabel", dayLabel);
+            row.put("startTime", startTime);
+            row.put("endTime", endTime);
+            row.put("timeRange", timeRange);
+            row.put("message", renderedMessage);
+            recipients.add(row);
+        }
+        return recipients;
+    }
+
+    private String formatReminderDayLabel(LocalDate date) {
+        if (date == null) {
+            return "-";
+        }
+        return date.format(REMINDER_DAY_LABEL_FORMATTER);
+    }
+
+    private String renderReminderMessage(String template, String patientName, String dayLabel, String startTime, String endTime, String timeRange) {
+        String result = template == null ? DEFAULT_REMINDER_TEMPLATE : template;
+        result = result.replace("{nome paziente}", patientName == null ? "" : patientName);
+        result = result.replace("{giorno}", dayLabel == null ? "" : dayLabel);
+        result = result.replace("{ora inizio}", startTime == null ? "" : startTime);
+        result = result.replace("{ora fine}", endTime == null ? "" : endTime);
+        result = result.replace("{ora inizio - ora fine}", timeRange == null ? "" : timeRange);
+        return result;
     }
 
     private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {

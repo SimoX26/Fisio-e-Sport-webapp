@@ -229,6 +229,12 @@ public class CalendarController {
                 .orElse("Paziente #" + patientId);
     }
 
+    public String resolvePatientEmail(long patientId) {
+        return patientDAO.findById(patientId)
+                .map(Patient::getEmail)
+                .orElse(null);
+    }
+
     public List<String> searchPatientNames(String query, int limit) {
         int normalizedLimit = Math.max(1, Math.min(limit, 20));
         List<Patient> matches = patientDAO.search(query);

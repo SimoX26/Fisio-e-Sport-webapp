@@ -22,8 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260401-2">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-3" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260401-3">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-5" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -56,6 +56,45 @@
     <div class="calendar-host">
         <div class="calendar-scroll-shell">
             <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+     MODALE REMINDER GIORNALIERI
+     ========================= -->
+<div class="modal fade" id="reminderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Reminder pazienti</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2 small text-muted">Giorno selezionato: <strong id="reminderDayLabel">-</strong></div>
+                <input type="hidden" id="reminderDate">
+
+                <div class="mb-3">
+                    <label class="form-label" for="reminderTemplate">Messaggio reminder</label>
+                    <textarea class="form-control" id="reminderTemplate" rows="4"></textarea>
+                    <div class="form-text">
+                        Placeholder disponibili: <code>{nome paziente}</code>, <code>{giorno}</code>, <code>{ora inizio}</code>, <code>{ora fine}</code>, <code>{ora inizio - ora fine}</code>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0">Anteprima destinatari</h6>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshReminderPreviewBtn">Aggiorna anteprima</button>
+                </div>
+                <div id="reminderPreviewEmpty" class="alert alert-light border mb-0 d-none">
+                    Nessun appuntamento pianificato per il giorno selezionato.
+                </div>
+                <div id="reminderPreviewList" class="reminder-preview-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id="sendReminderBtn">Invia reminder</button>
+            </div>
         </div>
     </div>
 </div>
