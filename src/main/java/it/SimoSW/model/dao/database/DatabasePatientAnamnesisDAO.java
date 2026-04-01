@@ -163,7 +163,7 @@ public class DatabasePatientAnamnesisDAO implements PatientAnamnesisDAO {
 
             return anamnesis;
         } catch (SQLException e) {
-            throw new RuntimeException("Errore durante il salvataggio dell'anamnesi", e);
+            throw new RuntimeException("Errore durante il salvataggio dell'anamnesi: " + e.getMessage(), e);
         }
     }
 

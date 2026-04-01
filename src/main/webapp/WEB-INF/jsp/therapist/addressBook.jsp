@@ -51,6 +51,18 @@
             </div>
         </c:if>
 
+        <c:if test="${param.created == '1'}">
+            <div class="alert alert-success" role="alert">
+                Paziente inserito correttamente.
+            </div>
+        </c:if>
+
+        <c:if test="${param.updated == '1'}">
+            <div class="alert alert-success" role="alert">
+                Dati paziente e anamnesi salvati correttamente.
+            </div>
+        </c:if>
+
         <%--
             Qui il controller dovrebbe settare:
             request.setAttribute("patients", List<Patient>);
@@ -104,7 +116,7 @@
                                         data-last-name="<c:out value='${patient.lastName}'/>"
                                         data-email="<c:out value='${patient.email}'/>"
                                         data-phone="<c:out value='${patient.phone}'/>">
-                                    Modifica
+                                    Dettagli
                                 </button>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger js-delete-patient"
@@ -513,10 +525,12 @@ sessionStorage.setItem('addressBookCreateSubmitted', '1');
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const contextPath = '<%= request.getContextPath() %>';
     const editModalEl = document.getElementById('editPatientModal');
     const deleteModalEl = document.getElementById('confirmDeletePatientModal');
     const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
     const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+    const editForm = editModalEl ? editModalEl.querySelector('form') : null;
 
     const editId = document.getElementById('editPatientId');
     const editFirstName = document.getElementById('editPatientFirstName');
@@ -527,14 +541,44 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteId = document.getElementById('deletePatientId');
     const deleteName = document.getElementById('deletePatientName');
 
+    function setFormFieldValue(name, value) {
+        if (!editForm) return;
+        const field = editForm.elements.namedItem(name);
+        if (!field) return;
+        field.value = value == null ? '' : String(value);
+    }
+
     document.querySelectorAll('.js-edit-patient').forEach(function (button) {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', async function () {
             if (!editModal) return;
+            if (editForm) {
+                editForm.reset();
+            }
             editId.value = this.dataset.id || '';
             editFirstName.value = this.dataset.firstName || '';
             editLastName.value = this.dataset.lastName || '';
             editEmail.value = this.dataset.email || '';
             editPhone.value = this.dataset.phone || '';
+
+            const patientId = this.dataset.id || '';
+            if (patientId) {
+                try {
+                    const response = await fetch(
+                        contextPath + '/address-book?action=anamnesis-details&id=' + encodeURIComponent(patientId),
+                        { headers: { 'Accept': 'application/json' } }
+                    );
+                    if (!response.ok) {
+                        throw new Error('Impossibile caricare i dettagli anamnesi');
+                    }
+                    const payload = await response.json();
+                    const anamnesis = payload && payload.anamnesis ? payload.anamnesis : {};
+                    Object.keys(anamnesis).forEach(function (key) {
+                        setFormFieldValue(key, anamnesis[key]);
+                    });
+                } catch (error) {
+                    alert('Impossibile caricare i dati anamnestici salvati.');
+                }
+            }
             editModal.show();
         });
     });

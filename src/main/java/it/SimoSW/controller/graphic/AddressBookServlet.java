@@ -1,5 +1,9 @@
 package it.SimoSW.controller.graphic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.model.ConditionCategory;
@@ -19,11 +23,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @WebServlet("/address-book")
 public class AddressBookServlet extends HttpServlet {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private AddressBookController addressBookController;
 
     @Override
@@ -42,6 +50,11 @@ public class AddressBookServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
+        String action = normalizeOptional(request.getParameter("action"));
+        if ("anamnesis-details".equals(action)) {
+            sendAnamnesisDetails(request, response);
+            return;
+        }
 
         List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
@@ -78,7 +91,10 @@ public class AddressBookServlet extends HttpServlet {
                     PostSubmitNavigationGuard.blockFormPageOnce(request, "/address-book/create", "/address-book?lockBack=1");
                     redirectPath = "/address-book?created=1&lockBack=1";
                 }
-                case "update" -> updatePatient(request);
+                case "update" -> {
+                    updatePatient(request);
+                    redirectPath = "/address-book?updated=1";
+                }
                 case "delete" -> deletePatient(request);
                 case "activate" -> changeState(request, "activate");
                 case "deactivate" -> changeState(request, "deactivate");
@@ -157,6 +173,154 @@ public class AddressBookServlet extends HttpServlet {
         addressBookController.deletePatient(patientId);
     }
 
+    private void sendAnamnesisDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String patientIdRaw = normalizeOptional(request.getParameter("id"));
+        if (patientIdRaw.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parametro id mancante");
+            return;
+        }
+
+        long patientId;
+        try {
+            patientId = Long.parseLong(patientIdRaw);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parametro id non valido");
+            return;
+        }
+
+        ObjectNode root = OBJECT_MAPPER.createObjectNode();
+        ObjectNode anamnesisNode = root.putObject("anamnesis");
+
+        try {
+            Optional<PatientAnamnesis> anamnesisOpt = addressBookController.getLatestAnamnesisByPatientId(patientId);
+            if (anamnesisOpt.isPresent()) {
+                PatientAnamnesis anamnesis = anamnesisOpt.get();
+                List<PatientCondition> conditions = addressBookController.getConditionsByAnamnesisId(anamnesis.getId());
+                fillAnamnesisNode(anamnesisNode, anamnesis, conditions);
+            }
+        } catch (RuntimeException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        OBJECT_MAPPER.writeValue(response.getWriter(), root);
+    }
+
+    private void fillAnamnesisNode(ObjectNode target, PatientAnamnesis a, List<PatientCondition> conditions) {
+        put(target, "assessmentDate", a.getAssessmentDate() == null ? "" : a.getAssessmentDate().toString());
+        put(target, "chiefComplaint", a.getChiefComplaint());
+        put(target, "painLocation", a.getPainLocation());
+        put(target, "painQuality", a.getPainQuality());
+        put(target, "associatedSymptoms", a.getAssociatedSymptoms());
+        put(target, "onsetType", a.getOnsetType());
+        put(target, "onsetContext", a.getOnsetContext());
+        put(target, "isDisabling", booleanToFormValue(a.getDisabling()));
+        put(target, "painFrequency", a.getPainFrequency());
+        put(target, "painProgression", a.getPainProgression());
+        put(target, "painWithMovement", a.getPainWithMovement());
+        put(target, "painWithRest", a.getPainWithRest());
+        put(target, "nightPain", booleanToFormValue(a.getNightPain()));
+        put(target, "morningPain", booleanToFormValue(a.getMorningPain()));
+        put(target, "painIntensity", a.getPainIntensity() == null ? "" : String.valueOf(a.getPainIntensity()));
+        put(target, "usesPainMeds", booleanToFormValue(a.getUsesPainMeds()));
+        put(target, "painMedsEffect", a.getPainMedsEffect());
+        put(target, "clinicalTests", a.getClinicalTests());
+        put(target, "specialistVisits", a.getSpecialistVisits());
+        put(target, "previousTreatments", a.getPreviousTreatments());
+        put(target, "pathologyHistory", a.getPathologyHistory());
+        put(target, "currentRegularDrugs", a.getCurrentRegularDrugs());
+        put(target, "surgeryHistory", a.getSurgeryHistory());
+        put(target, "traumaHistory", a.getTraumaHistory());
+        put(target, "devicesHistory", a.getDevicesHistory());
+        put(target, "chewingDisorders", booleanToFormValue(a.getChewingDisorders()));
+        put(target, "majorInfectionsHistory", a.getMajorInfectionsHistory());
+        put(target, "familyHistory", a.getFamilyHistory());
+        put(target, "heightCm", a.getHeightCm() == null ? "" : a.getHeightCm().toPlainString());
+        put(target, "weightKg", a.getWeightKg() == null ? "" : a.getWeightKg().toPlainString());
+        put(target, "lifestyle", a.getLifestyle());
+        put(target, "sportPractice", a.getSportPractice());
+        put(target, "substanceUse", a.getSubstanceUse());
+        put(target, "sleepQuality", a.getSleepQuality() == null ? "" : String.valueOf(a.getSleepQuality()));
+        put(target, "stressLevel", a.getStressLevel() == null ? "" : String.valueOf(a.getStressLevel()));
+        put(target, "dietQuality", a.getDietQuality());
+        put(target, "femaleCycleNotes", a.getFemaleCycleNotes());
+        put(target, "freeNotesJson", toDisplayFreeNotes(a.getFreeNotesJson()));
+
+        Map<ConditionCategory, StringBuilder> groupedConditions = new EnumMap<>(ConditionCategory.class);
+        if (conditions != null) {
+            for (PatientCondition condition : conditions) {
+                if (condition == null || condition.getCategory() == null) {
+                    continue;
+                }
+                String label = normalizeOptional(condition.getLabel());
+                if (label.isEmpty()) {
+                    continue;
+                }
+                StringBuilder bucket = groupedConditions.computeIfAbsent(condition.getCategory(), key -> new StringBuilder());
+                if (bucket.length() > 0) {
+                    bucket.append('\n');
+                }
+                bucket.append(label);
+            }
+        }
+
+        put(target, "conditionsPathology", groupedConditions.getOrDefault(ConditionCategory.PATHOLOGY, new StringBuilder()).toString());
+        put(target, "conditionsSymptom", groupedConditions.getOrDefault(ConditionCategory.SYMPTOM, new StringBuilder()).toString());
+        put(target, "conditionsFamilyHistory", groupedConditions.getOrDefault(ConditionCategory.FAMILY_HISTORY, new StringBuilder()).toString());
+        put(target, "conditionsAllergy", groupedConditions.getOrDefault(ConditionCategory.ALLERGY, new StringBuilder()).toString());
+        put(target, "conditionsDrug", groupedConditions.getOrDefault(ConditionCategory.DRUG, new StringBuilder()).toString());
+        put(target, "conditionsSystemReview", groupedConditions.getOrDefault(ConditionCategory.SYSTEM_REVIEW, new StringBuilder()).toString());
+        put(target, "conditionsOther", groupedConditions.getOrDefault(ConditionCategory.OTHER, new StringBuilder()).toString());
+    }
+
+    private String booleanToFormValue(Boolean value) {
+        if (value == null) {
+            return "";
+        }
+        return value ? "si" : "no";
+    }
+
+    private void put(ObjectNode target, String field, String value) {
+        target.put(field, value == null ? "" : value);
+    }
+
+    private String toDisplayFreeNotes(String rawValue) {
+        String normalized = normalizeOptional(rawValue);
+        if (normalized.isEmpty()) {
+            return "";
+        }
+        try {
+            JsonNode node = OBJECT_MAPPER.readTree(normalized);
+            if (node != null && node.isObject()) {
+                JsonNode noteNode = node.get("note");
+                if (noteNode != null && noteNode.isTextual()) {
+                    return noteNode.asText();
+                }
+
+                StringBuilder text = new StringBuilder();
+                node.fields().forEachRemaining(entry -> {
+                    JsonNode value = entry.getValue();
+                    String valueText = value == null || value.isNull() ? "" : value.asText();
+                    if (valueText.isEmpty()) {
+                        return;
+                    }
+                    if (text.length() > 0) {
+                        text.append('\n');
+                    }
+                    text.append(entry.getKey()).append(": ").append(valueText);
+                });
+                if (text.length() > 0) {
+                    return text.toString();
+                }
+            }
+            return normalized;
+        } catch (JsonProcessingException e) {
+            return normalized;
+        }
+    }
+
     private String normalizeOptional(String value) {
         if (value == null) {
             return "";
@@ -215,7 +379,7 @@ public class AddressBookServlet extends HttpServlet {
         a.setStressLevel(parseInteger(request.getParameter("stressLevel"), 0, 4));
         a.setDietQuality(normalizeEnum(request.getParameter("dietQuality")));
         a.setFemaleCycleNotes(normalizeOptional(request.getParameter("femaleCycleNotes")));
-        a.setFreeNotesJson(normalizeOptional(request.getParameter("freeNotesJson")));
+        a.setFreeNotesJson(normalizeFreeNotesJson(request.getParameter("freeNotesJson")));
 
         return a;
     }
@@ -352,8 +516,32 @@ public class AddressBookServlet extends HttpServlet {
     private String normalizeEnum(String value) {
         String normalized = normalizeOptional(value);
         if (normalized.isEmpty()) {
-            return "";
+            return null;
         }
         return normalized.toUpperCase();
+    }
+
+    private String normalizeFreeNotesJson(String value) {
+        String normalized = normalizeOptional(value);
+        if (normalized.isEmpty()) {
+            return null;
+        }
+
+        if (isValidJson(normalized)) {
+            return normalized;
+        }
+
+        ObjectNode wrapper = OBJECT_MAPPER.createObjectNode();
+        wrapper.put("note", normalized);
+        return wrapper.toString();
+    }
+
+    private boolean isValidJson(String value) {
+        try {
+            OBJECT_MAPPER.readTree(value);
+            return true;
+        } catch (JsonProcessingException e) {
+            return false;
+        }
     }
 }

@@ -13,6 +13,7 @@ import it.SimoSW.model.dao.PatientDAO;
 import it.SimoSW.model.dao.UserDAO;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Application controller responsible for managing patients in the address book.
@@ -225,6 +226,15 @@ public class AddressBookController {
             condition.setAnamnesisId(saved.getId());
         }
         patientConditionDAO.saveAll(saved.getId(), conditions);
+    }
+
+    public Optional<PatientAnamnesis> getLatestAnamnesisByPatientId(long patientId) {
+        getPatientById(patientId);
+        return patientAnamnesisDAO.findLatestByPatientId(patientId);
+    }
+
+    public List<PatientCondition> getConditionsByAnamnesisId(long anamnesisId) {
+        return patientConditionDAO.findByAnamnesisId(anamnesisId);
     }
 
 }
