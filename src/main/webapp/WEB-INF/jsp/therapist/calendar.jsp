@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260401-3">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-5" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260402-1" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -121,6 +121,7 @@
 
             <div class="modal-footer">
                 <span id="eventModalStateHint" class="me-auto text-muted small d-none"></span>
+                <a href="#" class="btn btn-outline-secondary" id="openPatientDetailsBtn">Dettagli paziente</a>
                 <button type="button" class="btn btn-success" id="completeAppointmentBtn">
                     Completa trattamento
                 </button>

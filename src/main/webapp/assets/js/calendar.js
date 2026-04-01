@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalPatientEl = document.getElementById('modalPatient');
     const modalNotesEl = document.getElementById('modalNotes');
     const modalTimeEl = document.getElementById('modalTime');
+    const openPatientDetailsBtn = document.getElementById('openPatientDetailsBtn');
     const editAppointmentBtn = document.getElementById('editAppointmentBtn');
     const deleteAppointmentBtn = document.getElementById('deleteAppointmentBtn');
     const completeAppointmentBtn = document.getElementById('completeAppointmentBtn');
@@ -526,6 +527,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (modalPatientEl) {
                 modalPatientEl.innerText = event.extendedProps.patient || event.extendedProps.patientId || '-';
+            }
+            if (openPatientDetailsBtn) {
+                const patientId = event.extendedProps.patientId;
+                if (patientId) {
+                    openPatientDetailsBtn.href = `${contextPath}/address-book?openPatientId=${encodeURIComponent(String(patientId))}`;
+                    openPatientDetailsBtn.classList.remove('d-none');
+                } else {
+                    openPatientDetailsBtn.href = '#';
+                    openPatientDetailsBtn.classList.add('d-none');
+                }
             }
             if (modalNotesEl) {
                 modalNotesEl.innerText = event.extendedProps.notes || 'Nessuna nota';

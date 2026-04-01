@@ -142,9 +142,9 @@
 <!-- MODALE MODIFICA PAZIENTE -->
 <div class="modal fade" id="editPatientModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content glass-card">
+            <div class="modal-content glass-card">
             <div class="modal-header">
-                <h5 class="modal-title">Modifica paziente</h5>
+                <h5 class="modal-title">Dettagli paziente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="post" action="<%= request.getContextPath() %>/address-book">
@@ -548,40 +548,55 @@ document.addEventListener('DOMContentLoaded', function () {
         field.value = value == null ? '' : String(value);
     }
 
+    async function openPatientDetails(button) {
+        if (!editModal || !button) return;
+        if (editForm) {
+            editForm.reset();
+        }
+        editId.value = button.dataset.id || '';
+        editFirstName.value = button.dataset.firstName || '';
+        editLastName.value = button.dataset.lastName || '';
+        editEmail.value = button.dataset.email || '';
+        editPhone.value = button.dataset.phone || '';
+
+        const patientId = button.dataset.id || '';
+        if (patientId) {
+            try {
+                const response = await fetch(
+                    contextPath + '/address-book?action=anamnesis-details&id=' + encodeURIComponent(patientId),
+                    { headers: { 'Accept': 'application/json' } }
+                );
+                if (!response.ok) {
+                    throw new Error('Impossibile caricare i dettagli anamnesi');
+                }
+                const payload = await response.json();
+                const anamnesis = payload && payload.anamnesis ? payload.anamnesis : {};
+                Object.keys(anamnesis).forEach(function (key) {
+                    setFormFieldValue(key, anamnesis[key]);
+                });
+            } catch (error) {
+                alert('Impossibile caricare i dati anamnestici salvati.');
+            }
+        }
+        editModal.show();
+    }
+
     document.querySelectorAll('.js-edit-patient').forEach(function (button) {
         button.addEventListener('click', async function () {
-            if (!editModal) return;
-            if (editForm) {
-                editForm.reset();
-            }
-            editId.value = this.dataset.id || '';
-            editFirstName.value = this.dataset.firstName || '';
-            editLastName.value = this.dataset.lastName || '';
-            editEmail.value = this.dataset.email || '';
-            editPhone.value = this.dataset.phone || '';
-
-            const patientId = this.dataset.id || '';
-            if (patientId) {
-                try {
-                    const response = await fetch(
-                        contextPath + '/address-book?action=anamnesis-details&id=' + encodeURIComponent(patientId),
-                        { headers: { 'Accept': 'application/json' } }
-                    );
-                    if (!response.ok) {
-                        throw new Error('Impossibile caricare i dettagli anamnesi');
-                    }
-                    const payload = await response.json();
-                    const anamnesis = payload && payload.anamnesis ? payload.anamnesis : {};
-                    Object.keys(anamnesis).forEach(function (key) {
-                        setFormFieldValue(key, anamnesis[key]);
-                    });
-                } catch (error) {
-                    alert('Impossibile caricare i dati anamnestici salvati.');
-                }
-            }
-            editModal.show();
+            await openPatientDetails(this);
         });
     });
+
+    const openPatientId = new URLSearchParams(window.location.search).get('openPatientId');
+    if (openPatientId) {
+        const targetButton = Array.from(document.querySelectorAll('.js-edit-patient'))
+            .find(function (button) {
+                return (button.dataset.id || '') === openPatientId;
+            });
+        if (targetButton) {
+            openPatientDetails(targetButton);
+        }
+    }
 
     document.querySelectorAll('.js-delete-patient').forEach(function (button) {
         button.addEventListener('click', function () {
