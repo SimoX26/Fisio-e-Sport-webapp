@@ -53,9 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const allDayInput = document.getElementById('allDay');
     const appointmentModalTitleEl = document.getElementById('appointmentModalTitle');
     const modalTitleEl = document.getElementById('modalTitle');
-    const modalPatientEl = document.getElementById('modalPatient');
+    const modalTitleTimeEl = document.getElementById('modalTitleTime');
     const modalNotesEl = document.getElementById('modalNotes');
-    const modalTimeEl = document.getElementById('modalTime');
     const openPatientDetailsBtn = document.getElementById('openPatientDetailsBtn');
     const editAppointmentBtn = document.getElementById('editAppointmentBtn');
     const deleteAppointmentBtn = document.getElementById('deleteAppointmentBtn');
@@ -525,9 +524,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modalTitleEl) {
                 modalTitleEl.innerText = event.title || '';
             }
-            if (modalPatientEl) {
-                modalPatientEl.innerText = event.extendedProps.patient || event.extendedProps.patientId || '-';
-            }
             if (openPatientDetailsBtn) {
                 const patientId = event.extendedProps.patientId;
                 if (patientId) {
@@ -544,16 +540,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const eventStart = event.start;
             const eventEnd = event.end;
-            if (modalTimeEl) {
+            if (modalTitleTimeEl) {
                 if (!eventStart) {
-                    modalTimeEl.innerText = '-';
+                    modalTitleTimeEl.innerText = '';
                 } else if (isAllDay) {
-                    modalTimeEl.innerText = `${toItalianDateLabel(eventStart)} • Tutto il giorno`;
+                    modalTitleTimeEl.innerText = `${toItalianDateLabel(eventStart)} • Tutto il giorno`;
                 } else {
                     const dateLabel = toItalianDateLabel(eventStart);
                     const startTimeLabel = toItalianTimeLabel(eventStart);
                     const endTimeLabel = eventEnd ? toItalianTimeLabel(eventEnd) : '';
-                    modalTimeEl.innerText = endTimeLabel
+                    modalTitleTimeEl.innerText = endTimeLabel
                         ? `${dateLabel} • ${startTimeLabel} - ${endTimeLabel}`
                         : `${dateLabel} • ${startTimeLabel}`;
                 }

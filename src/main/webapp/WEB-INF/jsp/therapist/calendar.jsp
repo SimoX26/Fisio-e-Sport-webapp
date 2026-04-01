@@ -22,8 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260401-3">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260402-1" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260402-13">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260402-3" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -107,13 +107,14 @@
         <div class="modal-content glass-card">
 
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle"></h5>
+                <div class="event-title-block">
+                    <h5 class="modal-title mb-0" id="modalTitle"></h5>
+                    <span id="modalTitleTime" class="event-title-time"></span>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-                <p><strong>Paziente:</strong> <span id="modalPatient"></span></p>
-                <p><strong>Orario:</strong> <span id="modalTime"></span></p>
                 <p><strong>Note:</strong></p>
                 <p id="modalNotes" class="text-muted"></p>
                 <span id="modalType" class="d-none" aria-hidden="true"></span>
