@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const endInput = document.getElementById('end');
     const notesInput = document.getElementById('notes');
     const patientNameInput = document.getElementById('patientName');
+    const patientSuggestionsMenuEl = document.getElementById('patientSuggestionsMenu');
     const allDayInput = document.getElementById('allDay');
     const appointmentModalTitleEl = document.getElementById('appointmentModalTitle');
     const modalTitleEl = document.getElementById('modalTitle');
@@ -82,6 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedEvent = null;
     let editingAppointmentId = null;
     let currentHeightMode = 'auto';
+    let patientSuggestionDebounce = null;
+    let patientSuggestionItems = [];
+    let highlightedSuggestionIndex = -1;
 
     function applyViewClass(calendarInstance) {
         const viewType = calendarInstance.view ? calendarInstance.view.type : '';
@@ -136,6 +140,102 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`${fieldLabel} non valido`);
         }
         return parsed;
+    }
+
+    function hidePatientSuggestions() {
+        if (!patientSuggestionsMenuEl) {
+            return;
+        }
+        patientSuggestionsMenuEl.classList.add('d-none');
+        patientSuggestionsMenuEl.innerHTML = '';
+        patientSuggestionItems = [];
+        highlightedSuggestionIndex = -1;
+    }
+
+    function selectPatientSuggestion(name) {
+        if (!patientNameInput) {
+            return;
+        }
+        patientNameInput.value = name || '';
+        hidePatientSuggestions();
+    }
+
+    function renderPatientSuggestions(names) {
+        if (!patientSuggestionsMenuEl) {
+            return;
+        }
+
+        patientSuggestionsMenuEl.innerHTML = '';
+        patientSuggestionItems = Array.isArray(names) ? names : [];
+        highlightedSuggestionIndex = -1;
+
+        if (!patientSuggestionItems.length) {
+            patientSuggestionsMenuEl.classList.add('d-none');
+            return;
+        }
+
+        patientSuggestionItems.forEach((name, index) => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'patient-suggestion-item';
+            item.setAttribute('role', 'option');
+            item.setAttribute('data-index', String(index));
+            item.textContent = name;
+            item.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                selectPatientSuggestion(name);
+            });
+            patientSuggestionsMenuEl.appendChild(item);
+        });
+
+        patientSuggestionsMenuEl.classList.remove('d-none');
+    }
+
+    function highlightSuggestion(index) {
+        if (!patientSuggestionsMenuEl || !patientSuggestionItems.length) {
+            return;
+        }
+
+        const normalizedIndex = ((index % patientSuggestionItems.length) + patientSuggestionItems.length) % patientSuggestionItems.length;
+        highlightedSuggestionIndex = normalizedIndex;
+
+        patientSuggestionsMenuEl.querySelectorAll('.patient-suggestion-item').forEach((item) => {
+            item.classList.remove('active');
+            if (Number(item.dataset.index) === normalizedIndex) {
+                item.classList.add('active');
+                item.scrollIntoView({ block: 'nearest' });
+            }
+        });
+    }
+
+    async function fetchPatientSuggestions(rawQuery) {
+        const query = (rawQuery || '').trim();
+        if (!query || query.length < 1) {
+            hidePatientSuggestions();
+            return;
+        }
+        try {
+            const response = await fetch(
+                `${contextPath}/calendar?patients=true&q=${encodeURIComponent(query)}`,
+                { headers: { Accept: 'application/json' } }
+            );
+            if (!response.ok) {
+                throw new Error('Impossibile caricare suggerimenti pazienti');
+            }
+            const names = await response.json();
+            renderPatientSuggestions(Array.isArray(names) ? names : []);
+        } catch (error) {
+            hidePatientSuggestions();
+        }
+    }
+
+    function schedulePatientSuggestions(query) {
+        if (patientSuggestionDebounce) {
+            clearTimeout(patientSuggestionDebounce);
+        }
+        patientSuggestionDebounce = setTimeout(() => {
+            fetchPatientSuggestions(query);
+        }, 180);
     }
 
     function resolveInitialCalendarConfig() {
@@ -249,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            hidePatientSuggestions();
             if (allDayInput) {
                 allDayInput.checked = false;
             }
@@ -348,6 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            hidePatientSuggestions();
             if (allDayInput) {
                 allDayInput.checked = false;
             }
@@ -384,6 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = selectedEvent.extendedProps.patient || '';
                 patientNameInput.readOnly = false;
             }
+            hidePatientSuggestions();
             if (notesInput) {
                 notesInput.value = selectedEvent.extendedProps.notes || '';
                 notesInput.readOnly = false;
@@ -638,6 +741,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
             startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(normalizedEnd);
+        });
+    }
+
+    if (patientNameInput) {
+        patientNameInput.addEventListener('input', () => {
+            schedulePatientSuggestions(patientNameInput.value);
+        });
+        patientNameInput.addEventListener('focus', () => {
+            if (patientNameInput.value && patientNameInput.value.trim().length >= 1) {
+                schedulePatientSuggestions(patientNameInput.value);
+            }
+        });
+        patientNameInput.addEventListener('keydown', (event) => {
+            if (!patientSuggestionItems.length || !patientSuggestionsMenuEl || patientSuggestionsMenuEl.classList.contains('d-none')) {
+                return;
+            }
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                highlightSuggestion(highlightedSuggestionIndex + 1);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                highlightSuggestion(highlightedSuggestionIndex - 1);
+            } else if (event.key === 'Enter' && highlightedSuggestionIndex >= 0) {
+                event.preventDefault();
+                selectPatientSuggestion(patientSuggestionItems[highlightedSuggestionIndex]);
+            } else if (event.key === 'Escape') {
+                hidePatientSuggestions();
+            }
+        });
+        patientNameInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                hidePatientSuggestions();
+            }, 120);
+        });
+    }
+
+    document.addEventListener('click', (event) => {
+        if (!patientSuggestionsMenuEl || !patientNameInput) {
+            return;
+        }
+        const clickInsideInput = patientNameInput.contains(event.target);
+        const clickInsideMenu = patientSuggestionsMenuEl.contains(event.target);
+        if (!clickInsideInput && !clickInsideMenu) {
+            hidePatientSuggestions();
+        }
+    });
+
+    if (appointmentModalEl) {
+        appointmentModalEl.addEventListener('hidden.bs.modal', () => {
+            hidePatientSuggestions();
         });
     }
 

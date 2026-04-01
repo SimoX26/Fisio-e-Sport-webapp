@@ -229,6 +229,31 @@ public class CalendarController {
                 .orElse("Paziente #" + patientId);
     }
 
+    public List<String> searchPatientNames(String query, int limit) {
+        int normalizedLimit = Math.max(1, Math.min(limit, 20));
+        List<Patient> matches = patientDAO.search(query);
+        List<String> result = new ArrayList<>();
+
+        for (Patient patient : matches) {
+            if (patient == null) {
+                continue;
+            }
+            String fullName = patient.getFullName();
+            if (fullName == null) {
+                continue;
+            }
+            String normalizedName = fullName.trim();
+            if (normalizedName.isEmpty() || result.contains(normalizedName)) {
+                continue;
+            }
+            result.add(normalizedName);
+            if (result.size() >= normalizedLimit) {
+                break;
+            }
+        }
+        return result;
+    }
+
     private void validateTimeRange(LocalDateTime start, LocalDateTime end, boolean allDay) {
         if (start == null || end == null || !start.isBefore(end)) {
             throw new IllegalArgumentException("Invalid time range");

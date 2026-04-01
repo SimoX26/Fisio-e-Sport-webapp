@@ -43,6 +43,11 @@ public class CalendarServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        if ("true".equals(request.getParameter("patients"))) {
+            loadPatientSuggestions(request, response);
+            return;
+        }
+
         // Caso 1: richiesta eventi
         if ("true".equals(request.getParameter("events"))) {
             loadEvents(request, response);
@@ -130,6 +135,14 @@ public class CalendarServlet extends HttpServlet {
 
         response.setContentType("application/json");
         mapper.writeValue(response.getWriter(), events);
+    }
+
+    private void loadPatientSuggestions(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String query = request.getParameter("q");
+        List<String> names = calendarController.searchPatientNames(query, 8);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        mapper.writeValue(response.getWriter(), names);
     }
 
 /*

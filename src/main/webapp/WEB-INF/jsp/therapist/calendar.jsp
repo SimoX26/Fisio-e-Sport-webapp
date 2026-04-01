@@ -22,8 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-10">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-1" defer></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260401-2">
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-3" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -187,13 +187,15 @@
                 <form id="appointmentForm">
 
                     <!-- Paziente -->
-                    <div class="mb-3">
+                    <div class="mb-3 patient-search-wrap">
                         <label class="form-label">Paziente</label>
                         <input type="text"
                                class="form-control"
                                id="patientName"
+                               autocomplete="off"
                                placeholder="Nome e cognome paziente"
                                required>
+                        <div id="patientSuggestionsMenu" class="patient-suggestions-menu d-none" role="listbox" aria-label="Suggerimenti pazienti"></div>
                     </div>
 
                     <!-- Giorno e orario -->
