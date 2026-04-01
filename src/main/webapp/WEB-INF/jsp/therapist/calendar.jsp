@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Calendario • Fisio e Sport</title>
+    <title>Calendario • Fisio e Sports</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260323-10">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260325-2" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260401-1" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">

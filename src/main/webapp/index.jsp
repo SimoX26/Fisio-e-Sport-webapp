@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Fisio e Sport • Centro di fisioterapia e riabilitazione</title>
+    <title>Fisio e Sports • Centro di fisioterapia e riabilitazione</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
 <nav class="landing-navbar py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <a href="#" class="navbar-brand m-0 fw-semibold text-dark">
-            <span class="landing-brand-dot"></span>Fisio e Sport
+            <span class="landing-brand-dot"></span>Fisio e Sports
         </a>
 
         <div class="d-flex gap-2">
@@ -34,7 +34,7 @@
 <header class="landing-hero">
     <div class="container py-5">
         <div class="landing-hero-content">
-            <h1 class="landing-hero-title mb-3">Fisio e Sport: recupero, performance e continuita atletica</h1>
+            <h1 class="landing-hero-title mb-3">Fisio e Sports: recupero, performance e continuita atletica</h1>
             <p class="landing-hero-subtitle mb-4">
                 Accompagniamo atleti e persone attive dal post-infortunio al ritorno in campo:
                 fisioterapia personalizzata, supporto al recupero e pianificazione degli allenamenti in sicurezza.
@@ -74,7 +74,7 @@
 </section>
 
 <footer class="py-4 text-center small">
-    © <%= java.time.Year.now() %> Fisio e Sport • Fisioterapia e riabilitazione
+    © <%= java.time.Year.now() %> Fisio e Sports • Fisioterapia e riabilitazione
 </footer>
 
 <script>

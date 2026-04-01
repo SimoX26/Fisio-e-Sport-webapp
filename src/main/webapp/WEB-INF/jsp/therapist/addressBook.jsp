@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rubrica Pazienti • Fisio e Sport</title>
+    <title>Rubrica Pazienti • Fisio e Sports</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -407,45 +407,45 @@
 
                     <div class="row g-3 mt-1">
                         <div class="col-md-6">
-                            <label class="form-label">Condizioni patologiche (virgola / nuova riga)</label>
+                            <label class="form-label">Condizioni patologiche (separate da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsPathology" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Sintomi rilevanti (virgola / nuova riga)</label>
+                            <label class="form-label">Sintomi rilevanti (separati da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsSymptom" rows="2"></textarea>
                         </div>
                     </div>
 
                     <div class="row g-3 mt-1">
                         <div class="col-md-6">
-                            <label class="form-label">Familiarita (virgola / nuova riga)</label>
+                            <label class="form-label">Familiarita (separate da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsFamilyHistory" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Allergie/intolleranze (virgola / nuova riga)</label>
+                            <label class="form-label">Allergie/intolleranze (separate da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsAllergy" rows="2"></textarea>
                         </div>
                     </div>
 
                     <div class="row g-3 mt-1">
                         <div class="col-md-6">
-                            <label class="form-label">Farmaci rilevanti (virgola / nuova riga)</label>
+                            <label class="form-label">Farmaci rilevanti (separati da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsDrug" rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Revisione sistemica (virgola / nuova riga)</label>
+                            <label class="form-label">Revisione sistemica (separate da virgola o su righe diverse)</label>
                             <textarea class="form-control" name="conditionsSystemReview" rows="2"></textarea>
                         </div>
                     </div>
 
                     <div class="mb-3 mt-3">
-                        <label class="form-label">Altre condizioni (virgola / nuova riga)</label>
+                        <label class="form-label">Altre condizioni (separate da virgola o su righe diverse)</label>
                         <textarea class="form-control" name="conditionsOther" rows="2"></textarea>
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label">Note libere JSON</label>
-                        <textarea class="form-control" name="freeNotesJson" rows="2" placeholder='{"extra":"valore"}'></textarea>
+                        <label class="form-label">Note libere</label>
+                        <textarea class="form-control" name="freeNotesJson" rows="2" placeholder="Inserisci note testuali libere"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

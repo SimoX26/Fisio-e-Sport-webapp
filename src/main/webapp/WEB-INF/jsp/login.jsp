@@ -4,7 +4,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Login • Fisio e Sport</title>
+    <title>Login • Fisio e Sports</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,7 +28,7 @@
             <div class="glass-card p-4 p-md-5">
 
                 <div class="text-center mb-4">
-                    <h2 class="brand">Fisio e Sport</h2>
+                    <h2 class="brand">Fisio e Sports</h2>
                     <p class="text-muted">Accedi alla tua dashboard</p>
                 </div>
 

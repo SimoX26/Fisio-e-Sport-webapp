@@ -113,6 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('it-IT');
     }
 
+    function toItalianTimeLabel(date) {
+        return date.toLocaleTimeString('it-IT', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    }
+
     function normalizeOptionalText(value) {
         const normalized = (value || '').trim();
         return normalized || null;
@@ -270,10 +278,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalNotesEl.innerText = event.extendedProps.notes || 'Nessuna nota';
             }
 
-            const start = event.start.toLocaleString('it-IT');
-            const end = event.end ? event.end.toLocaleString('it-IT') : '';
+            const eventStart = event.start;
+            const eventEnd = event.end;
             if (modalTimeEl) {
-                modalTimeEl.innerText = end ? `${start} – ${end}` : start;
+                if (!eventStart) {
+                    modalTimeEl.innerText = '-';
+                } else if (isAllDay) {
+                    modalTimeEl.innerText = `${toItalianDateLabel(eventStart)} • Tutto il giorno`;
+                } else {
+                    const dateLabel = toItalianDateLabel(eventStart);
+                    const startTimeLabel = toItalianTimeLabel(eventStart);
+                    const endTimeLabel = eventEnd ? toItalianTimeLabel(eventEnd) : '';
+                    modalTimeEl.innerText = endTimeLabel
+                        ? `${dateLabel} • ${startTimeLabel} - ${endTimeLabel}`
+                        : `${dateLabel} • ${startTimeLabel}`;
+                }
             }
 
             if (completeAppointmentBtn) {

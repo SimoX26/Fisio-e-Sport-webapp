@@ -1,4 +1,4 @@
-# Fisio e Sport WebApp
+# Fisio e Sports WebApp
 
 Applicazione web Java per la gestione di un centro di fisioterapia e riabilitazione: autenticazione, calendario appuntamenti, rubrica pazienti e storico trattamenti.
 
