@@ -7,20 +7,28 @@ REMOTE_USER_DEFAULT="ubuntu"
 REMOTE_HOST_DEFAULT="ec2-51-21-247-183.eu-north-1.compute.amazonaws.com"
 REMOTE_WEBAPPS_DEFAULT="~"
 REMOTE_SQL_PATH_DEFAULT="~/sql-scripts"
+ANDROID_BACKEND_URL_DEFAULT="http://ec2-51-21-247-183.eu-north-1.compute.amazonaws.com:8080/Fisio-e-Sport-webapp"
 
 usage() {
   cat <<'HELP'
 Uso:
-  ./deploy.sh (--locale | --remoto) [opzioni]
+  ./deploy.sh (--locale | --remoto | --android | --apk) [opzioni]
 
 Esempi:
   ./deploy.sh --locale
   ./deploy.sh --remoto
   ./deploy.sh --remoto --skip-build
+  ./deploy.sh --android
+  ./deploy.sh --apk
+  ./deploy.sh --android --android-url http://192.168.1.50:8080/Fisio-e-Sport-webapp
 
 Opzioni:
   --locale           Copia il WAR in locale su /home/simone/apache-tomcat-9.0.112/webapps
   --remoto           Copia il WAR su host remoto preconfigurato via scp
+  --android          Build APK Android (android-app) e installa via adb se disponibile
+  --apk              Build APK Android (android-app) senza installazione adb
+  --android-url <u>  URL backend da iniettare nella build Android (FISIO_SPORT_BASE_URL)
+  --android-no-install Salta installazione adb automatica (build-only)
   --war <path>       Percorso WAR locale (default: WAR piu recente in target/)
   --key <path.pem>   Chiave SSH (default: auto-rilevata)
   --port <port>      Porta SSH (default: 22)
@@ -110,6 +118,54 @@ resolve_ipv4() {
   echo "$ip"
 }
 
+detect_android_sdk_path() {
+  local raw=""
+  local candidate=""
+  local candidates=(
+    "${ANDROID_HOME:-}"
+    "${ANDROID_SDK_ROOT:-}"
+    "$HOME/Android/Sdk"
+    "$HOME/Library/Android/sdk"
+    "/opt/android-sdk"
+    "/usr/local/share/android-sdk"
+  )
+
+  for raw in "${candidates[@]}"; do
+    [[ -n "$raw" ]] || continue
+    candidate="$(expand_tilde_path "$raw")"
+    if [[ -d "$candidate" ]]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+configure_android_sdk() {
+  local android_dir="$1"
+  local sdk_path=""
+  local local_properties_path=""
+  local sdk_escaped=""
+
+  sdk_path="$(detect_android_sdk_path || true)"
+  if [[ -z "$sdk_path" ]]; then
+    echo "Errore: Android SDK non trovato." >&2
+    echo "Imposta ANDROID_HOME/ANDROID_SDK_ROOT oppure crea ${android_dir}/local.properties con sdk.dir=/percorso/android-sdk" >&2
+    exit 1
+  fi
+
+  export ANDROID_HOME="$sdk_path"
+  export ANDROID_SDK_ROOT="$sdk_path"
+  echo ">> Android SDK rilevato: ${sdk_path}"
+
+  local_properties_path="${android_dir}/local.properties"
+  sdk_escaped="${sdk_path//\\/\\\\}"
+  sdk_escaped="${sdk_escaped//:/\\:}"
+  printf "sdk.dir=%s\n" "$sdk_escaped" > "$local_properties_path"
+  echo ">> local.properties aggiornato: ${local_properties_path}"
+}
+
 MODE=""
 WAR_PATH=""
 SSH_PORT="22"
@@ -121,6 +177,9 @@ REMOTE_SQL_PATH="$REMOTE_SQL_PATH_DEFAULT"
 SKIP_BUILD="false"
 TRANSFER_SQL="true"
 LOCAL_PATH="$LOCAL_WEBAPPS_DEFAULT"
+ANDROID_URL=""
+ANDROID_URL_EXPLICIT="false"
+ANDROID_INSTALL="true"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -130,6 +189,24 @@ while [[ $# -gt 0 ]]; do
       ;;
     --remoto)
       MODE="remoto"
+      shift
+      ;;
+    --android)
+      MODE="android"
+      shift
+      ;;
+    --apk)
+      MODE="apk"
+      ANDROID_INSTALL="false"
+      shift
+      ;;
+    --android-url)
+      ANDROID_URL="${2:-}"
+      ANDROID_URL_EXPLICIT="true"
+      shift 2
+      ;;
+    --android-no-install)
+      ANDROID_INSTALL="false"
       shift
       ;;
     --war)
@@ -181,9 +258,71 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$MODE" ]]; then
-  echo "Errore: devi specificare --locale oppure --remoto." >&2
+  echo "Errore: devi specificare --locale, --remoto, --android o --apk." >&2
   usage
   exit 1
+fi
+
+if [[ "$ANDROID_URL_EXPLICIT" != "true" ]]; then
+  ANDROID_URL="$ANDROID_BACKEND_URL_DEFAULT"
+fi
+
+if [[ "$MODE" == "android" || "$MODE" == "apk" ]]; then
+  ANDROID_DIR="android-app"
+  APK_DIR="${ANDROID_DIR}/app/build/outputs/apk/debug"
+  PACKAGE_NAME="it.simosw.fisioesport"
+
+  if [[ ! -d "$ANDROID_DIR" ]]; then
+    echo "Errore: cartella Android non trovata: $ANDROID_DIR" >&2
+    exit 1
+  fi
+
+  configure_android_sdk "$ANDROID_DIR"
+
+  GRADLE_CMD=("./gradlew" "assembleDebug")
+  if [[ -n "$ANDROID_URL" ]]; then
+    GRADLE_CMD+=("-PFISIO_SPORT_BASE_URL=${ANDROID_URL}")
+  fi
+
+  echo ">> Android backend URL: ${ANDROID_URL}"
+  echo ">> Build Android in ${ANDROID_DIR}: ${GRADLE_CMD[*]}"
+  (
+    cd "$ANDROID_DIR"
+    "${GRADLE_CMD[@]}"
+  )
+
+  APK_FILE="$(ls -t "${APK_DIR}"/*.apk 2>/dev/null | head -n 1 || true)"
+  if [[ -z "$APK_FILE" || ! -f "$APK_FILE" ]]; then
+    echo "Errore: APK non trovato dopo la build in: $APK_DIR" >&2
+    exit 1
+  fi
+
+  APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
+
+  if [[ "$ANDROID_INSTALL" == "false" ]]; then
+    echo ">> APK generato: $APK_FILE"
+    echo ">> Percorso filesystem: $APK_ABS_PATH"
+    exit 0
+  fi
+
+  if ! command -v adb >/dev/null 2>&1; then
+    echo ">> adb non trovato: installazione automatica saltata."
+    echo ">> Installa manualmente con: adb install -r \"$APK_FILE\""
+    exit 0
+  fi
+
+  ADB_DEVICE_COUNT="$(adb devices | awk 'NR>1 && $2=="device" {count++} END {print count+0}')"
+  if [[ "$ADB_DEVICE_COUNT" -eq 0 ]]; then
+    echo ">> Nessun dispositivo adb collegato: installazione automatica saltata."
+    echo ">> Installa manualmente con: adb install -r \"$APK_FILE\""
+    exit 0
+  fi
+
+  echo ">> Installazione APK su dispositivo (adb install -r)"
+  adb install -r "$APK_FILE"
+  echo ">> Deploy Android completato."
+  echo ">> Pacchetto installato: ${PACKAGE_NAME}"
+  exit 0
 fi
 
 require_cmd mvn

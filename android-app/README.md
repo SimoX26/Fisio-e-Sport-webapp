@@ -12,9 +12,9 @@ Wrapper Android installabile per la webapp **Fisio e Sport**.
 
 L'app legge l'URL da proprietà Gradle `FISIO_SPORT_BASE_URL`.
 
-Default per emulatore Android:
+Default di progetto (server remoto deployato):
 
-- `http://10.0.2.2:8080/Fisio-e-Sport-webapp`
+- `http://ec2-51-21-247-183.eu-north-1.compute.amazonaws.com:8080/Fisio-e-Sport-webapp`
 
 Esempio build debug con backend in LAN:
 
