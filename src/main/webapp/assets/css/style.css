@@ -813,7 +813,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     #calendar{
-        min-width: 680px;
+        min-width: 760px;
         min-height: 520px;
     }
 
@@ -843,7 +843,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     .fc .fc-timegrid-slot{
-        height: 50px;
+        height: 54px;
     }
 
     .fc .fc-col-header-cell-cushion{
