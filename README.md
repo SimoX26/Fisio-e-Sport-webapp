@@ -78,3 +78,13 @@ Password per tutti: `1234`
 Per stato e decisioni architetturali aggiornate:
 
 - `STATO_ARCHITETTURALE.md`
+
+## Versione Android (WebView)
+
+Nel repository e disponibile anche il wrapper Android Kotlin:
+
+- `android-app/`
+
+Documentazione build/install:
+
+- `android-app/README.md`
