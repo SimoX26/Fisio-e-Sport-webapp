@@ -7,7 +7,7 @@ REMOTE_USER_DEFAULT="ubuntu"
 REMOTE_HOST_DEFAULT="ec2-51-21-247-183.eu-north-1.compute.amazonaws.com"
 REMOTE_WEBAPPS_DEFAULT="~"
 REMOTE_SQL_PATH_DEFAULT="~/sql-scripts"
-ANDROID_BACKEND_URL_DEFAULT="http://ec2-51-21-247-183.eu-north-1.compute.amazonaws.com:8080/Fisio-e-Sport-webapp"
+ANDROID_BACKEND_URL_DEFAULT="http://51.21.149.227:8080/Fisio-e-Sport-webapp/"
 
 usage() {
   cat <<'HELP'
