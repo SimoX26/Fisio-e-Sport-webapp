@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fisio e Sport</string>
+    <string name="app_name">Fisio e Sports</string>
     <string name="file_picker_title">Seleziona file</string>
     <string name="file_error">Impossibile preparare il file</string>
     <string name="camera_continue_title">Aggiungere un\'altra foto?</string>

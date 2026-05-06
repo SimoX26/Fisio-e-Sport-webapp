@@ -1,12 +1,12 @@
-# Fisio e Sport Android
+# Fisio e Sports Android
 
-Wrapper Android installabile per la webapp **Fisio e Sport**.
+Wrapper Android installabile per la webapp **Fisio e Sports**.
 
 ## Requisiti
 
 - Android Studio (consigliato) oppure JDK 17 + Android SDK
 - Dispositivo Android o emulatore
-- Backend Fisio e Sport raggiungibile via rete
+- Backend Fisio e Sports raggiungibile via rete
 
 ## Configurazione URL backend
 
