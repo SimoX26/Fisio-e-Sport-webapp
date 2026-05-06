@@ -19,6 +19,8 @@ Opzioni:
   --password <password>    Password SSH (default: preconfigurata nello script)
   --port <port>            Porta SSH (default: 22)
   --remote-path <path>     Cartella deploy remota (default: /opt/tomcat/webapps)
+  --with-sql              Carica anche gli script SQL su server remoto
+  --remote-sql-path <p>   Cartella remota per script SQL (default: /root/sql-scripts)
   --war <path>             WAR locale da deployare (default: ultimo in target/)
   --skip-build             Salta mvn clean package
   --restart-service <name> Riavvia servizio remoto con systemctl (opzionale)
@@ -26,6 +28,8 @@ Opzioni:
 
 Esempi:
   ./deploy.sh --remoto
+  ./deploy.sh --remoto --with-sql
+  ./deploy.sh --remoto --with-sql --remote-sql-path /root/sql-scripts
   ./deploy.sh --apk
   ./deploy.sh --apk --android-url http://31.70.74.92:8080/Fisio-e-Sport-webapp
   ./deploy.sh --password '***'
@@ -45,9 +49,11 @@ REMOTE_PASSWORD_DEFAULT="b6vTvLSce98iLra"
 PASSWORD="${DEPLOY_SSH_PASSWORD:-$REMOTE_PASSWORD_DEFAULT}"
 PORT="22"
 REMOTE_PATH="/opt/tomcat/webapps"
+REMOTE_SQL_PATH="/root/sql-scripts"
 WAR_PATH=""
 SKIP_BUILD="false"
 RESTART_SERVICE=""
+WITH_SQL="false"
 MODE=""
 ANDROID_URL=""
 ANDROID_URL_EXPLICIT="false"
@@ -85,6 +91,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --remote-path)
       REMOTE_PATH="${2:-}"
+      shift 2
+      ;;
+    --with-sql)
+      WITH_SQL="true"
+      shift
+      ;;
+    --remote-sql-path)
+      REMOTE_SQL_PATH="${2:-}"
       shift 2
       ;;
     --war)
@@ -188,6 +202,23 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p '$REMOTE_PATH'"
 
 echo ">> Upload WAR verso ${TARGET}:${REMOTE_PATH}/"
 sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$WAR_PATH" "$TARGET:${REMOTE_PATH%/}/$WAR_NAME"
+
+if [[ "$WITH_SQL" == "true" ]]; then
+  shopt -s nullglob
+  SQL_FILES=(src/main/resources/*.sql)
+  shopt -u nullglob
+
+  if [[ ${#SQL_FILES[@]} -eq 0 ]]; then
+    echo ">> Nessuno script SQL trovato in src/main/resources."
+  else
+    echo ">> Verifico cartella SQL remota: $REMOTE_SQL_PATH"
+    sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p '$REMOTE_SQL_PATH'"
+    echo ">> Upload script SQL verso ${TARGET}:${REMOTE_SQL_PATH}/"
+    for sql_file in "${SQL_FILES[@]}"; do
+      sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$sql_file" "$TARGET:${REMOTE_SQL_PATH%/}/"
+    done
+  fi
+fi
 
 echo ">> Rimuovo eventuale cartella esplosa precedente: ${REMOTE_PATH%/}/${APP_CONTEXT}"
 sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "rm -rf '${REMOTE_PATH%/}/${APP_CONTEXT}'"
