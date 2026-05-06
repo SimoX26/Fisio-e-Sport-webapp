@@ -14,7 +14,7 @@ L'app legge l'URL da proprietà Gradle `FISIO_SPORT_BASE_URL`.
 
 Default di progetto (server remoto deployato):
 
-- `http://ec2-51-21-247-183.eu-north-1.compute.amazonaws.com:8080/Fisio-e-Sport-webapp`
+- `http://31.70.74.92:8080/Fisio-e-Sport-webapp`
 
 Esempio build debug con backend in LAN:
 

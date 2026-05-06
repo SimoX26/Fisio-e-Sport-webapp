@@ -6,7 +6,7 @@ plugins {
 }
 
 val fisioSportBaseUrl = (project.findProperty("FISIO_SPORT_BASE_URL") as String?)
-    ?: "http://ec2-51-21-247-183.eu-north-1.compute.amazonaws.com:8080/Fisio-e-Sport-webapp"
+    ?: "http://31.70.74.92:8080/Fisio-e-Sport-webapp"
 
 android {
     namespace = "it.simosw.fisioesport"
