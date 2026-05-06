@@ -4,14 +4,16 @@ set -euo pipefail
 usage() {
   cat <<'HELP'
 Uso:
-  ./deploy.sh --remoto [opzioni]
+  ./deploy.sh (--remoto | --apk) [opzioni]
 
 Descrizione:
   Builda il progetto Maven, carica il WAR su server remoto via sshpass/scp
   e lo copia in /opt/tomcat/webapps/ (default).
 
 Opzioni:
-  --remoto                Esegue deploy remoto (obbligatorio)
+  --remoto                Esegue deploy remoto
+  --apk                   Genera APK Android debug (senza installazione)
+  --android-url <url>     URL backend per build APK (FISIO_SPORT_BASE_URL)
   --host <host>            Host remoto (default: 31.70.74.92)
   --user <user>            Utente SSH (default: root)
   --password <password>    Password SSH (default: preconfigurata nello script)
@@ -24,6 +26,8 @@ Opzioni:
 
 Esempi:
   ./deploy.sh --remoto
+  ./deploy.sh --apk
+  ./deploy.sh --apk --android-url http://31.70.74.92:8080/Fisio-e-Sport-webapp
   ./deploy.sh --password '***'
 HELP
 }
@@ -45,12 +49,23 @@ WAR_PATH=""
 SKIP_BUILD="false"
 RESTART_SERVICE=""
 MODE=""
+ANDROID_URL=""
+ANDROID_URL_EXPLICIT="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --remoto)
       MODE="remoto"
       shift
+      ;;
+    --apk)
+      MODE="apk"
+      shift
+      ;;
+    --android-url)
+      ANDROID_URL="${2:-}"
+      ANDROID_URL_EXPLICIT="true"
+      shift 2
       ;;
     --host)
       HOST="${2:-}"
@@ -96,10 +111,45 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$MODE" != "remoto" ]]; then
-  echo "Errore: devi specificare --remoto." >&2
+if [[ "$MODE" != "remoto" && "$MODE" != "apk" ]]; then
+  echo "Errore: devi specificare --remoto o --apk." >&2
   usage
   exit 1
+fi
+
+if [[ "$MODE" == "apk" ]]; then
+  ANDROID_DIR="android-app"
+  APK_DIR="${ANDROID_DIR}/app/build/outputs/apk/debug"
+
+  if [[ ! -d "$ANDROID_DIR" ]]; then
+    echo "Errore: cartella Android non trovata: $ANDROID_DIR" >&2
+    exit 1
+  fi
+
+  if [[ "$ANDROID_URL_EXPLICIT" == "true" ]]; then
+    echo ">> Build APK con backend URL: $ANDROID_URL"
+    (
+      cd "$ANDROID_DIR"
+      ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}"
+    )
+  else
+    echo ">> Build APK con configurazione di default"
+    (
+      cd "$ANDROID_DIR"
+      ./gradlew assembleDebug
+    )
+  fi
+
+  APK_FILE="$(ls -t "${APK_DIR}"/*.apk 2>/dev/null | head -n 1 || true)"
+  if [[ -z "$APK_FILE" || ! -f "$APK_FILE" ]]; then
+    echo "Errore: APK non trovato dopo la build in: $APK_DIR" >&2
+    exit 1
+  fi
+
+  APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
+  echo ">> APK generato: $APK_FILE"
+  echo ">> Percorso filesystem: $APK_ABS_PATH"
+  exit 0
 fi
 
 require_cmd sshpass
