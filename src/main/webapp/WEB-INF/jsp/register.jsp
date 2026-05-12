@@ -93,5 +93,6 @@
     </div>
 </div>
 
+<script src="<%= request.getContextPath() %>/assets/js/loading-overlay.js?v=20260513-5" defer></script>
 </body>
 </html>

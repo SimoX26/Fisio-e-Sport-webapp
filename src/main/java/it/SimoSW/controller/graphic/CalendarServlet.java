@@ -113,11 +113,11 @@ public class CalendarServlet extends HttpServlet {
        ========================= */
 
     private void loadEvents(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        long therapistId = resolveTherapistIdFromSession(request);
         LocalDateTime start = parseDateTime(request.getParameter("start"));
         LocalDateTime end = parseDateTime(request.getParameter("end"));
 
-        List<Appointment> appointments = calendarController.getAppointmentsInPeriod(start, end);
+        List<Appointment> appointments = calendarController.getAppointmentsForTherapistInPeriod(therapistId, start, end);
         List<Map<String, Object>> events = new ArrayList<>();
 
         for (Appointment appointment : appointments) {
