@@ -8,7 +8,7 @@ Uso:
 
 Descrizione:
   Builda il progetto Maven, carica il WAR su server remoto via sshpass/scp
-  e lo copia in /opt/tomcat/webapps/ (default).
+  e lo deploya in Tomcat con staging remoto.
 
 Opzioni:
   --remoto                Esegue deploy remoto
@@ -19,11 +19,11 @@ Opzioni:
   --password <password>    Password SSH (default: preconfigurata nello script)
   --port <port>            Porta SSH (default: 22)
   --remote-path <path>     Cartella deploy remota (default: ~/)
+  --tomcat-webapps <path>  Cartella webapps Tomcat (default: /opt/tomcat/webapps)
   --with-sql              Carica anche gli script SQL su server remoto
   --remote-sql-path <p>   Cartella remota per script SQL (default: /root/sql-scripts)
   --war <path>             WAR locale da deployare (default: ultimo in target/)
   --skip-build             Salta mvn clean package
-  --restart-service <name> Riavvia servizio remoto con systemctl (opzionale)
   --help                   Mostra questo aiuto
 
 Esempi:
@@ -49,10 +49,10 @@ REMOTE_PASSWORD_DEFAULT="b6vTvLSce98iLra"
 PASSWORD="${DEPLOY_SSH_PASSWORD:-$REMOTE_PASSWORD_DEFAULT}"
 PORT="22"
 REMOTE_PATH="~/"
+TOMCAT_WEBAPPS_PATH="/opt/tomcat/webapps"
 REMOTE_SQL_PATH="/root/sql-scripts"
 WAR_PATH=""
 SKIP_BUILD="false"
-RESTART_SERVICE=""
 WITH_SQL="false"
 MODE=""
 ANDROID_URL=""
@@ -93,6 +93,10 @@ while [[ $# -gt 0 ]]; do
       REMOTE_PATH="${2:-}"
       shift 2
       ;;
+    --tomcat-webapps)
+      TOMCAT_WEBAPPS_PATH="${2:-}"
+      shift 2
+      ;;
     --with-sql)
       WITH_SQL="true"
       shift
@@ -108,10 +112,6 @@ while [[ $# -gt 0 ]]; do
     --skip-build)
       SKIP_BUILD="true"
       shift
-      ;;
-    --restart-service)
-      RESTART_SERVICE="${2:-}"
-      shift 2
       ;;
     --help|-h)
       usage
@@ -203,6 +203,14 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p ${REMOTE_PATH}"
 echo ">> Upload WAR verso ${TARGET}:${REMOTE_PATH}/"
 sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$WAR_PATH" "$TARGET:${REMOTE_PATH%/}/$WAR_NAME"
 
+echo ">> Deploy WAR in Tomcat webapps: $TOMCAT_WEBAPPS_PATH"
+sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
+  set -e
+  mkdir -p '$TOMCAT_WEBAPPS_PATH'
+  cp -f ${REMOTE_PATH%/}/$WAR_NAME '${TOMCAT_WEBAPPS_PATH%/}/$WAR_NAME'
+  find '$TOMCAT_WEBAPPS_PATH' -maxdepth 1 -type f -name '${APP_CONTEXT}*.war' ! -name '$WAR_NAME' -delete
+"
+
 if [[ "$WITH_SQL" == "true" ]]; then
   shopt -s nullglob
   SQL_FILES=(src/main/resources/*.sql)
@@ -220,12 +228,7 @@ if [[ "$WITH_SQL" == "true" ]]; then
   fi
 fi
 
-echo ">> Cartella esplosa ${REMOTE_PATH%/}/${APP_CONTEXT} non rimossa manualmente (gestita da Tomcat)."
-
-if [[ -n "$RESTART_SERVICE" ]]; then
-  echo ">> Riavvio servizio remoto: $RESTART_SERVICE"
-  sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "systemctl restart '$RESTART_SERVICE' && systemctl is-active '$RESTART_SERVICE'"
-fi
+echo ">> Cartella esplosa ${TOMCAT_WEBAPPS_PATH%/}/${APP_CONTEXT} non rimossa manualmente (gestita da Tomcat)."
 
 APP_URL="http://${HOST}:8080/${APP_CONTEXT}/"
 if [[ "$APP_CONTEXT" == "ROOT" ]]; then
