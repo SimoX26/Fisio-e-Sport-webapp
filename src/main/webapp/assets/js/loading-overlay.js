@@ -57,6 +57,10 @@
         }
         window.__appLoadingOverlayInitialized = true;
 
+        if (document.body && document.body.dataset.disableLoadingOverlay === "true") {
+            return;
+        }
+
         const overlay = document.createElement("div");
         overlay.className = "app-loading-overlay";
         overlay.id = "appLoadingOverlay";
@@ -68,9 +72,19 @@
             + "</div>";
         document.body.appendChild(overlay);
 
+        const hideOverlay = function () {
+            overlay.classList.remove("is-visible");
+            overlay.setAttribute("aria-hidden", "true");
+        };
+
         const showOverlay = function () {
             overlay.classList.add("is-visible");
             overlay.setAttribute("aria-hidden", "false");
+        };
+
+        window.appLoadingOverlay = {
+            show: showOverlay,
+            hide: hideOverlay
         };
 
         document.addEventListener("submit", function (event) {
@@ -88,13 +102,6 @@
             showOverlay();
         }, true);
 
-        document.addEventListener("pointerdown", function (event) {
-            if (!shouldShowForLinkEvent(event)) {
-                return;
-            }
-            showOverlay();
-        }, true);
-
         document.addEventListener("click", function (event) {
             if (!shouldShowForLinkEvent(event)) {
                 return;
@@ -105,6 +112,8 @@
         window.addEventListener("beforeunload", function () {
             showOverlay();
         });
+
+        window.addEventListener("pageshow", hideOverlay);
     }
 
     if (document.readyState === "loading") {

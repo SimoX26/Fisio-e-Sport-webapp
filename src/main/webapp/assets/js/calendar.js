@@ -489,6 +489,16 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'GET',
             extraParams: { events: 'true' }
         },
+        loading(isLoading) {
+            if (!window.appLoadingOverlay) {
+                return;
+            }
+            if (isLoading) {
+                window.appLoadingOverlay.show();
+            } else {
+                window.appLoadingOverlay.hide();
+            }
+        },
         select(info) {
             const startDate = ceilToHour(new Date(info.start));
             const defaultEndDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);

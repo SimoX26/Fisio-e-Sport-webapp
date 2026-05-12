@@ -5,6 +5,7 @@ import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentController;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
+import it.SimoSW.model.CalendarEventView;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -117,16 +118,16 @@ public class CalendarServlet extends HttpServlet {
         LocalDateTime start = parseDateTime(request.getParameter("start"));
         LocalDateTime end = parseDateTime(request.getParameter("end"));
 
-        List<Appointment> appointments = calendarController.getAppointmentsForTherapistInPeriod(therapistId, start, end);
+        List<CalendarEventView> appointments = calendarController.getCalendarEventViewsForTherapistInPeriod(therapistId, start, end);
         List<Map<String, Object>> events = new ArrayList<>();
 
-        for (Appointment appointment : appointments) {
+        for (CalendarEventView appointment : appointments) {
             if (appointment.getState() == AppointmentState.CANCELLED) {
                 continue;
             }
             Map<String, Object> event = new HashMap<>();
-            String patientFullName = calendarController.resolvePatientFullName(appointment.getPatientId());
-            event.put("id", appointment.getId());
+            String patientFullName = appointment.getPatientFullName();
+            event.put("id", appointment.getAppointmentId());
             event.put("title", patientFullName);
             event.put("start", appointment.getStart().toString());
             event.put("end", appointment.getEnd().toString());

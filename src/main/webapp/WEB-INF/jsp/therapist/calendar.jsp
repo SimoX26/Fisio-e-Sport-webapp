@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260402-13">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260402-3" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-4" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">

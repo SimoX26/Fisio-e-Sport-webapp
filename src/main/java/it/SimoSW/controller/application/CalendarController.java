@@ -5,6 +5,7 @@ import it.SimoSW.exception.InvalidAppointmentStateException;
 import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
+import it.SimoSW.model.CalendarEventView;
 import it.SimoSW.model.Patient;
 import it.SimoSW.model.PatientState;
 import it.SimoSW.model.UserRole;
@@ -43,6 +44,12 @@ public class CalendarController {
         validatePeriodRange(start, end);
         checkTherapistUserExists(therapistId);
         return appointmentDAO.findByTherapistInPeriod(therapistId, start, end);
+    }
+
+    public List<CalendarEventView> getCalendarEventViewsForTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end) {
+        validatePeriodRange(start, end);
+        checkTherapistUserExists(therapistId);
+        return appointmentDAO.findEventViewsByTherapistInPeriod(therapistId, start, end);
     }
 
     public Appointment scheduleAppointment(Appointment appointment) {

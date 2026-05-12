@@ -3,6 +3,7 @@ package it.SimoSW.model.dao.database;
 import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
+import it.SimoSW.model.CalendarEventView;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -176,6 +177,66 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException("Errore caricamento appuntamenti terapista", e);
+        }
+    }
+
+    @Override
+    public List<CalendarEventView> findEventViewsByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end) {
+        String sql = """
+            SELECT a.id,
+                   a.patient_id,
+                   a.therapist_id,
+                   a.start_time,
+                   a.end_time,
+                   a.all_day,
+                   a.notes,
+                   a.state,
+                   p.first_name,
+                   p.last_name
+            FROM appointments a
+            INNER JOIN patients p ON p.id = a.patient_id
+            WHERE a.therapist_id = ?
+              AND a.state <> 'CANCELLED'
+              AND a.start_time < ?
+              AND a.end_time > ?
+            ORDER BY a.start_time
+        """;
+
+        List<CalendarEventView> result = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, therapistId);
+            ps.setTimestamp(2, Timestamp.valueOf(end));
+            ps.setTimestamp(3, Timestamp.valueOf(start));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String firstName = rs.getString("first_name");
+                    String lastName = rs.getString("last_name");
+                    String fullName = ((firstName == null ? "" : firstName.trim()) + " " + (lastName == null ? "" : lastName.trim())).trim();
+                    if (fullName.isEmpty()) {
+                        fullName = "Paziente #" + rs.getLong("patient_id");
+                    }
+                    result.add(new CalendarEventView(
+                            rs.getLong("id"),
+                            rs.getLong("patient_id"),
+                            rs.getLong("therapist_id"),
+                            rs.getTimestamp("start_time").toLocalDateTime(),
+                            rs.getTimestamp("end_time").toLocalDateTime(),
+                            rs.getBoolean("all_day"),
+                            rs.getString("notes"),
+                            AppointmentState.valueOf(rs.getString("state")),
+                            fullName
+                    ));
+                }
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore caricamento eventi calendario terapista", e);
         }
     }
 

@@ -62,8 +62,12 @@ public class LoginPageServlet extends HttpServlet {
             session.setAttribute("loggedUser", user.getUsername());
             session.setAttribute("userRole", user.getRole().name());
 
-            String rememberMeToken = authenticationController.createRememberMeToken(user);
-            SessionCookieService.addRememberMeCookie(request, response, rememberMeToken);
+            try {
+                String rememberMeToken = authenticationController.createRememberMeToken(user);
+                SessionCookieService.addRememberMeCookie(request, response, rememberMeToken);
+            } catch (RuntimeException ex) {
+                getServletContext().log("Remember-me token non disponibile, continuo senza cookie persistente", ex);
+            }
 
             if (user.getRole() == UserRole.ADMIN) {
                 response.sendRedirect(request.getContextPath() + "/admin");

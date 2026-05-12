@@ -20,7 +20,7 @@
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
 </head>
 
-<body class="auth-page app-page d-flex align-items-center justify-content-center">
+<body class="auth-page app-page d-flex align-items-center justify-content-center" data-disable-loading-overlay="true">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -70,6 +70,6 @@
     </div>
 </div>
 
-<script src="<%= request.getContextPath() %>/assets/js/loading-overlay.js?v=20260513-5" defer></script>
+<script src="<%= request.getContextPath() %>/assets/js/loading-overlay.js?v=20260513-10" defer></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package it.SimoSW.model.dao;
 
 import it.SimoSW.model.Appointment;
+import it.SimoSW.model.CalendarEventView;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,8 @@ public interface AppointmentDAO {
     List<Appointment> findInPeriod(LocalDateTime start, LocalDateTime end);
 
     List<Appointment> findByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end);
+
+    List<CalendarEventView> findEventViewsByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end);
 
     List<Appointment> findCancelledByTherapist(long therapistId);
 

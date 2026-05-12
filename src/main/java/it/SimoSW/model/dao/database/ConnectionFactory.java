@@ -1,8 +1,10 @@
 package it.SimoSW.model.dao.database;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -10,9 +12,7 @@ public final class ConnectionFactory {
 
     private static final String CONFIG_FILE = "config.properties";
 
-    private static final String url;
-    private static final String username;
-    private static final String password;
+    private static final HikariDataSource dataSource;
 
     static {
         try {
@@ -29,15 +29,27 @@ public final class ConnectionFactory {
             props.load(input);
 
             String driver = props.getProperty("db.driver");
-            url = props.getProperty("db.url");
-            username = props.getProperty("db.username");
-            password = props.getProperty("db.password");
+            String url = props.getProperty("db.url");
+            String username = props.getProperty("db.username");
+            String password = props.getProperty("db.password");
 
             if (driver == null || url == null || username == null || password == null) {
                 throw new RuntimeException("Configurazione database incompleta");
             }
 
-            Class.forName(driver);
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setDriverClassName(driver);
+            hikariConfig.setJdbcUrl(url);
+            hikariConfig.setUsername(username);
+            hikariConfig.setPassword(password);
+            hikariConfig.setPoolName("FisioSportPool");
+            hikariConfig.setMaximumPoolSize(readInt(props, "db.pool.maxSize", 5));
+            hikariConfig.setMinimumIdle(readInt(props, "db.pool.minIdle", 1));
+            hikariConfig.setConnectionTimeout(readLong(props, "db.pool.connectionTimeoutMs", 3000L));
+            hikariConfig.setIdleTimeout(readLong(props, "db.pool.idleTimeoutMs", 60000L));
+            hikariConfig.setMaxLifetime(readLong(props, "db.pool.maxLifetimeMs", 1800000L));
+
+            dataSource = new HikariDataSource(hikariConfig);
 
         } catch (Exception e) {
             throw new RuntimeException("Errore inizializzazione ConnectionFactory", e);
@@ -49,6 +61,30 @@ public final class ConnectionFactory {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+        return dataSource.getConnection();
+    }
+
+    private static int readInt(Properties props, String key, int defaultValue) {
+        String raw = props.getProperty(key);
+        if (raw == null || raw.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(raw.trim());
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
+
+    private static long readLong(Properties props, String key, long defaultValue) {
+        String raw = props.getProperty(key);
+        if (raw == null || raw.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(raw.trim());
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }
