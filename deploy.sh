@@ -18,7 +18,7 @@ Opzioni:
   --user <user>            Utente SSH (default: root)
   --password <password>    Password SSH (default: preconfigurata nello script)
   --port <port>            Porta SSH (default: 22)
-  --remote-path <path>     Cartella deploy remota (default: /opt/tomcat/webapps)
+  --remote-path <path>     Cartella deploy remota (default: ~/)
   --with-sql              Carica anche gli script SQL su server remoto
   --remote-sql-path <p>   Cartella remota per script SQL (default: /root/sql-scripts)
   --war <path>             WAR locale da deployare (default: ultimo in target/)
@@ -48,7 +48,7 @@ USER="root"
 REMOTE_PASSWORD_DEFAULT="b6vTvLSce98iLra"
 PASSWORD="${DEPLOY_SSH_PASSWORD:-$REMOTE_PASSWORD_DEFAULT}"
 PORT="22"
-REMOTE_PATH="/opt/tomcat/webapps"
+REMOTE_PATH="~/"
 REMOTE_SQL_PATH="/root/sql-scripts"
 WAR_PATH=""
 SKIP_BUILD="false"
@@ -198,7 +198,7 @@ SCP_OPTS=(-o StrictHostKeyChecking=accept-new -P "$PORT")
 
 echo ">> WAR selezionato: $WAR_PATH"
 echo ">> Verifico cartella remota: $REMOTE_PATH"
-sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p '$REMOTE_PATH'"
+sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p ${REMOTE_PATH}"
 
 echo ">> Upload WAR verso ${TARGET}:${REMOTE_PATH}/"
 sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$WAR_PATH" "$TARGET:${REMOTE_PATH%/}/$WAR_NAME"
