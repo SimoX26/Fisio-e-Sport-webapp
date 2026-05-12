@@ -220,8 +220,7 @@ if [[ "$WITH_SQL" == "true" ]]; then
   fi
 fi
 
-echo ">> Rimuovo eventuale cartella esplosa precedente: ${REMOTE_PATH%/}/${APP_CONTEXT}"
-sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "rm -rf '${REMOTE_PATH%/}/${APP_CONTEXT}'"
+echo ">> Cartella esplosa ${REMOTE_PATH%/}/${APP_CONTEXT} non rimossa manualmente (gestita da Tomcat)."
 
 if [[ -n "$RESTART_SERVICE" ]]; then
   echo ">> Riavvio servizio remoto: $RESTART_SERVICE"
