@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat <<'HELP'
 Uso:
-  ./deploy.sh (--remoto | --apk) [opzioni]
+  ./deploy.sh (--remoto | --locale | --apk) [opzioni]
 
 Descrizione:
   Builda il progetto Maven, carica il WAR su server remoto via sshpass/scp
@@ -12,8 +12,13 @@ Descrizione:
 
 Opzioni:
   --remoto                Esegue deploy remoto
+  --locale                Esegue deploy locale su Tomcat
   --apk                   Genera APK Android debug (senza installazione)
   --android-url <url>     URL backend per build APK (FISIO_SPORT_BASE_URL)
+  --apk-prefix <prefix>   Prefisso nome APK generato (es: test)
+  --apk-test              Profilo test LAN (prefix: test, server: 192.168.1.16, overlay rosso)
+  --local-server <host>    Host locale per URL finale (default: localhost)
+  --local-port <port>      Porta locale Tomcat per URL finale (default: 8080)
   --host <host>            Host remoto (default: 31.70.74.92)
   --user <user>            Utente SSH (default: root)
   --password <password>    Password SSH (default: preconfigurata nello script)
@@ -28,9 +33,13 @@ Opzioni:
 
 Esempi:
   ./deploy.sh --remoto
+  ./deploy.sh --locale
+  ./deploy.sh --locale --tomcat-webapps /home/simone/apache-tomcat-9.0.112/webapps
   ./deploy.sh --remoto --with-sql
   ./deploy.sh --remoto --with-sql --remote-sql-path /root/sql-scripts
   ./deploy.sh --apk
+  ./deploy.sh --apk --apk-test
+  ./deploy.sh --apk --apk-prefix test --android-url http://192.168.1.16:8080/Fisio-e-Sport-webapp
   ./deploy.sh --apk --android-url http://31.70.74.92:8080/Fisio-e-Sport-webapp
   ./deploy.sh --password '***'
 HELP
@@ -51,12 +60,18 @@ PORT="22"
 REMOTE_PATH="~/"
 TOMCAT_WEBAPPS_PATH="/opt/tomcat/webapps"
 REMOTE_SQL_PATH="/root/sql-scripts"
+LOCAL_WEBAPPS_DEFAULT="/home/simone/apache-tomcat-9.0.112/webapps"
+LOCAL_SERVER="localhost"
+LOCAL_PORT="8080"
+APK_OUTPUT_DIR="/home/simone/Scaricati"
 WAR_PATH=""
 SKIP_BUILD="false"
 WITH_SQL="false"
 MODE=""
 ANDROID_URL=""
 ANDROID_URL_EXPLICIT="false"
+APK_PREFIX=""
+APK_TEST_MODE="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -68,9 +83,29 @@ while [[ $# -gt 0 ]]; do
       MODE="apk"
       shift
       ;;
+    --locale)
+      MODE="locale"
+      shift
+      ;;
     --android-url)
       ANDROID_URL="${2:-}"
       ANDROID_URL_EXPLICIT="true"
+      shift 2
+      ;;
+    --apk-prefix)
+      APK_PREFIX="${2:-}"
+      shift 2
+      ;;
+    --apk-test)
+      APK_TEST_MODE="true"
+      shift
+      ;;
+    --local-server)
+      LOCAL_SERVER="${2:-}"
+      shift 2
+      ;;
+    --local-port)
+      LOCAL_PORT="${2:-}"
       shift 2
       ;;
     --host)
@@ -125,8 +160,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$MODE" != "remoto" && "$MODE" != "apk" ]]; then
-  echo "Errore: devi specificare --remoto o --apk." >&2
+if [[ "$MODE" != "remoto" && "$MODE" != "locale" && "$MODE" != "apk" ]]; then
+  echo "Errore: devi specificare --remoto, --locale o --apk." >&2
   usage
   exit 1
 fi
@@ -134,47 +169,73 @@ fi
 if [[ "$MODE" == "apk" ]]; then
   ANDROID_DIR="android-app"
   APK_DIR="${ANDROID_DIR}/app/build/outputs/apk/debug"
+  BASE_APK_NAME="FisioESport.apk"
+  LAN_TEST_URL="http://192.168.1.16:8080/Fisio-e-Sport-webapp"
 
   if [[ ! -d "$ANDROID_DIR" ]]; then
     echo "Errore: cartella Android non trovata: $ANDROID_DIR" >&2
     exit 1
   fi
 
+  if [[ "$APK_TEST_MODE" == "true" ]]; then
+    if [[ "$ANDROID_URL_EXPLICIT" != "true" ]]; then
+      ANDROID_URL="$LAN_TEST_URL"
+      ANDROID_URL_EXPLICIT="true"
+    fi
+    if [[ -z "$APK_PREFIX" ]]; then
+      APK_PREFIX="test"
+    fi
+  fi
+
   if [[ "$ANDROID_URL_EXPLICIT" == "true" ]]; then
     echo ">> Build APK con backend URL: $ANDROID_URL"
     (
       cd "$ANDROID_DIR"
-      ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}"
+      if [[ "$APK_TEST_MODE" == "true" ]]; then
+        ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}" -PFISIO_SPORT_TEST_OVERLAY=true -PFISIO_SPORT_TEST_APP=true
+      else
+        ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}"
+      fi
     )
   else
     echo ">> Build APK con configurazione di default"
     (
       cd "$ANDROID_DIR"
-      ./gradlew assembleDebug
+      if [[ "$APK_TEST_MODE" == "true" ]]; then
+        ./gradlew assembleDebug -PFISIO_SPORT_TEST_OVERLAY=true -PFISIO_SPORT_TEST_APP=true
+      else
+        ./gradlew assembleDebug
+      fi
     )
   fi
 
-  APK_FILE="$(ls -t "${APK_DIR}"/*.apk 2>/dev/null | head -n 1 || true)"
+  APK_FILE="${APK_DIR}/${BASE_APK_NAME}"
   if [[ -z "$APK_FILE" || ! -f "$APK_FILE" ]]; then
-    echo "Errore: APK non trovato dopo la build in: $APK_DIR" >&2
+    echo "Errore: APK non trovato dopo la build in: $APK_FILE" >&2
     exit 1
   fi
 
+  mkdir -p "$APK_OUTPUT_DIR"
+
+  DEST_APK="${APK_OUTPUT_DIR%/}/${BASE_APK_NAME}"
+  cp -f "$APK_FILE" "$DEST_APK"
+  APK_FILE="$DEST_APK"
   APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
+
+  if [[ -n "$APK_PREFIX" ]]; then
+    APK_BASENAME="$(basename "$DEST_APK")"
+    PREFIXED_APK="${APK_OUTPUT_DIR%/}/${APK_PREFIX}-${APK_BASENAME}"
+    cp -f "$DEST_APK" "$PREFIXED_APK"
+    APK_FILE="$PREFIXED_APK"
+    APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
+  fi
+
   echo ">> APK generato: $APK_FILE"
   echo ">> Percorso filesystem: $APK_ABS_PATH"
   exit 0
 fi
 
-require_cmd sshpass
-require_cmd ssh
-require_cmd scp
 require_cmd mvn
-
-if [[ -z "$PASSWORD" ]]; then
-  echo "Errore: password SSH mancante. Usa --password o DEPLOY_SSH_PASSWORD." >&2
-  exit 1
-fi
 
 if [[ "$SKIP_BUILD" != "true" ]]; then
   echo ">> Build Maven: mvn clean package"
@@ -192,11 +253,40 @@ fi
 
 WAR_NAME="$(basename "$WAR_PATH")"
 APP_CONTEXT="${WAR_NAME%.war}"
+
+echo ">> WAR selezionato: $WAR_PATH"
+
+if [[ "$MODE" == "locale" ]]; then
+  if [[ "$TOMCAT_WEBAPPS_PATH" == "/opt/tomcat/webapps" ]]; then
+    TOMCAT_WEBAPPS_PATH="$LOCAL_WEBAPPS_DEFAULT"
+  fi
+
+  echo ">> Deploy locale in Tomcat webapps: $TOMCAT_WEBAPPS_PATH"
+  mkdir -p "$TOMCAT_WEBAPPS_PATH"
+  cp -f "$WAR_PATH" "${TOMCAT_WEBAPPS_PATH%/}/$WAR_NAME"
+  find "$TOMCAT_WEBAPPS_PATH" -maxdepth 1 -type f -name "${APP_CONTEXT}*.war" ! -name "$WAR_NAME" -delete
+
+  echo ">> Cartella esplosa ${TOMCAT_WEBAPPS_PATH%/}/${APP_CONTEXT} non rimossa manualmente (gestita da Tomcat)."
+  echo ">> Deploy locale completato."
+  echo ">> URL applicativo: http://${LOCAL_SERVER}:${LOCAL_PORT}/${APP_CONTEXT}/"
+  if [[ "$APP_CONTEXT" == "ROOT" ]]; then
+    echo ">> URL applicativo: http://${LOCAL_SERVER}:${LOCAL_PORT}/"
+  fi
+  exit 0
+fi
+
+require_cmd sshpass
+require_cmd ssh
+require_cmd scp
+
+if [[ -z "$PASSWORD" ]]; then
+  echo "Errore: password SSH mancante. Usa --password o DEPLOY_SSH_PASSWORD." >&2
+  exit 1
+fi
+
 TARGET="${USER}@${HOST}"
 SSH_OPTS=(-o StrictHostKeyChecking=accept-new -p "$PORT")
 SCP_OPTS=(-o StrictHostKeyChecking=accept-new -P "$PORT")
-
-echo ">> WAR selezionato: $WAR_PATH"
 echo ">> Verifico cartella remota: $REMOTE_PATH"
 sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p ${REMOTE_PATH}"
 
