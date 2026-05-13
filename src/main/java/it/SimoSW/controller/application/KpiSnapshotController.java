@@ -209,6 +209,7 @@ public class KpiSnapshotController {
                 SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)), 0) AS total
                 FROM appointments
                 WHERE state <> 'CANCELLED'
+                  AND patient_id IS NOT NULL
                   AND start_time >= ? AND start_time < ?
                 """ + therapistFilterSql("therapist_id", therapistId);
         return runCountByDateTime(sql, start, end, therapistId);
@@ -259,4 +260,3 @@ public class KpiSnapshotController {
         }
     }
 }
-

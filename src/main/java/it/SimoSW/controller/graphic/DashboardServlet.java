@@ -2,6 +2,7 @@ package it.SimoSW.controller.graphic;
 
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.model.Appointment;
+import it.SimoSW.model.AppointmentState;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 
 import javax.servlet.ServletException;
@@ -66,6 +67,8 @@ public class DashboardServlet extends HttpServlet {
                 List<Appointment> weekAppointments = calendarController
                         .getAppointmentsForTherapistInPeriod(therapistId, weekStart, weekEnd);
                 bookedHoursThisWeek = weekAppointments.stream()
+                        .filter(a -> a.getState() != AppointmentState.CANCELLED)
+                        .filter(a -> a.getPatientId() != null)
                         .filter(a -> !a.isAllDay())
                         .mapToLong(a -> ChronoUnit.HOURS.between(a.getStart(), a.getEnd()))
                         .sum();

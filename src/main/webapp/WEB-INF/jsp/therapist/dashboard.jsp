@@ -84,14 +84,12 @@
     <!-- Navigazione rapida -->
     <div class="mb-3">
         <h3 class="page-title fs-4 mb-1">Navigazione rapida</h3>
-        <p class="page-subtitle mb-0">Seleziona la schermata su cui vuoi lavorare.</p>
     </div>
     <div class="row g-4">
 
         <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/calendar">
-                <div class="kpi-label mb-2">Calendario</div>
                 <h5>Calendario</h5>
                 <p class="page-subtitle">
                     Visualizza e gestisci gli appuntamenti
@@ -102,7 +100,6 @@
         <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/address-book">
-                <div class="kpi-label mb-2">Rubrica</div>
                 <h5>Rubrica Pazienti</h5>
                 <p class="page-subtitle">
                     Consulta l’elenco dei pazienti
@@ -113,7 +110,6 @@
         <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/treatment-history">
-                <div class="kpi-label mb-2">Storico</div>
                 <h5>Storico Trattamenti</h5>
                 <p class="page-subtitle">
                     Visualizza le sedute effettuate
@@ -124,10 +120,9 @@
         <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/dashboard/insights">
-                <div class="kpi-label mb-2">Statistiche</div>
                 <h5>Statistiche KPI</h5>
                 <p class="page-subtitle">
-                    Visualizza trend mensili, grafici e indicatori storici.
+                    Visualizza analisi mensili, grafici e indicatori storici.
                 </p>
             </a>
         </div>

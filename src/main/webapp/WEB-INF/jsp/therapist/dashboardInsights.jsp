@@ -29,12 +29,11 @@
     <div class="page-header-row mb-4">
         <div>
             <h2 class="page-title mb-0">Statistiche</h2>
-            <p class="page-subtitle mb-0">Trend mensili e indicatori storici snapshot</p>
         </div>
         <div class="d-flex gap-2">
             <select id="kpiScopeSelect" class="form-select form-select-sm">
-                <option value="me">I miei KPI</option>
-                <option value="global">KPI globali</option>
+                <option value="me">I miei dati</option>
+                <option value="global">Dati globali</option>
             </select>
             <select id="kpiMonthsSelect" class="form-select form-select-sm">
                 <option value="6">Ultimi 6 mesi</option>
@@ -151,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function formatHoursFromMinutes(minutes) {
         const value = Number(minutes || 0) / 60;
-        return value.toFixed(1).replace('.', ',');
+        return Math.round(value).toLocaleString('it-IT');
     }
 
     function updateCards(series) {
@@ -159,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!latest) {
             kpiCompletedMonth.textContent = '0';
             kpiNewPatientsMonth.textContent = '0';
-            kpiBookedHoursMonth.textContent = '0,0';
+            kpiBookedHoursMonth.textContent = '0';
             kpiCancellationRate.textContent = '0%';
             if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = 'mese corrente';
             if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = 'mese corrente';
