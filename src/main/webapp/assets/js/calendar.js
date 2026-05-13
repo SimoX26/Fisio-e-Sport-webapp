@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_APPOINTMENT_DURATION_MINUTES = 60;
+    const APPOINTMENT_STEP_MINUTES = 15;
 
     function toLocalDateTimeInputValue(date) {
         const pad = (n) => String(n).padStart(2, '0');
@@ -22,17 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return next;
     }
 
-    function ceilToHour(date) {
+    function ceilToQuarterHour(date) {
         const rounded = new Date(date);
         const minutes = rounded.getMinutes();
-        const seconds = rounded.getSeconds();
-        const ms = rounded.getMilliseconds();
-
-        if (minutes !== 0 || seconds !== 0 || ms !== 0) {
-            rounded.setHours(rounded.getHours() + 1);
+        const remainder = minutes % APPOINTMENT_STEP_MINUTES;
+        if (remainder !== 0) {
+            rounded.setMinutes(minutes + (APPOINTMENT_STEP_MINUTES - remainder));
         }
-
-        rounded.setMinutes(0, 0, 0);
+        rounded.setSeconds(0, 0);
         return rounded;
     }
 
@@ -47,11 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const reminderModalEl = document.getElementById('reminderModal');
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
+    const appointmentDateInput = document.getElementById('appointmentDate');
+    const timeSelectionSection = document.getElementById('timeSelectionSection');
+    const startTimeNativeInput = document.getElementById('startTimeNative');
+    const endTimeNativeInput = document.getElementById('endTimeNative');
     const notesInput = document.getElementById('notes');
     const appointmentFormErrorEl = document.getElementById('appointmentFormError');
+    const patientNameLabel = document.getElementById('patientNameLabel');
     const patientNameInput = document.getElementById('patientName');
     const patientSuggestionsMenuEl = document.getElementById('patientSuggestionsMenu');
     const allDayInput = document.getElementById('allDay');
+    const nonTreatmentEventInput = document.getElementById('nonTreatmentEvent');
     const appointmentModalTitleEl = document.getElementById('appointmentModalTitle');
     const modalTitleEl = document.getElementById('modalTitle');
     const modalTitleTimeEl = document.getElementById('modalTitleTime');
@@ -98,6 +102,89 @@ document.addEventListener('DOMContentLoaded', () => {
     let highlightedSuggestionIndex = -1;
     let reminderPreviewData = [];
     let noticeCounter = 0;
+
+    function pad2(value) {
+        return String(value).padStart(2, '0');
+    }
+
+    function toIsoDate(date) {
+        return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+    }
+
+    function fromDateAndTime(dateIso, timeValue) {
+        return new Date(`${dateIso}T${timeValue}:00`);
+    }
+
+    function toTimeValue(date) {
+        return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+    }
+
+    function toggleTimeSelectionVisibility() {
+        if (!timeSelectionSection || !allDayInput) {
+            return;
+        }
+        timeSelectionSection.classList.toggle('d-none', allDayInput.checked);
+    }
+
+    function isNonTreatmentEventEnabled() {
+        return Boolean(nonTreatmentEventInput?.checked);
+    }
+
+    function updatePatientFieldUi() {
+        const nonTreatmentEvent = isNonTreatmentEventEnabled();
+        if (patientNameLabel) {
+            patientNameLabel.textContent = nonTreatmentEvent ? 'Titolo' : 'Paziente';
+        }
+        if (patientNameInput) {
+            patientNameInput.placeholder = nonTreatmentEvent
+                ? "Inserisci il titolo dell'evento"
+                : 'Nome e cognome paziente';
+        }
+    }
+
+    function syncVisibleTimeControlsFromDateTimeInputs() {
+        if (!startInput || !endInput || !appointmentDateInput || !startTimeNativeInput || !endTimeNativeInput) {
+            return;
+        }
+        if (!startInput.value || !endInput.value) {
+            return;
+        }
+
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
+        if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+            return;
+        }
+
+        appointmentDateInput.value = toIsoDate(startDate);
+        startTimeNativeInput.value = toTimeValue(startDate);
+        endTimeNativeInput.value = toTimeValue(endDate);
+    }
+
+    function syncDateTimeInputsFromVisibleControls(preserveSelectedEnd = true) {
+        if (!startInput || !endInput || !appointmentDateInput || !startTimeNativeInput || !endTimeNativeInput) {
+            return;
+        }
+
+        const dateIso = appointmentDateInput.value;
+        const startTime = startTimeNativeInput.value;
+        if (!dateIso || !startTime) {
+            return;
+        }
+
+        const startDate = fromDateAndTime(dateIso, startTime);
+        let endDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+        if (preserveSelectedEnd && endTimeNativeInput.value) {
+            const selectedEnd = fromDateAndTime(dateIso, endTimeNativeInput.value);
+            if (selectedEnd > startDate) {
+                endDate = selectedEnd;
+            }
+        }
+
+        startInput.value = toLocalDateTimeInputValue(startDate);
+        endInput.value = toLocalDateTimeInputValue(endDate);
+        endTimeNativeInput.value = toTimeValue(endDate);
+    }
 
     function showGlobalNotice(message, variant = 'error') {
         const container = document.getElementById('appNoticeContainer');
@@ -438,6 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchPatientSuggestions(rawQuery) {
+        if (isNonTreatmentEventEnabled()) {
+            hidePatientSuggestions();
+            return;
+        }
         const query = (rawQuery || '').trim();
         if (!query || query.length < 1) {
             hidePatientSuggestions();
@@ -518,8 +609,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 titleFormat: { day: 'numeric', month: 'long', year: 'numeric' }
             }
         },
-        slotDuration: '01:00:00',
-        snapDuration: '01:00:00',
+        slotDuration: '00:15:00',
+        snapDuration: '00:15:00',
         nowIndicator: true,
         slotMinTime: '08:00:00',
         slotMaxTime: '21:00:00',
@@ -578,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         select(info) {
-            const startDate = ceilToHour(new Date(info.start));
+            const startDate = ceilToQuarterHour(new Date(info.start));
             const defaultEndDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             editingAppointmentId = null;
@@ -589,12 +680,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            if (nonTreatmentEventInput) {
+                nonTreatmentEventInput.checked = false;
+            }
+            updatePatientFieldUi();
             hidePatientSuggestions();
             if (allDayInput) {
                 allDayInput.checked = false;
             }
+            toggleTimeSelectionVisibility();
             startInput.value = toLocalDateTimeInputValue(startDate);
             endInput.value = toLocalDateTimeInputValue(defaultEndDate);
+            syncVisibleTimeControlsFromDateTimeInputs();
             if (notesInput) {
                 notesInput.value = '';
                 notesInput.readOnly = false;
@@ -608,6 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const state = (event.extendedProps.state || '').toUpperCase();
             const isCompleted = state === 'COMPLETED';
             const isAllDay = Boolean(event.allDay || event.extendedProps.allDay);
+            const isNonTreatmentEvent = Boolean(event.extendedProps.nonTreatmentEvent);
 
             if (modalTitleEl) {
                 modalTitleEl.innerText = event.title || '';
@@ -644,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (completeAppointmentBtn) {
-                completeAppointmentBtn.classList.toggle('d-none', isCompleted || isAllDay);
+                completeAppointmentBtn.classList.toggle('d-none', isCompleted || isAllDay || isNonTreatmentEvent);
             }
             if (editAppointmentBtn) {
                 editAppointmentBtn.classList.toggle('d-none', isCompleted);
@@ -686,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {
             const now = new Date();
-            const rounded = ceilToHour(now);
+            const rounded = ceilToQuarterHour(now);
             const end = addMinutes(rounded, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             editingAppointmentId = null;
@@ -697,12 +795,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = '';
                 patientNameInput.readOnly = false;
             }
+            if (nonTreatmentEventInput) {
+                nonTreatmentEventInput.checked = false;
+            }
+            updatePatientFieldUi();
             hidePatientSuggestions();
             if (allDayInput) {
                 allDayInput.checked = false;
             }
+            toggleTimeSelectionVisibility();
             startInput.value = toLocalDateTimeInputValue(rounded);
             endInput.value = toLocalDateTimeInputValue(end);
+            syncVisibleTimeControlsFromDateTimeInputs();
             if (notesInput) {
                 notesInput.value = '';
                 notesInput.readOnly = false;
@@ -717,12 +821,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const startDate = selectedEvent.start ? ceilToHour(new Date(selectedEvent.start)) : null;
+            const startDate = selectedEvent.start ? ceilToQuarterHour(new Date(selectedEvent.start)) : null;
             if (!startDate) {
                 showGlobalNotice('Impossibile modificare questo appuntamento.', 'error');
                 return;
             }
             const eventIsAllDay = Boolean(selectedEvent.allDay || selectedEvent.extendedProps.allDay);
+            const isNonTreatmentEvent = Boolean(selectedEvent.extendedProps.nonTreatmentEvent);
             const normalizedStart = eventIsAllDay ? startOfDay(startDate) : startDate;
             const endDate = eventIsAllDay ? nextDay(normalizedStart) : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
@@ -734,7 +839,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 patientNameInput.value = selectedEvent.extendedProps.patient || '';
                 patientNameInput.readOnly = false;
             }
+            if (nonTreatmentEventInput) {
+                nonTreatmentEventInput.checked = isNonTreatmentEvent;
+            }
             hidePatientSuggestions();
+            updatePatientFieldUi();
             if (notesInput) {
                 notesInput.value = selectedEvent.extendedProps.notes || '';
                 notesInput.readOnly = false;
@@ -743,9 +852,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (allDayInput) {
                 allDayInput.checked = eventIsAllDay;
             }
+            toggleTimeSelectionVisibility();
 
             startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(endDate);
+            syncVisibleTimeControlsFromDateTimeInputs();
             if (eventModal) {
                 eventModal.hide();
             }
@@ -960,6 +1071,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (appointmentDateInput && startTimeNativeInput) {
+        appointmentDateInput.addEventListener('change', () => {
+            syncDateTimeInputsFromVisibleControls(true);
+        });
+        startTimeNativeInput.addEventListener('change', () => {
+            syncDateTimeInputsFromVisibleControls(false);
+        });
+    }
+
+    if (appointmentDateInput && endTimeNativeInput) {
+        endTimeNativeInput.addEventListener('change', () => {
+            syncDateTimeInputsFromVisibleControls(true);
+        });
+    }
+
     if (startInput && endInput) {
         startInput.addEventListener('change', () => {
             if (!startInput.value) {
@@ -967,32 +1093,45 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const selectedDate = new Date(startInput.value);
-            const normalizedStart = allDayInput?.checked ? startOfDay(selectedDate) : ceilToHour(selectedDate);
+            const normalizedStart = allDayInput?.checked ? startOfDay(selectedDate) : ceilToQuarterHour(selectedDate);
             const normalizedEnd = allDayInput?.checked
                 ? nextDay(normalizedStart)
                 : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(normalizedEnd);
+            syncVisibleTimeControlsFromDateTimeInputs();
         });
     }
 
     if (allDayInput && startInput && endInput) {
         allDayInput.addEventListener('change', () => {
+            toggleTimeSelectionVisibility();
             if (!startInput.value) {
                 return;
             }
 
             const selectedDate = new Date(startInput.value);
-            const normalizedStart = allDayInput.checked ? startOfDay(selectedDate) : ceilToHour(selectedDate);
+            const normalizedStart = allDayInput.checked ? startOfDay(selectedDate) : ceilToQuarterHour(selectedDate);
             const normalizedEnd = allDayInput.checked
                 ? nextDay(normalizedStart)
                 : addMinutes(normalizedStart, DEFAULT_APPOINTMENT_DURATION_MINUTES);
 
             startInput.value = toLocalDateTimeInputValue(normalizedStart);
             endInput.value = toLocalDateTimeInputValue(normalizedEnd);
+            syncVisibleTimeControlsFromDateTimeInputs();
         });
     }
+
+    if (nonTreatmentEventInput) {
+        nonTreatmentEventInput.addEventListener('change', () => {
+            hidePatientSuggestions();
+            updatePatientFieldUi();
+        });
+    }
+
+    updatePatientFieldUi();
+    toggleTimeSelectionVisibility();
 
     if (patientNameInput) {
         patientNameInput.addEventListener('input', () => {
@@ -1111,13 +1250,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = new URLSearchParams();
         const isAllDay = Boolean(allDayInput?.checked);
         const selectedDate = new Date(startInput.value);
-        const startDate = isAllDay ? startOfDay(selectedDate) : ceilToHour(selectedDate);
-        const endDate = isAllDay ? nextDay(startDate) : addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+        const startDate = isAllDay ? startOfDay(selectedDate) : ceilToQuarterHour(selectedDate);
+        let endDate = new Date(endInput.value);
+        if (Number.isNaN(endDate.getTime()) || !endDate.getTime()) {
+            endDate = isAllDay ? nextDay(startDate) : addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+        }
+        if (!isAllDay && endDate <= startDate) {
+            showAppointmentFormError("L'orario di fine deve essere successivo all'orario di inizio.");
+            return;
+        }
         const normalizedStart = toLocalDateTimeInputValue(startDate);
         const normalizedEnd = toLocalDateTimeInputValue(endDate);
 
         startInput.value = normalizedStart;
         endInput.value = normalizedEnd;
+        syncVisibleTimeControlsFromDateTimeInputs();
 
         if (editingAppointmentId) {
             data.append('action', 'reschedule');
@@ -1138,6 +1285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         data.append('start', normalizedStart);
         data.append('end', normalizedEnd);
         data.append('allDay', String(isAllDay));
+        data.append('nonTreatmentEvent', String(isNonTreatmentEventEnabled()));
 
         fetch(contextPath + '/calendar', {
             method: 'POST',

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class CalendarController {
-    private static final int APPOINTMENT_DURATION_HOURS = 1;
+    private static final int APPOINTMENT_BOUNDARY_MINUTES = 15;
     private static final DateTimeFormatter TRASH_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final AppointmentDAO appointmentDAO;
@@ -66,7 +66,7 @@ public class CalendarController {
         return appointmentDAO.save(appointment);
     }
 
-    public Appointment rescheduleAppointment(long appointmentId, String patientName, LocalDateTime newStart, LocalDateTime newEnd, boolean allDay, String notes) {
+    public Appointment rescheduleAppointment(long appointmentId, String patientName, LocalDateTime newStart, LocalDateTime newEnd, boolean allDay, boolean nonTreatmentEvent, String notes) {
         Appointment existing = appointmentDAO.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
 
@@ -76,12 +76,16 @@ public class CalendarController {
 
         validateTimeRange(newStart, newEnd, allDay);
 
-        if (patientName != null && !patientName.isBlank()) {
+        if (nonTreatmentEvent) {
+            existing.setPatientId(null);
+            existing.setTitle(patientName == null ? null : patientName.trim());
+        } else if (patientName != null && !patientName.isBlank()) {
             long patientId = allDay
                     ? resolveExistingPatientId(patientName)
                     : resolveOrCreatePatientId(patientName);
             checkPatientExists(patientId);
             existing.setPatientId(patientId);
+            existing.setTitle(null);
         }
         existing.setStart(newStart);
         existing.setEnd(newEnd);
@@ -230,13 +234,19 @@ public class CalendarController {
                 .orElseThrow(() -> new IllegalArgumentException("L'utente loggato non e un terapista attivo"));
     }
 
-    public String resolvePatientFullName(long patientId) {
+    public String resolvePatientFullName(Long patientId) {
+        if (patientId == null) {
+            return "Evento";
+        }
         return patientDAO.findById(patientId)
                 .map(Patient::getFullName)
                 .orElse("Paziente #" + patientId);
     }
 
-    public String resolvePatientEmail(long patientId) {
+    public String resolvePatientEmail(Long patientId) {
+        if (patientId == null) {
+            return null;
+        }
         return patientDAO.findById(patientId)
                 .map(Patient::getEmail)
                 .orElse(null);
@@ -283,13 +293,13 @@ public class CalendarController {
             return;
         }
 
-        if (!isOnHourBoundary(start) || !isOnHourBoundary(end)) {
-            throw new IllegalArgumentException("Gli appuntamenti devono iniziare e finire all'ora piena");
+        if (!isOnQuarterHourBoundary(start) || !isOnQuarterHourBoundary(end)) {
+            throw new IllegalArgumentException("Gli appuntamenti devono iniziare e finire su intervalli di 15 minuti");
         }
 
-        long durationHours = ChronoUnit.HOURS.between(start, end);
-        if (durationHours != APPOINTMENT_DURATION_HOURS) {
-            throw new IllegalArgumentException("La durata dell'appuntamento deve essere di 1 ora");
+        long durationMinutes = ChronoUnit.MINUTES.between(start, end);
+        if (durationMinutes < APPOINTMENT_BOUNDARY_MINUTES) {
+            throw new IllegalArgumentException("La durata minima dell'appuntamento e di 15 minuti");
         }
     }
 
@@ -299,13 +309,16 @@ public class CalendarController {
         }
     }
 
-    private boolean isOnHourBoundary(LocalDateTime value) {
-        return value.getMinute() == 0
+    private boolean isOnQuarterHourBoundary(LocalDateTime value) {
+        return value.getMinute() % APPOINTMENT_BOUNDARY_MINUTES == 0
                 && value.getSecond() == 0
                 && value.getNano() == 0;
     }
 
-    private void checkPatientExists(long patientId) {
+    private void checkPatientExists(Long patientId) {
+        if (patientId == null) {
+            return;
+        }
         patientDAO.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
     }

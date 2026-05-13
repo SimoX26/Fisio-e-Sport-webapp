@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 public class Appointment {
 
     private long id;
-    private long patientId;
+    private Long patientId;
     private long therapistId;
     private LocalDateTime start;
     private LocalDateTime end;
     private boolean allDay;
+    private String title;
     private String notes;
     private AppointmentState state;
 
@@ -17,7 +18,7 @@ public class Appointment {
     }
 
 
-    public Appointment(long id, long patientId, long therapistId,
+    public Appointment(long id, Long patientId, long therapistId,
                        LocalDateTime start, LocalDateTime end) {
         this.id = id;
         this.patientId = patientId;
@@ -34,11 +35,11 @@ public class Appointment {
         this.id = id;
     }
 
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(long patientId) {
+    public void setPatientId(Long patientId) {
         this.patientId = patientId;
     }
 
@@ -72,6 +73,14 @@ public class Appointment {
 
     public void setAllDay(boolean allDay) {
         this.allDay = allDay;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public AppointmentState getState() {

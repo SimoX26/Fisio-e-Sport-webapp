@@ -172,18 +172,19 @@ CREATE TABLE patient_conditions (
    ========================= */
 CREATE TABLE appointments (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  patient_id BIGINT NOT NULL,
+  patient_id BIGINT NULL,
   therapist_id BIGINT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
   all_day BOOLEAN NOT NULL DEFAULT FALSE,
+  title VARCHAR(150),
   notes TEXT,
   state ENUM('SCHEDULED', 'CANCELLED', 'COMPLETED') NOT NULL DEFAULT 'SCHEDULED',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   CONSTRAINT fk_appointments_patient
     FOREIGN KEY (patient_id) REFERENCES patients(id)
-    ON DELETE RESTRICT
+    ON DELETE SET NULL
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_appointments_therapist

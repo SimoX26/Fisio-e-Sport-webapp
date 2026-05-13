@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class CalendarEventView {
     private final long appointmentId;
-    private final long patientId;
+    private final Long patientId;
     private final long therapistId;
     private final LocalDateTime start;
     private final LocalDateTime end;
@@ -14,7 +14,7 @@ public class CalendarEventView {
     private final String patientFullName;
 
     public CalendarEventView(long appointmentId,
-                             long patientId,
+                             Long patientId,
                              long therapistId,
                              LocalDateTime start,
                              LocalDateTime end,
@@ -37,7 +37,7 @@ public class CalendarEventView {
         return appointmentId;
     }
 
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 

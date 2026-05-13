@@ -18,20 +18,25 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
 
         String sql = """
             INSERT INTO appointments
-            (patient_id, therapist_id, start_time, end_time, all_day, notes, state)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (patient_id, therapist_id, start_time, end_time, all_day, title, notes, state)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setLong(1, appointment.getPatientId());
+            if (appointment.getPatientId() == null) {
+                ps.setNull(1, Types.BIGINT);
+            } else {
+                ps.setLong(1, appointment.getPatientId());
+            }
             ps.setLong(2, appointment.getTherapistId());
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getStart()));
             ps.setTimestamp(4, Timestamp.valueOf(appointment.getEnd()));
             ps.setBoolean(5, appointment.isAllDay());
-            ps.setString(6, appointment.getNotes());
-            ps.setString(7, appointment.getState().name());
+            ps.setString(6, appointment.getTitle());
+            ps.setString(7, appointment.getNotes());
+            ps.setString(8, appointment.getState().name());
 
             ps.executeUpdate();
 
@@ -59,6 +64,7 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                 start_time = ?,
                 end_time = ?,
                 all_day = ?,
+                title = ?,
                 notes = ?,
                 state = ?
             WHERE id = ?
@@ -67,14 +73,19 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, appointment.getPatientId());
+            if (appointment.getPatientId() == null) {
+                ps.setNull(1, Types.BIGINT);
+            } else {
+                ps.setLong(1, appointment.getPatientId());
+            }
             ps.setLong(2, appointment.getTherapistId());
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getStart()));
             ps.setTimestamp(4, Timestamp.valueOf(appointment.getEnd()));
             ps.setBoolean(5, appointment.isAllDay());
-            ps.setString(6, appointment.getNotes());
-            ps.setString(7, appointment.getState().name());
-            ps.setLong(8, appointment.getId());
+            ps.setString(6, appointment.getTitle());
+            ps.setString(7, appointment.getNotes());
+            ps.setString(8, appointment.getState().name());
+            ps.setLong(9, appointment.getId());
 
             int updatedRows = ps.executeUpdate();
 
@@ -189,12 +200,13 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                    a.start_time,
                    a.end_time,
                    a.all_day,
+                   a.title,
                    a.notes,
                    a.state,
                    p.first_name,
                    p.last_name
             FROM appointments a
-            INNER JOIN patients p ON p.id = a.patient_id
+            LEFT JOIN patients p ON p.id = a.patient_id
             WHERE a.therapist_id = ?
               AND a.state <> 'CANCELLED'
               AND a.start_time < ?
@@ -217,11 +229,17 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                     String lastName = rs.getString("last_name");
                     String fullName = ((firstName == null ? "" : firstName.trim()) + " " + (lastName == null ? "" : lastName.trim())).trim();
                     if (fullName.isEmpty()) {
-                        fullName = "Paziente #" + rs.getLong("patient_id");
+                        fullName = rs.getString("title");
                     }
+                    if (fullName == null || fullName.isBlank()) {
+                        long patientId = rs.getLong("patient_id");
+                        fullName = rs.wasNull() ? "Evento" : "Paziente #" + patientId;
+                    }
+                    long rawPatientId = rs.getLong("patient_id");
+                    Long patientId = rs.wasNull() ? null : rawPatientId;
                     result.add(new CalendarEventView(
                             rs.getLong("id"),
-                            rs.getLong("patient_id"),
+                            patientId,
                             rs.getLong("therapist_id"),
                             rs.getTimestamp("start_time").toLocalDateTime(),
                             rs.getTimestamp("end_time").toLocalDateTime(),
@@ -290,11 +308,13 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
     private Appointment mapRow(ResultSet rs) throws SQLException {
         Appointment a = new Appointment();
         a.setId(rs.getLong("id"));
-        a.setPatientId(rs.getLong("patient_id"));
+        long patientId = rs.getLong("patient_id");
+        a.setPatientId(rs.wasNull() ? null : patientId);
         a.setTherapistId(rs.getLong("therapist_id"));
         a.setStart(rs.getTimestamp("start_time").toLocalDateTime());
         a.setEnd(rs.getTimestamp("end_time").toLocalDateTime());
         a.setAllDay(rs.getBoolean("all_day"));
+        a.setTitle(rs.getString("title"));
         a.setNotes(rs.getString("notes"));
         a.setState(AppointmentState.valueOf(rs.getString("state")));
         return a;

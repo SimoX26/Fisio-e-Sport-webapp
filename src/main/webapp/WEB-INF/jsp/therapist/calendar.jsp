@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260402-13">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-5" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-17" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -229,9 +229,24 @@
                 <form id="appointmentForm">
                     <div id="appointmentFormError" class="alert alert-danger d-none" role="alert"></div>
 
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allDay">
+                            <label class="form-check-label" for="allDay">
+                                Tutto il giorno
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="nonTreatmentEvent">
+                            <label class="form-check-label" for="nonTreatmentEvent">
+                                Evento non collegato a trattamento
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Paziente -->
                     <div class="mb-3 patient-search-wrap">
-                        <label class="form-label">Paziente</label>
+                        <label class="form-label" id="patientNameLabel">Paziente</label>
                         <input type="text"
                                class="form-control"
                                id="patientName"
@@ -242,23 +257,21 @@
                     </div>
 
                     <!-- Giorno e orario -->
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Inizio</label>
-                            <input type="datetime-local" class="form-control" id="start" step="3600" required>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Fine</label>
-                            <input type="datetime-local" class="form-control" id="end" step="3600" readonly required>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Giorno</label>
+                        <input type="date" class="form-control" id="appointmentDate" required>
                     </div>
 
-                    <div class="mt-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="allDay">
-                            <label class="form-check-label" for="allDay">
-                                Tutto il giorno (evento non collegato ai trattamenti)
-                            </label>
+                    <div class="row g-3 appointment-time-grid" id="timeSelectionSection">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Orario inizio</label>
+                            <input type="time" class="form-control" id="startTimeNative" step="900" required>
+                            <input type="datetime-local" class="form-control d-none" id="start" step="900" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Orario fine</label>
+                            <input type="time" class="form-control" id="endTimeNative" step="900" required>
+                            <input type="datetime-local" class="form-control d-none" id="end" step="900" required>
                         </div>
                     </div>
 

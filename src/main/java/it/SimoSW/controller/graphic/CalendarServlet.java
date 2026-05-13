@@ -146,6 +146,7 @@ public class CalendarServlet extends HttpServlet {
             Map<String, Object> extendedProps = new HashMap<>();
             extendedProps.put("patientId", appointment.getPatientId());
             extendedProps.put("patient", patientFullName);
+            extendedProps.put("nonTreatmentEvent", appointment.getPatientId() == null);
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());
             extendedProps.put("notes", appointment.getNotes());
@@ -208,14 +209,23 @@ public class CalendarServlet extends HttpServlet {
         }
 
         boolean allDay = parseBooleanParameter(request.getParameter("allDay"));
+        boolean nonTreatmentEvent = parseBooleanParameter(request.getParameter("nonTreatmentEvent"));
         String patientName = request.getParameter("patientName");
-        long patientId = allDay
-                ? calendarController.resolveExistingPatientId(patientName)
-                : calendarController.resolveOrCreatePatientId(patientName);
+        Long patientId = null;
+        String appointmentTitle = null;
+        if (nonTreatmentEvent) {
+            appointmentTitle = normalizeRequired(patientName, "Titolo evento obbligatorio");
+        } else {
+            boolean requireExistingPatient = allDay;
+            patientId = requireExistingPatient
+                    ? calendarController.resolveExistingPatientId(patientName)
+                    : calendarController.resolveOrCreatePatientId(patientName);
+        }
         long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
         Appointment a = new Appointment();
         a.setPatientId(patientId);
+        a.setTitle(appointmentTitle);
         a.setStart(parseDateTime(request.getParameter("start")));
         a.setEnd(parseDateTime(request.getParameter("end")));
         a.setAllDay(allDay);
@@ -234,6 +244,7 @@ public class CalendarServlet extends HttpServlet {
         LocalDateTime newStart = parseDateTime(request.getParameter("start"));
         LocalDateTime newEnd = parseDateTime(request.getParameter("end"));
         boolean allDay = parseBooleanParameter(request.getParameter("allDay"));
+        boolean nonTreatmentEvent = parseBooleanParameter(request.getParameter("nonTreatmentEvent"));
         String notes = normalizeNotes(request.getParameter("notes"));
 
         calendarController.rescheduleAppointment(
@@ -242,6 +253,7 @@ public class CalendarServlet extends HttpServlet {
                 newStart,
                 newEnd,
                 allDay,
+                nonTreatmentEvent,
                 notes
         );
     }
@@ -285,6 +297,9 @@ public class CalendarServlet extends HttpServlet {
     private void completeAppointmentAndCreateTreatment(HttpServletRequest request) {
         long appointmentId = Long.parseLong(request.getParameter("id"));
         Appointment completed = calendarController.completeAppointment(appointmentId);
+        if (completed.getPatientId() == null) {
+            throw new IllegalArgumentException("Gli eventi non collegati a trattamento non possono essere completati come trattamento");
+        }
         if (!completed.isAllDay()) {
             treatmentController.createTreatmentForCompletedAppointment(
                     appointmentId,
@@ -390,6 +405,9 @@ public class CalendarServlet extends HttpServlet {
 
         for (Appointment appointment : appointments) {
             if (appointment.getState() != AppointmentState.SCHEDULED) {
+                continue;
+            }
+            if (appointment.getPatientId() == null) {
                 continue;
             }
             String patientName = calendarController.resolvePatientFullName(appointment.getPatientId());
