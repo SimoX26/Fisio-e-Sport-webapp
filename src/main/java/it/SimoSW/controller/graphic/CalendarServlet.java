@@ -158,6 +158,7 @@ public class CalendarServlet extends HttpServlet {
         }
 
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), events);
     }
 

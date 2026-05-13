@@ -37,6 +37,8 @@ public class AuthenticationFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         String path = normalizePath(request);
 
         if (isStaticOrTechnicalPath(path)) {
