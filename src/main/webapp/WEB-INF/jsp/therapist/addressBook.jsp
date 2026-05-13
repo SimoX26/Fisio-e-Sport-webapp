@@ -147,7 +147,8 @@
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger js-delete-patient"
                                         data-id="<c:out value='${patient.id}'/>"
-                                        data-name="<c:out value='${patient.fullName}'/>">
+                                        data-name="<c:out value='${patient.fullName}'/>"
+                                        data-linked-appointments="<c:out value='${patient.linkedAppointmentsCount}'/>">
                                     Elimina
                                 </button>
                             </td>
@@ -507,7 +508,12 @@
                 <div class="modal-body">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="id" id="deletePatientId">
+                    <input type="hidden" name="forceDeleteWithLinkedAppointments" id="forceDeleteWithLinkedAppointments" value="0">
                     <p class="mb-0">Vuoi eliminare il paziente <strong id="deletePatientName"></strong>?</p>
+                    <div id="deleteDangerZone" class="alert alert-warning mt-3 d-none mb-0" role="alert">
+                        Azione pericolosa: esistono <strong id="linkedAppointmentsCount"></strong> appuntamenti di calendario collegati.
+                        Se confermi, gli appuntamenti resteranno nel calendario ma non saranno piu associati a questo paziente.
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
@@ -566,6 +572,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const deleteId = document.getElementById('deletePatientId');
     const deleteName = document.getElementById('deletePatientName');
+    const forceDeleteWithLinkedAppointments = document.getElementById('forceDeleteWithLinkedAppointments');
+    const deleteDangerZone = document.getElementById('deleteDangerZone');
+    const linkedAppointmentsCount = document.getElementById('linkedAppointmentsCount');
 
     function setFormFieldValue(name, value) {
         if (!editForm) return;
@@ -629,6 +638,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!deleteModal) return;
             deleteId.value = this.dataset.id || '';
             deleteName.textContent = this.dataset.name || 'questo paziente';
+            const linkedCount = Number.parseInt(this.dataset.linkedAppointments || '0', 10);
+            const hasLinkedAppointments = Number.isFinite(linkedCount) && linkedCount > 0;
+            if (forceDeleteWithLinkedAppointments) {
+                forceDeleteWithLinkedAppointments.value = hasLinkedAppointments ? '1' : '0';
+            }
+            if (deleteDangerZone && linkedAppointmentsCount) {
+                deleteDangerZone.classList.toggle('d-none', !hasLinkedAppointments);
+                linkedAppointmentsCount.textContent = String(hasLinkedAppointments ? linkedCount : 0);
+            }
             deleteModal.show();
         });
     });

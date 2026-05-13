@@ -294,6 +294,48 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
     }
 
     @Override
+    public int countByPatientId(long patientId) {
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM appointments
+            WHERE patient_id = ?
+        """;
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore conteggio appuntamenti paziente", e);
+        }
+    }
+
+    @Override
+    public int detachPatientFromAppointments(long patientId, String fallbackTitle) {
+        String sql = """
+            UPDATE appointments
+            SET patient_id = NULL,
+                title = CASE
+                    WHEN title IS NULL OR TRIM(title) = '' THEN ?
+                    ELSE title
+                END
+            WHERE patient_id = ?
+        """;
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, fallbackTitle);
+            ps.setLong(2, patientId);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore sgancio appuntamenti dal paziente", e);
+        }
+    }
+
+    @Override
     public int deleteCancelledByTherapist(long therapistId) {
         String sql = """
             DELETE FROM appointments

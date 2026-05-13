@@ -77,6 +77,7 @@ public class ApplicationInitializer {
                 patientDAO,
                 patientAnamnesisDAO,
                 patientConditionDAO,
+                appointmentDAO,
                 userDAO
         );
         calendarController = new CalendarController(appointmentDAO, patientDAO, userDAO);

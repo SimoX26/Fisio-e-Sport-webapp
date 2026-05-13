@@ -194,7 +194,8 @@ public class AddressBookServlet extends HttpServlet {
 
     private void deletePatient(HttpServletRequest request) {
         long patientId = Long.parseLong(request.getParameter("id"));
-        addressBookController.deletePatient(patientId);
+        boolean forceDelete = "1".equals(normalizeOptional(request.getParameter("forceDeleteWithLinkedAppointments")));
+        addressBookController.deletePatient(patientId, forceDelete);
     }
 
     private void sendAnamnesisDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {

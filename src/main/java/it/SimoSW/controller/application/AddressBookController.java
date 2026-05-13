@@ -10,6 +10,7 @@ import it.SimoSW.model.UserRole;
 import it.SimoSW.model.dao.PatientAnamnesisDAO;
 import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
+import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.dao.UserDAO;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class AddressBookController {
     private final PatientDAO patientDAO;
     private final PatientAnamnesisDAO patientAnamnesisDAO;
     private final PatientConditionDAO patientConditionDAO;
+    private final AppointmentDAO appointmentDAO;
     private final UserDAO userDAO;
 
 
@@ -47,11 +49,13 @@ public class AddressBookController {
             PatientDAO patientDAO,
             PatientAnamnesisDAO patientAnamnesisDAO,
             PatientConditionDAO patientConditionDAO,
+            AppointmentDAO appointmentDAO,
             UserDAO userDAO
     ) {
         this.patientDAO = patientDAO;
         this.patientAnamnesisDAO = patientAnamnesisDAO;
         this.patientConditionDAO = patientConditionDAO;
+        this.appointmentDAO = appointmentDAO;
         this.userDAO = userDAO;
     }
 
@@ -193,8 +197,18 @@ public class AddressBookController {
         patientDAO.update(patient);
     }
 
-    public void deletePatient(long patientId) {
-        getPatientById(patientId);
+    public void deletePatient(long patientId, boolean forceDeleteWithLinkedAppointments) {
+        Patient patient = getPatientById(patientId);
+        int linkedAppointments = appointmentDAO.countByPatientId(patientId);
+        if (linkedAppointments > 0 && !forceDeleteWithLinkedAppointments) {
+            throw new IllegalArgumentException(
+                    "ATTENZIONE: il paziente ha " + linkedAppointments +
+                            " appuntamenti collegati. Conferma l'eliminazione forzata per procedere."
+            );
+        }
+        if (linkedAppointments > 0) {
+            appointmentDAO.detachPatientFromAppointments(patientId, patient.getFullName());
+        }
         patientDAO.deleteById(patientId);
     }
 

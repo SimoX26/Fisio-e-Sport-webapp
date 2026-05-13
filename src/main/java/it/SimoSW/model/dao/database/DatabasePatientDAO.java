@@ -32,26 +32,29 @@ public class DatabasePatientDAO implements PatientDAO {
             """;
 
     private static final String FIND_BY_ID = """
-            SELECT id, first_name, last_name, email, phone, state, created_at
-            FROM patients
+            SELECT p.id, p.first_name, p.last_name, p.email, p.phone, p.state, p.created_at,
+                   (SELECT COUNT(*) FROM appointments a WHERE a.patient_id = p.id) AS linked_appointments_count
+            FROM patients p
             WHERE id = ?
             """;
 
     private static final String SEARCH_ALL = """
-            SELECT id, first_name, last_name, email, phone, state, created_at
-            FROM patients
-            ORDER BY last_name, first_name
+            SELECT p.id, p.first_name, p.last_name, p.email, p.phone, p.state, p.created_at,
+                   (SELECT COUNT(*) FROM appointments a WHERE a.patient_id = p.id) AS linked_appointments_count
+            FROM patients p
+            ORDER BY p.last_name, p.first_name
             """;
 
     private static final String SEARCH_BY_QUERY = """
-            SELECT id, first_name, last_name, email, phone, state, created_at
-            FROM patients
-            WHERE LOWER(first_name) LIKE ?
-               OR LOWER(last_name) LIKE ?
-               OR LOWER(CONCAT(first_name, ' ', last_name)) LIKE ?
-               OR LOWER(COALESCE(email, '')) LIKE ?
-               OR LOWER(COALESCE(phone, '')) LIKE ?
-            ORDER BY last_name, first_name
+            SELECT p.id, p.first_name, p.last_name, p.email, p.phone, p.state, p.created_at,
+                   (SELECT COUNT(*) FROM appointments a WHERE a.patient_id = p.id) AS linked_appointments_count
+            FROM patients p
+            WHERE LOWER(p.first_name) LIKE ?
+               OR LOWER(p.last_name) LIKE ?
+               OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE ?
+               OR LOWER(COALESCE(p.email, '')) LIKE ?
+               OR LOWER(COALESCE(p.phone, '')) LIKE ?
+            ORDER BY p.last_name, p.first_name
             """;
 
     private static final String DELETE_BY_ID = """
@@ -167,7 +170,7 @@ public class DatabasePatientDAO implements PatientDAO {
             }
 
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new RuntimeException("Impossibile eliminare il paziente: esistono appuntamenti collegati", e);
+            throw new RuntimeException("Impossibile eliminare il paziente: esistono dati clinici o trattamenti ancora collegati", e);
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante l'eliminazione del paziente", e);
         }
@@ -185,6 +188,7 @@ public class DatabasePatientDAO implements PatientDAO {
         if (createdAt != null) {
             patient.setCreatedAt(createdAt.toLocalDateTime());
         }
+        patient.setLinkedAppointmentsCount(rs.getInt("linked_appointments_count"));
         return patient;
     }
 }

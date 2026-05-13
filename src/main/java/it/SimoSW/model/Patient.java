@@ -13,6 +13,7 @@ public class Patient {
     private String phone;
     private PatientState state;
     private LocalDateTime createdAt;
+    private int linkedAppointmentsCount;
 
     public Patient() {
     }
@@ -94,5 +95,13 @@ public class Patient {
             return "";
         }
         return CREATED_DATE_FORMATTER.format(createdAt.toLocalDate());
+    }
+
+    public int getLinkedAppointmentsCount() {
+        return linkedAppointmentsCount;
+    }
+
+    public void setLinkedAppointmentsCount(int linkedAppointmentsCount) {
+        this.linkedAppointmentsCount = Math.max(linkedAppointmentsCount, 0);
     }
 }
