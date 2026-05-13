@@ -1,6 +1,10 @@
 package it.SimoSW.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Patient {
+    private static final DateTimeFormatter CREATED_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private long id;
     private String firstName;
@@ -8,6 +12,7 @@ public class Patient {
     private String email;
     private String phone;
     private PatientState state;
+    private LocalDateTime createdAt;
 
     public Patient() {
     }
@@ -74,5 +79,20 @@ public class Patient {
 
     public void setState(PatientState state) {
         this.state = state;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getCreatedDateLabel() {
+        if (createdAt == null) {
+            return "";
+        }
+        return CREATED_DATE_FORMATTER.format(createdAt.toLocalDate());
     }
 }

@@ -91,7 +91,32 @@
                 <table class="table table-borderless align-middle mb-0">
                     <thead>
                     <tr>
-                        <th>Nome</th>
+                        <th>
+                            <c:url var="sortByNameUrl" value="/address-book">
+                                <c:if test="${not empty param.q}">
+                                    <c:param name="q" value="${param.q}" />
+                                </c:if>
+                                <c:param name="sortName" value="${nameSort == 'asc' ? 'desc' : 'asc'}" />
+                            </c:url>
+                            <a class="text-decoration-none text-reset" href="${sortByNameUrl}">
+                                Nome
+                                <c:if test="${nameSort == 'asc'}">↑</c:if>
+                                <c:if test="${nameSort == 'desc'}">↓</c:if>
+                            </a>
+                        </th>
+                        <th>
+                            <c:url var="sortByCreatedUrl" value="/address-book">
+                                <c:if test="${not empty param.q}">
+                                    <c:param name="q" value="${param.q}" />
+                                </c:if>
+                                <c:param name="sortCreated" value="${createdSort == 'asc' ? 'desc' : 'asc'}" />
+                            </c:url>
+                            <a class="text-decoration-none text-reset" href="${sortByCreatedUrl}">
+                                Data creazione
+                                <c:if test="${createdSort == 'asc'}">↑</c:if>
+                                <c:if test="${createdSort == 'desc'}">↓</c:if>
+                            </a>
+                        </th>
                         <th>Telefono</th>
                         <th class="text-end">Azioni</th>
                     </tr>
@@ -103,6 +128,7 @@
                             <td>
                                 <c:out value="${patient.fullName}" />
                             </td>
+                            <td><c:out value="${patient.createdDateLabel}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
                             <td class="text-end">
                                 <a href="${pageContext.request.contextPath}/treatment-history?patientId=${patient.id}"

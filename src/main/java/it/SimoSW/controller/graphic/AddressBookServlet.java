@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -58,16 +59,39 @@ public class AddressBookServlet extends HttpServlet {
 
         List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
+        String nameSort = normalizeOptional(request.getParameter("sortName")).toLowerCase();
+        String createdSort = normalizeOptional(request.getParameter("sortCreated")).toLowerCase();
 
         try {
             patients = addressBookController.searchPatients(
                     query != null ? query : ""
             );
+            if ("asc".equals(nameSort) || "desc".equals(nameSort)) {
+                Comparator<Patient> byName = Comparator.comparing(
+                        p -> p.getFullName().toLowerCase()
+                );
+                if ("desc".equals(nameSort)) {
+                    byName = byName.reversed();
+                }
+                patients.sort(byName);
+                createdSort = "";
+            } else {
+                Comparator<Patient> byCreatedAt = Comparator.comparing(Patient::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder()));
+                if (!"asc".equals(createdSort)) {
+                    patients.sort(byCreatedAt.reversed());
+                    createdSort = "desc";
+                } else {
+                    patients.sort(byCreatedAt);
+                }
+            }
         } catch (RuntimeException ex) {
             request.setAttribute("error", "Impossibile caricare la rubrica in questo momento.");
         }
 
         request.setAttribute("patients", patients);
+        request.setAttribute("nameSort", nameSort);
+        request.setAttribute("createdSort", createdSort);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/addressBook.jsp")
                 .forward(request, response);
     }

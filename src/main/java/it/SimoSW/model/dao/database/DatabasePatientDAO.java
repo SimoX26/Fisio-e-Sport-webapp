@@ -32,19 +32,19 @@ public class DatabasePatientDAO implements PatientDAO {
             """;
 
     private static final String FIND_BY_ID = """
-            SELECT id, first_name, last_name, email, phone, state
+            SELECT id, first_name, last_name, email, phone, state, created_at
             FROM patients
             WHERE id = ?
             """;
 
     private static final String SEARCH_ALL = """
-            SELECT id, first_name, last_name, email, phone, state
+            SELECT id, first_name, last_name, email, phone, state, created_at
             FROM patients
             ORDER BY last_name, first_name
             """;
 
     private static final String SEARCH_BY_QUERY = """
-            SELECT id, first_name, last_name, email, phone, state
+            SELECT id, first_name, last_name, email, phone, state, created_at
             FROM patients
             WHERE LOWER(first_name) LIKE ?
                OR LOWER(last_name) LIKE ?
@@ -181,6 +181,10 @@ public class DatabasePatientDAO implements PatientDAO {
         patient.setEmail(rs.getString("email"));
         patient.setPhone(rs.getString("phone"));
         patient.setState(PatientState.valueOf(rs.getString("state")));
+        java.sql.Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) {
+            patient.setCreatedAt(createdAt.toLocalDateTime());
+        }
         return patient;
     }
 }
