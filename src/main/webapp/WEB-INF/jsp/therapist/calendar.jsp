@@ -23,7 +23,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260513-17">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-19" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-20" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
@@ -50,6 +50,9 @@
                 <span>Crea</span>
             </button>
         </div>
+    </div>
+    <div id="searchHighlightNotice" class="alert alert-warning py-2 px-3 small d-none" role="status">
+        Risultati della ricerca evidenziati nel calendario.
     </div>
 </div>
 

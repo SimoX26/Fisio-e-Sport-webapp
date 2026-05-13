@@ -100,7 +100,7 @@ public class GlobalSearchServlet extends HttpServlet {
     private void searchAppointments(Connection conn, String query, Long therapistId, List<SearchResult> results) throws SQLException {
         String baseSql = """
                 SELECT a.id, a.start_time, a.end_time, a.state, a.all_day, a.notes,
-                       p.first_name, p.last_name
+                       p.id AS patient_id, p.first_name, p.last_name
                 FROM appointments a
                 INNER JOIN patients p ON p.id = a.patient_id
                 WHERE (
@@ -139,7 +139,14 @@ public class GlobalSearchServlet extends HttpServlet {
                                     + (end == null ? "" : " - " + DATE_TIME_FORMATTER.format(end.toLocalDateTime()));
                     String allDayLabel = rs.getBoolean("all_day") ? " • Tutto il giorno" : "";
                     r.subtitle = timing + " • Stato: " + translateAppointmentState(rs.getString("state")) + allDayLabel;
-                    r.link = "/calendar";
+                    String dateParam = start == null
+                            ? "today"
+                            : start.toLocalDateTime().toLocalDate().toString();
+                    long appointmentId = rs.getLong("id");
+                    long patientId = rs.getLong("patient_id");
+                    r.link = "/calendar?view=timeGridDay&date=" + dateParam
+                            + "&highlightAppointmentId=" + appointmentId
+                            + "&highlightPatientId=" + patientId;
                     results.add(r);
                 }
             }

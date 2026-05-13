@@ -35,7 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const contextPath = document.body.dataset.contextPath || '';
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const highlightAppointmentIdParam = (urlSearchParams.get('highlightAppointmentId') || '').trim();
+    const highlightPatientIdParam = (urlSearchParams.get('highlightPatientId') || '').trim();
+    const highlightAppointmentId = /^\d+$/.test(highlightAppointmentIdParam)
+        ? Number.parseInt(highlightAppointmentIdParam, 10)
+        : null;
+    const highlightPatientId = /^\d+$/.test(highlightPatientIdParam)
+        ? Number.parseInt(highlightPatientIdParam, 10)
+        : null;
     const calendarEl = document.getElementById('calendar');
+    const calendarScrollShell = document.querySelector('.calendar-scroll-shell');
     const saveButton = document.getElementById('saveAppointmentBtn');
     const openModalButton = document.getElementById('openAppointmentModalBtn');
     const appointmentModalEl = document.getElementById('appointmentModal');
@@ -84,9 +94,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const reminderPreviewEmptyEl = document.getElementById('reminderPreviewEmpty');
     const sendReminderBtn = document.getElementById('sendReminderBtn');
     const refreshReminderPreviewBtn = document.getElementById('refreshReminderPreviewBtn');
+    const searchHighlightNoticeEl = document.getElementById('searchHighlightNotice');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
         return;
+    }
+
+    if (calendarScrollShell) {
+        let touchStartY = 0;
+        calendarScrollShell.addEventListener('touchstart', (event) => {
+            if (!event.touches || !event.touches.length) {
+                return;
+            }
+            touchStartY = event.touches[0].clientY;
+        }, { passive: true });
+
+        calendarScrollShell.addEventListener('touchmove', (event) => {
+            if (!event.touches || !event.touches.length) {
+                return;
+            }
+            const currentY = event.touches[0].clientY;
+            const pullingDown = currentY > touchStartY;
+            if (pullingDown && calendarScrollShell.scrollTop <= 0) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    }
+
+    if (searchHighlightNoticeEl) {
+        const hasHighlightFromSearch = highlightAppointmentId !== null || highlightPatientId !== null;
+        searchHighlightNoticeEl.classList.toggle('d-none', !hasHighlightFromSearch);
     }
 
     const appointmentModal = new bootstrap.Modal(appointmentModalEl);
@@ -650,9 +687,18 @@ document.addEventListener('DOMContentLoaded', () => {
         eventDidMount(info) {
             info.el.style.background = '#eaf1fb';
             info.el.style.backgroundImage = 'none';
-            info.el.style.border = '1px solid var(--calendar-event-border)';
+            info.el.style.setProperty('border', '1px solid var(--calendar-event-border)', 'important');
             info.el.style.color = '#1f2d3d';
-            info.el.style.boxShadow = 'none';
+            info.el.style.setProperty('box-shadow', 'none', 'important');
+
+            const eventId = Number.parseInt(String(info.event.id || ''), 10);
+            const eventPatientId = Number.parseInt(String(info.event.extendedProps?.patientId || ''), 10);
+            const matchesAppointment = Number.isFinite(eventId) && highlightAppointmentId !== null && eventId === highlightAppointmentId;
+            const matchesPatient = Number.isFinite(eventPatientId) && highlightPatientId !== null && eventPatientId === highlightPatientId;
+            if (matchesAppointment || matchesPatient) {
+                info.el.style.setProperty('border', '2px solid #f59f00', 'important');
+                info.el.style.setProperty('box-shadow', '0 0 0 2px rgba(245, 159, 0, .22)', 'important');
+            }
         },
         datesSet() {
             applyViewClass(calendar);

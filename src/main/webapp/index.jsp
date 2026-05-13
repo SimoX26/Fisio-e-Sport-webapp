@@ -77,7 +77,7 @@
     © <%= java.time.Year.now() %> Fisio e Sports • Fisioterapia e riabilitazione
 </footer>
 
-<script src="<%= request.getContextPath() %>/assets/js/loading-overlay.js?v=20260513-10" defer></script>
+<script src="<%= request.getContextPath() %>/assets/js/loading-overlay.js?v=20260513-11" defer></script>
 <script>
 (function () {
     const lockKey = 'lockBackLanding';

@@ -26,7 +26,7 @@
     <div class="page-header-row mb-3">
         <div>
             <h2 class="page-title mb-0">Cestino appuntamenti</h2>
-            <p class="page-subtitle mb-0">Visualizza gli appuntamenti cancellati e gestiscili. Eliminazione automatica dopo 30 giorni.</p>
+            <p class="page-subtitle mb-0">Eliminazione automatica dopo 30 giorni.</p>
         </div>
         <div class="d-flex gap-2">
             <button type="button"

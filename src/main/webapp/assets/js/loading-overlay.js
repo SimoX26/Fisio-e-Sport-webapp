@@ -87,6 +87,9 @@
             hide: hideOverlay
         };
 
+        // Safety net: ensure overlay is not left visible after navigation/redirect edge cases.
+        hideOverlay();
+
         document.addEventListener("submit", function (event) {
             const form = event.target;
             if (!(form instanceof HTMLFormElement)) {
@@ -114,6 +117,8 @@
         });
 
         window.addEventListener("pageshow", hideOverlay);
+        window.addEventListener("load", hideOverlay);
+        window.setTimeout(hideOverlay, 0);
     }
 
     if (document.readyState === "loading") {
