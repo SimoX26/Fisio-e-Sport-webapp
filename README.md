@@ -79,6 +79,13 @@ Per stato e decisioni architetturali aggiornate:
 
 - `STATO_ARCHITETTURALE.md`
 
+## Documentazione Statistiche
+
+Per dettagli su KPI, formule e interpretazione dei grafici:
+
+- `KPI_STATISTICHE_GUIDA.md`
+
+
 ## Versione Android (WebView)
 
 Nel repository e disponibile anche il wrapper Android Kotlin:

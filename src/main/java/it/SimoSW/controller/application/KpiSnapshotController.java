@@ -1,0 +1,262 @@
+package it.SimoSW.controller.application;
+
+import it.SimoSW.model.KpiMonthlySnapshot;
+import it.SimoSW.model.dao.KpiMonthlySnapshotDAO;
+import it.SimoSW.model.dao.database.ConnectionFactory;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
+
+public class KpiSnapshotController {
+
+    private static final String SOURCE_VERSION = "v1";
+
+    private final KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO;
+
+    public KpiSnapshotController(KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO) {
+        this.kpiMonthlySnapshotDAO = kpiMonthlySnapshotDAO;
+    }
+
+    public void refreshCurrentAndPreviousMonthSnapshots() {
+        YearMonth current = YearMonth.now();
+        YearMonth previous = current.minusMonths(1);
+
+        refreshMonthSnapshots(current);
+        refreshMonthSnapshots(previous);
+    }
+
+    public void refreshMonthSnapshots(YearMonth yearMonth) {
+        if (yearMonth == null) {
+            throw new IllegalArgumentException("yearMonth non valido");
+        }
+
+        saveSnapshot(buildGlobalSnapshot(yearMonth));
+        for (Long therapistId : findActiveTherapistIds()) {
+            saveSnapshot(buildTherapistSnapshot(yearMonth, therapistId));
+        }
+    }
+
+    public List<KpiMonthlySnapshot> getRecentGlobalSnapshots(int months) {
+        return kpiMonthlySnapshotDAO.findRecentGlobal(months);
+    }
+
+    public List<KpiMonthlySnapshot> getRecentTherapistSnapshots(long therapistId, int months) {
+        return kpiMonthlySnapshotDAO.findRecentByTherapist(therapistId, months);
+    }
+
+    private void saveSnapshot(KpiMonthlySnapshot snapshot) {
+        kpiMonthlySnapshotDAO.saveOrUpdate(snapshot);
+    }
+
+    private KpiMonthlySnapshot buildGlobalSnapshot(YearMonth yearMonth) {
+        KpiMonthlySnapshot snapshot = baseSnapshot(yearMonth, "GLOBAL", 0L, null);
+        LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.plusMonths(1).atDay(1);
+
+        snapshot.setAppointmentsCreated(countAppointmentsCreated(start, end, null));
+        snapshot.setAppointmentsCompleted(countAppointmentsCompleted(start, end, null));
+        snapshot.setAppointmentsCancelled(countAppointmentsCancelled(start, end, null));
+        snapshot.setActivePatientsMonth(countActivePatientsMonth(start, end, null));
+        snapshot.setNewPatientsMonth(countNewPatientsMonth(start, end, null));
+        snapshot.setTreatmentPlansStarted(countTreatmentPlansStarted(startDate, endDate, null));
+        snapshot.setTreatmentSessionsCompleted(countTreatmentSessionsCompleted(start, end, null));
+        snapshot.setTotalBookedMinutes(sumTotalBookedMinutes(start, end, null));
+        return snapshot;
+    }
+
+    private KpiMonthlySnapshot buildTherapistSnapshot(YearMonth yearMonth, long therapistId) {
+        KpiMonthlySnapshot snapshot = baseSnapshot(yearMonth, "THERAPIST", therapistId, therapistId);
+        LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.plusMonths(1).atDay(1);
+
+        snapshot.setAppointmentsCreated(countAppointmentsCreated(start, end, therapistId));
+        snapshot.setAppointmentsCompleted(countAppointmentsCompleted(start, end, therapistId));
+        snapshot.setAppointmentsCancelled(countAppointmentsCancelled(start, end, therapistId));
+        snapshot.setActivePatientsMonth(countActivePatientsMonth(start, end, therapistId));
+        snapshot.setNewPatientsMonth(countNewPatientsMonth(start, end, therapistId));
+        snapshot.setTreatmentPlansStarted(countTreatmentPlansStarted(startDate, endDate, therapistId));
+        snapshot.setTreatmentSessionsCompleted(countTreatmentSessionsCompleted(start, end, therapistId));
+        snapshot.setTotalBookedMinutes(sumTotalBookedMinutes(start, end, therapistId));
+        return snapshot;
+    }
+
+    private KpiMonthlySnapshot baseSnapshot(YearMonth yearMonth, String scopeType, long scopeId, Long therapistId) {
+        KpiMonthlySnapshot snapshot = new KpiMonthlySnapshot();
+        snapshot.setScopeType(scopeType);
+        snapshot.setScopeId(scopeId);
+        snapshot.setTherapistId(therapistId);
+        snapshot.setYear(yearMonth.getYear());
+        snapshot.setMonth(yearMonth.getMonthValue());
+        snapshot.setComputedAt(LocalDateTime.now());
+        snapshot.setSourceVersion(SOURCE_VERSION);
+        return snapshot;
+    }
+
+    private List<Long> findActiveTherapistIds() {
+        String sql = """
+                SELECT id
+                FROM users
+                WHERE role = 'THERAPIST' AND active = TRUE
+                ORDER BY id
+                """;
+        List<Long> ids = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                ids.add(rs.getLong("id"));
+            }
+            return ids;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore lettura terapisti attivi per KPI snapshot", e);
+        }
+    }
+
+    private int countAppointmentsCreated(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM appointments
+                WHERE created_at >= ? AND created_at < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countAppointmentsCompleted(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM appointments
+                WHERE state = 'COMPLETED'
+                  AND end_time >= ? AND end_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countAppointmentsCancelled(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM appointments
+                WHERE state = 'CANCELLED'
+                  AND cancelled_at >= ? AND cancelled_at < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countActivePatientsMonth(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(DISTINCT patient_id) AS total
+                FROM appointments
+                WHERE patient_id IS NOT NULL
+                  AND state <> 'CANCELLED'
+                  AND start_time >= ? AND start_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countNewPatientsMonth(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        if (therapistId == null) {
+            String sql = """
+                    SELECT COUNT(*) AS total
+                    FROM patients
+                    WHERE created_at >= ? AND created_at < ?
+                    """;
+            return runCountByDateTime(sql, start, end, null);
+        }
+
+        String sql = """
+                SELECT COUNT(DISTINCT p.id) AS total
+                FROM patients p
+                JOIN appointments a ON a.patient_id = p.id
+                WHERE p.created_at >= ? AND p.created_at < ?
+                  AND a.therapist_id = ?
+                """;
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countTreatmentPlansStarted(LocalDate startDate, LocalDate endDate, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM treatment_plans
+                WHERE start_date >= ? AND start_date < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDate(sql, startDate, endDate, therapistId);
+    }
+
+    private int countTreatmentSessionsCompleted(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM treatment_sessions
+                WHERE state = 'COMPLETED'
+                  AND end_time >= ? AND end_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int sumTotalBookedMinutes(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)), 0) AS total
+                FROM appointments
+                WHERE state <> 'CANCELLED'
+                  AND start_time >= ? AND start_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private String therapistFilterSql(String column, Long therapistId) {
+        if (therapistId == null) {
+            return "";
+        }
+        return " AND " + column + " = ? ";
+    }
+
+    private int runCountByDateTime(String sql, LocalDateTime start, LocalDateTime end, Long therapistId) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(start));
+            stmt.setTimestamp(2, Timestamp.valueOf(end));
+            if (therapistId != null) {
+                stmt.setLong(3, therapistId);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore calcolo KPI snapshot mensili", e);
+        }
+    }
+
+    private int runCountByDate(String sql, LocalDate start, LocalDate end, Long therapistId) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(start));
+            stmt.setDate(2, Date.valueOf(end));
+            if (therapistId != null) {
+                stmt.setLong(3, therapistId);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    return 0;
+                }
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore calcolo KPI snapshot mensili", e);
+        }
+    }
+}
+

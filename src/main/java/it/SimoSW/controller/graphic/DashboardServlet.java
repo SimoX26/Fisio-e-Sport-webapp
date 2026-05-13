@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -38,13 +39,17 @@ public class DashboardServlet extends HttpServlet {
         int patientsThisMonth = 0;
         long bookedHoursThisWeek = 0;
         LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
         String todayLabel = formatFullDateLabel(today);
         String patientsMonthYearLabel = formatMonthYearLabel(today);
         String weekRangeLabel = formatWeekRangeLabel(today);
+        String loggedUserDisplay = "";
+        String greetingPrefix = now.getHour() > 15 ? "Buonasera" : "Buongiorno";
 
         try {
             String loggedUser = (String) request.getSession().getAttribute("loggedUser");
             if (loggedUser != null && !loggedUser.isBlank()) {
+                loggedUserDisplay = loggedUser.trim().toUpperCase(Locale.ROOT);
                 long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
                 LocalDateTime todayStart = today.atStartOfDay();
@@ -84,6 +89,8 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("bookedHoursThisWeek", bookedHoursThisWeek);
         request.setAttribute("patientsMonthYearLabel", patientsMonthYearLabel);
         request.setAttribute("weekRangeLabel", weekRangeLabel);
+        request.setAttribute("greetingPrefix", greetingPrefix);
+        request.setAttribute("loggedUserDisplay", loggedUserDisplay);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/dashboard.jsp").forward(request, response);
     }
 

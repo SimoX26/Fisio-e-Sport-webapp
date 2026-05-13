@@ -156,6 +156,12 @@ body.auth-page{
     background: #f3f8ff;
 }
 
+.kpi-chart-wrap{
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+}
+
 
 
 

@@ -90,6 +90,13 @@
                                 Storico Trattamenti
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="<%= request.getContextPath() %>/dashboard/insights">
+                                Statistiche
+                            </a>
+                        </li>
                     </c:otherwise>
                 </c:choose>
 

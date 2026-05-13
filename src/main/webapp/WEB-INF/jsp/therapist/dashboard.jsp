@@ -29,12 +29,18 @@
 
 <div class="container app-shell mt-4">
 
-    <!-- HEADER DASHBOARD -->
-    <div class="mb-4">
-        <h2 class="page-title">Home</h2>
-        <p class="page-subtitle">
-            Panoramica generale dello studio
-        </p>
+    <div class="glass-card section-card p-4 p-md-5 mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <h1 class="page-title mb-1">
+                    <c:out value="${greetingPrefix}" /> <c:out value="${loggedUserDisplay}" />
+                </h1>
+                <p class="page-subtitle mb-0">Panoramica generale e accesso rapido alle schermate principali.</p>
+            </div>
+            <a class="btn btn-primary section-action-btn" href="<%= request.getContextPath() %>/calendar">
+                Apri calendario
+            </a>
+        </div>
     </div>
 
     <c:if test="${not empty error}">
@@ -43,7 +49,7 @@
         </div>
     </c:if>
 
-    <!-- KPI -->
+    <!-- KPI principali -->
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
@@ -76,10 +82,14 @@
         </div>
     </div>
 
-    <!-- AZIONI PRINCIPALI -->
+    <!-- Navigazione rapida -->
+    <div class="mb-3">
+        <h3 class="page-title fs-4 mb-1">Navigazione rapida</h3>
+        <p class="page-subtitle mb-0">Seleziona la schermata su cui vuoi lavorare.</p>
+    </div>
     <div class="row g-4">
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/calendar">
                 <div class="kpi-label mb-2">Calendario</div>
@@ -90,7 +100,7 @@
             </a>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/address-book">
                 <div class="kpi-label mb-2">Rubrica</div>
@@ -101,13 +111,24 @@
             </a>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/treatment-history">
                 <div class="kpi-label mb-2">Storico</div>
                 <h5>Storico Trattamenti</h5>
                 <p class="page-subtitle">
                     Visualizza le sedute effettuate
+                </p>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
+               href="<%= request.getContextPath() %>/dashboard/insights">
+                <div class="kpi-label mb-2">Statistiche</div>
+                <h5>Statistiche KPI</h5>
+                <p class="page-subtitle">
+                    Visualizza trend mensili, grafici e indicatori storici.
                 </p>
             </a>
         </div>

@@ -4,6 +4,7 @@ import it.SimoSW.controller.application.AddressBookController;
 import it.SimoSW.controller.application.AccessRequestController;
 import it.SimoSW.controller.application.AuthenticationController;
 import it.SimoSW.controller.application.CalendarController;
+import it.SimoSW.controller.application.KpiSnapshotController;
 import it.SimoSW.controller.application.TreatmentController;
 import it.SimoSW.controller.application.UserController;
 import it.SimoSW.model.dao.AppointmentDAO;
@@ -11,6 +12,7 @@ import it.SimoSW.model.dao.AccessRequestDAO;
 import it.SimoSW.model.dao.PatientAnamnesisDAO;
 import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
+import it.SimoSW.model.dao.KpiMonthlySnapshotDAO;
 import it.SimoSW.model.dao.RememberMeTokenDAO;
 import it.SimoSW.model.dao.TreatmentPlanDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
@@ -20,6 +22,7 @@ import it.SimoSW.model.dao.database.DatabaseAccessRequestDAO;
 import it.SimoSW.model.dao.database.DatabasePatientAnamnesisDAO;
 import it.SimoSW.model.dao.database.DatabasePatientConditionDAO;
 import it.SimoSW.model.dao.database.DatabasePatientDAO;
+import it.SimoSW.model.dao.database.DatabaseKpiMonthlySnapshotDAO;
 import it.SimoSW.model.dao.database.DatabaseRememberMeTokenDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentPlanDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
@@ -33,6 +36,7 @@ public class ApplicationInitializer {
     private AuthenticationController authenticationController;
     private UserController userController;
     private AccessRequestController accessRequestController;
+    private KpiSnapshotController kpiSnapshotController;
 
     public void init() {
         initDatabasePersistence();
@@ -46,6 +50,7 @@ public class ApplicationInitializer {
         TreatmentPlanDAO treatmentPlanDAO = new DatabaseTreatmentPlanDAO();
         TreatmentSessionDAO treatmentSessionDAO = new DatabaseTreatmentSessionDAO();
         UserDAO userDAO = new DatabaseUserDAO();
+        KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO = new DatabaseKpiMonthlySnapshotDAO();
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
         AccessRequestDAO accessRequestDAO = new DatabaseAccessRequestDAO();
 
@@ -57,6 +62,7 @@ public class ApplicationInitializer {
                 treatmentPlanDAO,
                 treatmentSessionDAO,
                 userDAO,
+                kpiMonthlySnapshotDAO,
                 rememberMeTokenDAO,
                 accessRequestDAO
         );
@@ -70,6 +76,7 @@ public class ApplicationInitializer {
             TreatmentPlanDAO treatmentPlanDAO,
             TreatmentSessionDAO treatmentSessionDAO,
             UserDAO userDAO,
+            KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO,
             RememberMeTokenDAO rememberMeTokenDAO,
             AccessRequestDAO accessRequestDAO
     ) {
@@ -90,6 +97,7 @@ public class ApplicationInitializer {
         authenticationController = new AuthenticationController(userDAO, rememberMeTokenDAO);
         userController = new UserController(userDAO);
         accessRequestController = new AccessRequestController(accessRequestDAO, userDAO);
+        kpiSnapshotController = new KpiSnapshotController(kpiMonthlySnapshotDAO);
     }
 
     public AddressBookController getAddressBookController() {
@@ -114,5 +122,9 @@ public class ApplicationInitializer {
 
     public AccessRequestController getAccessRequestController() {
         return accessRequestController;
+    }
+
+    public KpiSnapshotController getKpiSnapshotController() {
+        return kpiSnapshotController;
     }
 }
