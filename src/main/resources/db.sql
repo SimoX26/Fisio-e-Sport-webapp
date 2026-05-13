@@ -56,10 +56,13 @@ CREATE TABLE access_requests (
    REMEMBER ME TOKENS
    ========================= */
 CREATE TABLE remember_me_tokens (
-  user_id BIGINT PRIMARY KEY,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
   token_hash CHAR(64) NOT NULL UNIQUE,
   expires_at DATETIME NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  INDEX idx_remember_me_user_id (user_id),
 
   CONSTRAINT fk_remember_me_user
     FOREIGN KEY (user_id) REFERENCES users(id)

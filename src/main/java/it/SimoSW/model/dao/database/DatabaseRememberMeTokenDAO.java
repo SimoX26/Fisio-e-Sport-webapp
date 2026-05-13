@@ -14,10 +14,9 @@ import java.util.Optional;
 
 public class DatabaseRememberMeTokenDAO implements RememberMeTokenDAO {
 
-    private static final String UPSERT_TOKEN =
+    private static final String INSERT_TOKEN =
             "INSERT INTO remember_me_tokens (user_id, token_hash, expires_at) " +
-                    "VALUES (?, ?, ?) " +
-                    "ON DUPLICATE KEY UPDATE token_hash = VALUES(token_hash), expires_at = VALUES(expires_at)";
+                    "VALUES (?, ?, ?)";
 
     private static final String FIND_ACTIVE_USER_BY_TOKEN =
             "SELECT u.username, u.role, u.active " +
@@ -37,7 +36,7 @@ public class DatabaseRememberMeTokenDAO implements RememberMeTokenDAO {
     @Override
     public void saveOrUpdate(long userId, String tokenHash, LocalDateTime expiresAt) {
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(UPSERT_TOKEN)) {
+             PreparedStatement stmt = conn.prepareStatement(INSERT_TOKEN)) {
 
             stmt.setLong(1, userId);
             stmt.setString(2, tokenHash);
