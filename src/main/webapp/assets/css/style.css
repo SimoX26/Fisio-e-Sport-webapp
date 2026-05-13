@@ -959,7 +959,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     .fc .fc-timegrid-slot{
-        height: 54px;
+        height: 24px;
     }
 
     .fc .fc-col-header-cell-cushion{
@@ -1143,6 +1143,7 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 .fc-timegrid-slot{
     background: rgba(0,0,0,.01);
+    min-height: 10px;
 }
 
 /* =========================

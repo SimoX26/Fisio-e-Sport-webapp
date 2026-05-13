@@ -623,6 +623,12 @@ document.addEventListener('DOMContentLoaded', () => {
             minute: '2-digit',
             hour12: false
         },
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
+        slotLabelInterval: '01:00',
         eventContent(arg) {
             const timeText = arg.timeText || '';
             const title = arg.event.title || '';
