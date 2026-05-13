@@ -18,9 +18,13 @@ android {
 
     defaultConfig {
         applicationId = "it.simosw.fisioesport"
+        manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
+        manifestPlaceholders["appRoundIcon"] = "@mipmap/ic_launcher_round"
         if (fisioSportTestApp) {
             applicationIdSuffix = ".test"
             resValue("string", "app_name", "Fisio e Sports Test")
+            manifestPlaceholders["appIcon"] = "@drawable/ic_launcher_test"
+            manifestPlaceholders["appRoundIcon"] = "@drawable/ic_launcher_test_round"
         }
         minSdk = 24
         targetSdk = 35

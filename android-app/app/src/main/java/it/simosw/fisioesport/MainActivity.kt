@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val overlayView = View(this).apply {
-            setBackgroundColor(0x44FF0000)
+            setBackgroundColor(0x22FF0000)
             isClickable = false
             isFocusable = false
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
