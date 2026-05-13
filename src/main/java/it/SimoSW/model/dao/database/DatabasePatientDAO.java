@@ -62,6 +62,34 @@ public class DatabasePatientDAO implements PatientDAO {
             WHERE id = ?
             """;
 
+    private static final String MERGE_APPOINTMENTS = """
+            UPDATE appointments
+            SET patient_id = ?,
+                title = CASE
+                    WHEN title IS NULL OR TRIM(title) = '' THEN NULL
+                    ELSE title
+                END
+            WHERE patient_id = ?
+            """;
+
+    private static final String MERGE_ANAMNESES = """
+            UPDATE patient_anamneses
+            SET patient_id = ?
+            WHERE patient_id = ?
+            """;
+
+    private static final String MERGE_TREATMENT_PLANS = """
+            UPDATE treatment_plans
+            SET patient_id = ?
+            WHERE patient_id = ?
+            """;
+
+    private static final String MERGE_TREATMENT_SESSIONS = """
+            UPDATE treatment_sessions
+            SET patient_id = ?
+            WHERE patient_id = ?
+            """;
+
     @Override
     public Patient save(Patient patient) {
         try (Connection conn = ConnectionFactory.getConnection();
@@ -173,6 +201,64 @@ public class DatabasePatientDAO implements PatientDAO {
             throw new RuntimeException("Impossibile eliminare il paziente: esistono dati clinici o trattamenti ancora collegati", e);
         } catch (SQLException e) {
             throw new RuntimeException("Errore durante l'eliminazione del paziente", e);
+        }
+    }
+
+    @Override
+    public void mergeInto(long sourcePatientId, long targetPatientId) {
+        if (sourcePatientId <= 0 || targetPatientId <= 0 || sourcePatientId == targetPatientId) {
+            throw new IllegalArgumentException("Parametri merge non validi");
+        }
+
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            boolean originalAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                if (!existsById(conn, sourcePatientId) || !existsById(conn, targetPatientId)) {
+                    throw new RuntimeException("Paziente origine o destinazione non trovato");
+                }
+
+                executeUpdate(conn, MERGE_APPOINTMENTS, targetPatientId, sourcePatientId);
+                executeUpdate(conn, MERGE_ANAMNESES, targetPatientId, sourcePatientId);
+                executeUpdate(conn, MERGE_TREATMENT_PLANS, targetPatientId, sourcePatientId);
+                executeUpdate(conn, MERGE_TREATMENT_SESSIONS, targetPatientId, sourcePatientId);
+
+                try (PreparedStatement deleteStmt = conn.prepareStatement(DELETE_BY_ID)) {
+                    deleteStmt.setLong(1, sourcePatientId);
+                    int deletedRows = deleteStmt.executeUpdate();
+                    if (deletedRows == 0) {
+                        throw new RuntimeException("Nessun paziente eliminato durante il merge");
+                    }
+                }
+
+                conn.commit();
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(originalAutoCommit);
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("Merge non riuscito per vincoli di integrita referenziale", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante il merge pazienti", e);
+        }
+    }
+
+    private void executeUpdate(Connection conn, String sql, long targetId, long sourceId) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, targetId);
+            stmt.setLong(2, sourceId);
+            stmt.executeUpdate();
+        }
+    }
+
+    private boolean existsById(Connection conn, long patientId) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM patients WHERE id = ?")) {
+            stmt.setLong(1, patientId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 

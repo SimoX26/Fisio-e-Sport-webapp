@@ -15,5 +15,7 @@ public interface PatientDAO {
 
     List<Patient> search(String query);
 
+    void mergeInto(long sourcePatientId, long targetPatientId);
+
     void deleteById(long id);
 }

@@ -56,6 +56,10 @@ public class AddressBookServlet extends HttpServlet {
             sendAnamnesisDetails(request, response);
             return;
         }
+        if ("merge-candidates".equals(action)) {
+            sendMergeCandidates(request, response);
+            return;
+        }
 
         List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
@@ -160,6 +164,12 @@ public class AddressBookServlet extends HttpServlet {
 
         addressBookController.updatePatientProfile(p);
 
+        long mergeTargetId = parseLongOrZero(request.getParameter("mergeTargetId"));
+        if (mergeTargetId > 0) {
+            addressBookController.mergePatients(p.getId(), mergeTargetId);
+            return;
+        }
+
         PatientAnamnesis anamnesis = parseAnamnesis(request);
         List<PatientCondition> conditions = parseConditions(request);
 
@@ -231,6 +241,27 @@ public class AddressBookServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         OBJECT_MAPPER.writeValue(response.getWriter(), root);
+    }
+
+    private void sendMergeCandidates(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        long sourceId = parseRequiredLong(request.getParameter("id"), "Parametro id non valido");
+        String firstName = normalizeOptional(request.getParameter("firstName"));
+        String lastName = normalizeOptional(request.getParameter("lastName"));
+        List<Patient> candidates = addressBookController.findMergeCandidates(sourceId, firstName, lastName);
+
+        List<Map<String, Object>> payload = new ArrayList<>();
+        for (Patient candidate : candidates) {
+            Map<String, Object> row = new java.util.HashMap<>();
+            row.put("id", candidate.getId());
+            row.put("fullName", candidate.getFullName());
+            row.put("phone", normalizeOptional(candidate.getPhone()));
+            row.put("createdDate", candidate.getCreatedDateLabel());
+            payload.add(row);
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        OBJECT_MAPPER.writeValue(response.getWriter(), payload);
     }
 
     private void fillAnamnesisNode(ObjectNode target, PatientAnamnesis a, List<PatientCondition> conditions) {
@@ -359,6 +390,30 @@ public class AddressBookServlet extends HttpServlet {
             throw new IllegalArgumentException(errorMessage);
         }
         return normalized;
+    }
+
+    private long parseLongOrZero(String value) {
+        String normalized = normalizeOptional(value);
+        if (normalized.isEmpty()) {
+            return 0;
+        }
+        try {
+            return Long.parseLong(normalized);
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
+    private long parseRequiredLong(String value, String errorMessage) {
+        String normalized = normalizeOptional(value);
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
+        try {
+            return Long.parseLong(normalized);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     private PatientAnamnesis parseAnamnesis(HttpServletRequest request) {

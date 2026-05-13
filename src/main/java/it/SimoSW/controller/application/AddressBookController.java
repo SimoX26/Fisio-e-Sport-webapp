@@ -14,6 +14,7 @@ import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.dao.UserDAO;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -140,6 +141,24 @@ public class AddressBookController {
         return patientDAO.search(query);
     }
 
+    public List<Patient> findMergeCandidates(long sourcePatientId, String firstName, String lastName) {
+        String sourceName = normalizeFullName(firstName, lastName);
+        if (sourceName.isEmpty()) {
+            return List.of();
+        }
+        List<Patient> matches = patientDAO.search(sourceName);
+        List<Patient> candidates = new java.util.ArrayList<>();
+        for (Patient patient : matches) {
+            if (patient == null || patient.getId() == sourcePatientId) {
+                continue;
+            }
+            if (normalizeSingle(patient.getFullName()).equals(sourceName)) {
+                candidates.add(patient);
+            }
+        }
+        return candidates;
+    }
+
 
     /**
      * Activates a patient, if allowed by the domain rules.
@@ -212,6 +231,15 @@ public class AddressBookController {
         patientDAO.deleteById(patientId);
     }
 
+    public void mergePatients(long sourcePatientId, long targetPatientId) {
+        if (sourcePatientId <= 0 || targetPatientId <= 0 || sourcePatientId == targetPatientId) {
+            throw new IllegalArgumentException("Merge non valido: seleziona due contatti diversi");
+        }
+        getPatientById(sourcePatientId);
+        getPatientById(targetPatientId);
+        patientDAO.mergeInto(sourcePatientId, targetPatientId);
+    }
+
     public void savePatientAnamnesis(
             long patientId,
             String therapistUsername,
@@ -249,6 +277,18 @@ public class AddressBookController {
 
     public List<PatientCondition> getConditionsByAnamnesisId(long anamnesisId) {
         return patientConditionDAO.findByAnamnesisId(anamnesisId);
+    }
+
+    private String normalizeFullName(String firstName, String lastName) {
+        String composed = (firstName == null ? "" : firstName) + " " + (lastName == null ? "" : lastName);
+        return normalizeSingle(composed);
+    }
+
+    private String normalizeSingle(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+", " ");
     }
 
 }

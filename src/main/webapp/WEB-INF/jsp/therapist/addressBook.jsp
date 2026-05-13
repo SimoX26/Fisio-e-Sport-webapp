@@ -198,6 +198,16 @@
                         </div>
                     </div>
 
+                    <input type="hidden" name="mergeTargetId" id="mergeTargetId">
+                    <div id="mergeCandidatesBox" class="alert alert-info mt-3 d-none" role="alert">
+                        <div class="fw-semibold mb-2">Possibile unione contatti</div>
+                        <p class="mb-2">Esistono contatti con lo stesso nome. Se vuoi, puoi unirli ora. Opzione facoltativa.</p>
+                        <label class="form-label" for="mergeCandidateSelect">Unisci questo contatto con:</label>
+                        <select id="mergeCandidateSelect" class="form-select">
+                            <option value="">Nessuna unione (mantieni contatti separati)</option>
+                        </select>
+                    </div>
+
                     <hr class="my-4">
                     <h6 class="mb-3">Scheda anamnesi</h6>
 
@@ -524,6 +534,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="confirmMergePatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Conferma unione contatti</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Stai per unire il contatto:</p>
+                <p class="mb-2"><strong id="mergeConfirmSourceName">-</strong></p>
+                <p class="mb-2">nel contatto:</p>
+                <p class="mb-2"><strong id="mergeConfirmTargetName">-</strong></p>
+                <p class="mb-0 text-muted">Questa operazione e irreversibile.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-danger" id="confirmMergePatientBtn">Conferma unione</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <c:if test="${param.created == '1'}">
 <script>
 sessionStorage.setItem('addressBookCreateSubmitted', '1');
@@ -560,8 +592,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const contextPath = '<%= request.getContextPath() %>';
     const editModalEl = document.getElementById('editPatientModal');
     const deleteModalEl = document.getElementById('confirmDeletePatientModal');
+    const mergeConfirmModalEl = document.getElementById('confirmMergePatientModal');
     const editModal = editModalEl ? new bootstrap.Modal(editModalEl) : null;
     const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
+    const mergeConfirmModal = mergeConfirmModalEl ? new bootstrap.Modal(mergeConfirmModalEl) : null;
     const editForm = editModalEl ? editModalEl.querySelector('form') : null;
 
     const editId = document.getElementById('editPatientId');
@@ -569,6 +603,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const editLastName = document.getElementById('editPatientLastName');
     const editEmail = document.getElementById('editPatientEmail');
     const editPhone = document.getElementById('editPatientPhone');
+    const mergeCandidatesBox = document.getElementById('mergeCandidatesBox');
+    const mergeCandidateSelect = document.getElementById('mergeCandidateSelect');
+    const mergeTargetIdInput = document.getElementById('mergeTargetId');
+    const mergeConfirmSourceName = document.getElementById('mergeConfirmSourceName');
+    const mergeConfirmTargetName = document.getElementById('mergeConfirmTargetName');
+    const confirmMergePatientBtn = document.getElementById('confirmMergePatientBtn');
+    let mergeSubmitPending = false;
 
     const deleteId = document.getElementById('deletePatientId');
     const deleteName = document.getElementById('deletePatientName');
@@ -583,11 +624,72 @@ document.addEventListener('DOMContentLoaded', function () {
         field.value = value == null ? '' : String(value);
     }
 
+    function resetMergeCandidatesUi() {
+        if (mergeCandidatesBox) {
+            mergeCandidatesBox.classList.add('d-none');
+        }
+        if (mergeTargetIdInput) {
+            mergeTargetIdInput.value = '';
+        }
+        if (mergeCandidateSelect) {
+            mergeCandidateSelect.innerHTML = '<option value="">Nessuna unione (mantieni contatti separati)</option>';
+            mergeCandidateSelect.value = '';
+        }
+    }
+
+    async function refreshMergeCandidates() {
+        if (!editId || !mergeCandidatesBox || !mergeCandidateSelect) {
+            return;
+        }
+        const id = (editId.value || '').trim();
+        const firstName = (editFirstName?.value || '').trim();
+        const lastName = (editLastName?.value || '').trim();
+
+        if (!id || !firstName) {
+            resetMergeCandidatesUi();
+            return;
+        }
+
+        const url = new URL(contextPath + '/address-book', window.location.origin);
+        url.searchParams.set('action', 'merge-candidates');
+        url.searchParams.set('id', id);
+        url.searchParams.set('firstName', firstName);
+        url.searchParams.set('lastName', lastName);
+
+        try {
+            const response = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) {
+                throw new Error('Impossibile caricare candidati merge');
+            }
+            const candidates = await response.json();
+            mergeCandidateSelect.innerHTML = '<option value="">Nessuna unione (mantieni contatti separati)</option>';
+            if (!Array.isArray(candidates) || candidates.length === 0) {
+                mergeCandidatesBox.classList.add('d-none');
+                if (mergeTargetIdInput) {
+                    mergeTargetIdInput.value = '';
+                }
+                return;
+            }
+            candidates.forEach(function (candidate) {
+                const option = document.createElement('option');
+                option.value = String(candidate.id || '');
+                const phone = candidate.phone ? ' • ' + candidate.phone : '';
+                const created = candidate.createdDate ? ' • creato il ' + candidate.createdDate : '';
+                option.textContent = (candidate.fullName || 'Contatto') + phone + created;
+                mergeCandidateSelect.appendChild(option);
+            });
+            mergeCandidatesBox.classList.remove('d-none');
+        } catch (error) {
+            resetMergeCandidatesUi();
+        }
+    }
+
     async function openPatientDetails(button) {
         if (!editModal || !button) return;
         if (editForm) {
             editForm.reset();
         }
+        resetMergeCandidatesUi();
         editId.value = button.dataset.id || '';
         editFirstName.value = button.dataset.firstName || '';
         editLastName.value = button.dataset.lastName || '';
@@ -613,6 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Impossibile caricare i dati anamnestici salvati.');
             }
         }
+        await refreshMergeCandidates();
         editModal.show();
     }
 
@@ -648,6 +751,58 @@ document.addEventListener('DOMContentLoaded', function () {
                 linkedAppointmentsCount.textContent = String(hasLinkedAppointments ? linkedCount : 0);
             }
             deleteModal.show();
+        });
+    });
+
+    if (mergeCandidateSelect && mergeTargetIdInput) {
+        mergeCandidateSelect.addEventListener('change', function () {
+            mergeTargetIdInput.value = this.value || '';
+        });
+    }
+
+    if (editForm && mergeCandidateSelect) {
+        editForm.addEventListener('submit', function (event) {
+            if (mergeSubmitPending) {
+                mergeSubmitPending = false;
+                return;
+            }
+            const selectedTargetId = (mergeCandidateSelect.value || '').trim();
+            if (!selectedTargetId) {
+                return;
+            }
+            event.preventDefault();
+            if (window.appLoadingOverlay && typeof window.appLoadingOverlay.hide === 'function') {
+                window.appLoadingOverlay.hide();
+            }
+            const selectedOption = mergeCandidateSelect.options[mergeCandidateSelect.selectedIndex];
+            const sourceName = ((editFirstName?.value || '') + ' ' + (editLastName?.value || '')).trim() || 'contatto corrente';
+            const targetLabel = (selectedOption?.textContent || 'contatto selezionato').trim();
+            if (mergeConfirmSourceName) {
+                mergeConfirmSourceName.textContent = sourceName;
+            }
+            if (mergeConfirmTargetName) {
+                mergeConfirmTargetName.textContent = targetLabel;
+            }
+            if (mergeConfirmModal) {
+                mergeConfirmModal.show();
+            }
+        });
+    }
+
+    if (confirmMergePatientBtn && editForm) {
+        confirmMergePatientBtn.addEventListener('click', function () {
+            mergeSubmitPending = true;
+            if (mergeConfirmModal) {
+                mergeConfirmModal.hide();
+            }
+            editForm.requestSubmit();
+        });
+    }
+
+    [editFirstName, editLastName].forEach(function (field) {
+        if (!field) return;
+        field.addEventListener('blur', function () {
+            refreshMergeCandidates();
         });
     });
 });
