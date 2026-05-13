@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? Number.parseInt(highlightPatientIdParam, 10)
         : null;
     const calendarEl = document.getElementById('calendar');
-    const calendarScrollShell = document.querySelector('.calendar-scroll-shell');
     const saveButton = document.getElementById('saveAppointmentBtn');
     const openModalButton = document.getElementById('openAppointmentModalBtn');
     const appointmentModalEl = document.getElementById('appointmentModal');
@@ -98,27 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
         return;
-    }
-
-    if (calendarScrollShell) {
-        let touchStartY = 0;
-        calendarScrollShell.addEventListener('touchstart', (event) => {
-            if (!event.touches || !event.touches.length) {
-                return;
-            }
-            touchStartY = event.touches[0].clientY;
-        }, { passive: true });
-
-        calendarScrollShell.addEventListener('touchmove', (event) => {
-            if (!event.touches || !event.touches.length) {
-                return;
-            }
-            const currentY = event.touches[0].clientY;
-            const pullingDown = currentY > touchStartY;
-            if (pullingDown && calendarScrollShell.scrollTop <= 0) {
-                event.preventDefault();
-            }
-        }, { passive: false });
     }
 
     if (searchHighlightNoticeEl) {
@@ -276,6 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.classList.toggle('calendar-week-fill', shouldFillHeight);
     }
+
 
     function toIsoDateValue(date) {
         const pad = (n) => String(n).padStart(2, '0');
@@ -831,7 +810,9 @@ document.addEventListener('DOMContentLoaded', () => {
     applyViewClass(calendar);
     applyDesktopWeekFillMode(calendar);
     renderReminderButtons(calendar);
-    window.addEventListener('resize', () => applyDesktopWeekFillMode(calendar));
+    window.addEventListener('resize', () => {
+        applyDesktopWeekFillMode(calendar);
+    });
 
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {

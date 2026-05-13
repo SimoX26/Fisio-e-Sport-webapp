@@ -65,6 +65,17 @@
         overlay.className = "app-loading-overlay";
         overlay.id = "appLoadingOverlay";
         overlay.setAttribute("aria-hidden", "true");
+        // Inline fallback styles: keep overlay hidden/positioned even if stale CSS is served from cache.
+        overlay.style.position = "fixed";
+        overlay.style.inset = "0";
+        overlay.style.zIndex = "2000";
+        overlay.style.display = "flex";
+        overlay.style.alignItems = "center";
+        overlay.style.justifyContent = "center";
+        overlay.style.background = "rgba(255,255,255,.72)";
+        overlay.style.opacity = "0";
+        overlay.style.visibility = "hidden";
+        overlay.style.pointerEvents = "none";
         overlay.innerHTML = ""
             + '<div class="app-loading-overlay__panel" role="status" aria-live="polite">'
             + '  <div class="spinner-border app-loading-overlay__spinner" aria-hidden="true"></div>'
@@ -75,11 +86,17 @@
         const hideOverlay = function () {
             overlay.classList.remove("is-visible");
             overlay.setAttribute("aria-hidden", "true");
+            overlay.style.opacity = "0";
+            overlay.style.visibility = "hidden";
+            overlay.style.pointerEvents = "none";
         };
 
         const showOverlay = function () {
             overlay.classList.add("is-visible");
             overlay.setAttribute("aria-hidden", "false");
+            overlay.style.opacity = "1";
+            overlay.style.visibility = "visible";
+            overlay.style.pointerEvents = "all";
         };
 
         window.appLoadingOverlay = {

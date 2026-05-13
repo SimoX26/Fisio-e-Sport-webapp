@@ -180,7 +180,6 @@ body.auth-page{
 
 body.calendar-gcal-page{
     background: #ffffff;
-    overscroll-behavior-y: none;
 }
 
 .calendar-gcal-page .app-navbar{
@@ -193,6 +192,8 @@ body.calendar-gcal-page{
 .calendar-gcal-wrap{
     padding-left: 10px;
     padding-right: 10px;
+    padding-bottom: 0;
+    margin-bottom: 0 !important;
 }
 
 .calendar-gcal-head{
@@ -227,8 +228,12 @@ body.calendar-gcal-page{
 .calendar-scroll-shell{
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    max-height: calc(100vh - 170px);
+    max-height: none;
+}
+
+.calendar-gcal-page .fc-scroller,
+.calendar-gcal-page .fc-scroller-liquid-absolute{
+    -webkit-overflow-scrolling: touch;
 }
 
 #calendar{
@@ -295,9 +300,30 @@ body.calendar-gcal-page{
 }
 
 @media (min-width: 992px){
+    body.calendar-gcal-page{
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .calendar-gcal-header-shell{
+        flex: 0 0 auto;
+    }
+
+    .calendar-gcal-wrap{
+        flex: 1 1 auto;
+        display: flex;
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .calendar-host{
+        width: 100%;
+    }
+
     body.calendar-week-fill .calendar-scroll-shell{
-        height: calc(100vh - 170px);
         max-height: none;
+        height: 100%;
     }
 
     body.calendar-week-fill #calendar{
@@ -933,7 +959,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     .calendar-scroll-shell{
-        max-height: 70vh;
+        max-height: none;
     }
 
     #calendar{
@@ -988,6 +1014,7 @@ body.calendar-gcal-page .modal-backdrop.show {
         overflow: visible;
         text-overflow: clip;
     }
+
 
     .fc .fc-daygrid-day-frame{
         min-height: 110px;
