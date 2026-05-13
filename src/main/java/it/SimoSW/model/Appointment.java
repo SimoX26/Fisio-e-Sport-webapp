@@ -13,6 +13,7 @@ public class Appointment {
     private String title;
     private String notes;
     private AppointmentState state;
+    private LocalDateTime cancelledAt;
 
     public Appointment() {
     }
@@ -97,5 +98,13 @@ public class Appointment {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public LocalDateTime getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(LocalDateTime cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }

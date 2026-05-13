@@ -23,5 +23,9 @@ public interface AppointmentDAO {
 
     List<Appointment> findCancelledByTherapist(long therapistId);
 
+    int deleteCancelledByTherapist(long therapistId);
+
+    int deleteCancelledOlderThanDays(long therapistId, int retentionDays);
+
     void deleteById(long appointmentId);
 }

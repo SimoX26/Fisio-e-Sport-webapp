@@ -183,6 +183,7 @@ CREATE TABLE appointments (
   title VARCHAR(150),
   notes TEXT,
   state ENUM('SCHEDULED', 'CANCELLED', 'COMPLETED') NOT NULL DEFAULT 'SCHEDULED',
+  cancelled_at DATETIME NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   CONSTRAINT fk_appointments_patient

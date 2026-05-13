@@ -23,6 +23,7 @@ import java.util.Locale;
 
 public class CalendarController {
     private static final int APPOINTMENT_BOUNDARY_MINUTES = 15;
+    private static final int TRASH_RETENTION_DAYS = 30;
     private static final DateTimeFormatter TRASH_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final AppointmentDAO appointmentDAO;
@@ -110,6 +111,7 @@ public class CalendarController {
         }
 
         appointment.setState(AppointmentState.CANCELLED);
+        appointment.setCancelledAt(LocalDateTime.now());
         appointmentDAO.update(appointment);
     }
 
@@ -163,6 +165,7 @@ public class CalendarController {
         }
 
         appointment.setState(AppointmentState.SCHEDULED);
+        appointment.setCancelledAt(null);
         checkForConflicts(appointment);
         appointmentDAO.update(appointment);
     }
@@ -182,6 +185,16 @@ public class CalendarController {
         }
 
         appointmentDAO.deleteById(appointmentId);
+    }
+
+    public int emptyTrashForTherapist(long therapistId) {
+        checkTherapistUserExists(therapistId);
+        return appointmentDAO.deleteCancelledByTherapist(therapistId);
+    }
+
+    public int purgeExpiredTrashForTherapist(long therapistId) {
+        checkTherapistUserExists(therapistId);
+        return appointmentDAO.deleteCancelledOlderThanDays(therapistId, TRASH_RETENTION_DAYS);
     }
 
     public long resolveOrCreatePatientId(String patientName) {

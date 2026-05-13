@@ -66,7 +66,8 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                 all_day = ?,
                 title = ?,
                 notes = ?,
-                state = ?
+                state = ?,
+                cancelled_at = ?
             WHERE id = ?
         """;
 
@@ -85,7 +86,12 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
             ps.setString(6, appointment.getTitle());
             ps.setString(7, appointment.getNotes());
             ps.setString(8, appointment.getState().name());
-            ps.setLong(9, appointment.getId());
+            if (appointment.getCancelledAt() == null) {
+                ps.setNull(9, Types.TIMESTAMP);
+            } else {
+                ps.setTimestamp(9, Timestamp.valueOf(appointment.getCancelledAt()));
+            }
+            ps.setLong(10, appointment.getId());
 
             int updatedRows = ps.executeUpdate();
 
@@ -288,6 +294,47 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
     }
 
     @Override
+    public int deleteCancelledByTherapist(long therapistId) {
+        String sql = """
+            DELETE FROM appointments
+            WHERE therapist_id = ?
+              AND state = 'CANCELLED'
+        """;
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, therapistId);
+            return ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore svuotamento cestino appuntamenti", e);
+        }
+    }
+
+    @Override
+    public int deleteCancelledOlderThanDays(long therapistId, int retentionDays) {
+        String sql = """
+            DELETE FROM appointments
+            WHERE therapist_id = ?
+              AND state = 'CANCELLED'
+              AND cancelled_at IS NOT NULL
+              AND TIMESTAMPDIFF(DAY, cancelled_at, NOW()) >= ?
+        """;
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, therapistId);
+            ps.setInt(2, retentionDays);
+            return ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore pulizia automatica cestino appuntamenti", e);
+        }
+    }
+
+    @Override
     public void deleteById(long appointmentId) {
         String sql = "DELETE FROM appointments WHERE id = ?";
 
@@ -317,6 +364,10 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
         a.setTitle(rs.getString("title"));
         a.setNotes(rs.getString("notes"));
         a.setState(AppointmentState.valueOf(rs.getString("state")));
+        Timestamp cancelledAt = rs.getTimestamp("cancelled_at");
+        if (cancelledAt != null) {
+            a.setCancelledAt(cancelledAt.toLocalDateTime());
+        }
         return a;
     }
 }

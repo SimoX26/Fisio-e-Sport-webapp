@@ -26,12 +26,25 @@
     <div class="page-header-row mb-3">
         <div>
             <h2 class="page-title mb-0">Cestino appuntamenti</h2>
-            <p class="page-subtitle mb-0">Visualizza gli appuntamenti cancellati e gestiscili</p>
+            <p class="page-subtitle mb-0">Visualizza gli appuntamenti cancellati e gestiscili. Eliminazione automatica dopo 30 giorni.</p>
         </div>
-        <a href="<%= request.getContextPath() %>/calendar" class="btn btn-outline-secondary section-action-btn">Torna al calendario</a>
+        <div class="d-flex gap-2">
+            <button type="button"
+                    class="btn btn-outline-danger section-action-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmEmptyTrashModal">
+                Svuota cestino
+            </button>
+            <a href="<%= request.getContextPath() %>/calendar" class="btn btn-outline-secondary section-action-btn">Torna al calendario</a>
+        </div>
     </div>
 
     <div class="glass-card section-card p-4">
+        <c:if test="${not empty message}">
+            <div class="alert alert-success" role="alert">
+                <c:out value="${message}" />
+            </div>
+        </c:if>
         <c:if test="${not empty error}">
             <div class="alert alert-warning" role="alert">
                 <c:out value="${error}" />
@@ -50,7 +63,16 @@
                     <table class="table table-borderless align-middle mb-0">
                         <thead>
                         <tr>
-                            <th>Paziente</th>
+                            <th>
+                                <c:url var="sortByPatientUrl" value="/calendar/trash">
+                                    <c:param name="sortPatient" value="${patientSort == 'asc' ? 'desc' : 'asc'}" />
+                                </c:url>
+                                <a class="text-decoration-none text-reset" href="${sortByPatientUrl}">
+                                    Paziente
+                                    <c:if test="${patientSort == 'asc'}">↑</c:if>
+                                    <c:if test="${patientSort == 'desc'}">↓</c:if>
+                                </a>
+                            </th>
                             <th>Inizio</th>
                             <th>Fine</th>
                             <th>Note</th>
@@ -98,5 +120,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="confirmEmptyTrashModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Conferma svuotamento cestino</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Svuotare completamente il cestino? Questa azione e definitiva.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <form method="post" action="<%= request.getContextPath() %>/calendar/trash" class="d-inline">
+                    <input type="hidden" name="action" value="empty-trash">
+                    <button type="submit" class="btn btn-danger">Svuota cestino</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
