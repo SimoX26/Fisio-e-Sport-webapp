@@ -16,6 +16,7 @@ import it.SimoSW.model.dao.UserDAO;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.time.YearMonth;
 
 /**
  * Application controller responsible for managing patients in the address book.
@@ -139,6 +140,23 @@ public class AddressBookController {
      */
     public List<Patient> searchPatients(String query) {
         return patientDAO.search(query);
+    }
+
+    public List<Patient> getPatientsTreatedInMonth(long therapistId, YearMonth yearMonth) {
+        if (therapistId <= 0 || yearMonth == null) {
+            throw new IllegalArgumentException("Parametri filtro mese non validi");
+        }
+        java.time.LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
+        java.time.LocalDateTime end = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
+        List<Long> patientIds = appointmentDAO.findDistinctPatientIdsByTherapistInPeriod(therapistId, start, end);
+        List<Patient> patients = new java.util.ArrayList<>();
+        for (Long patientId : patientIds) {
+            if (patientId == null) {
+                continue;
+            }
+            patientDAO.findById(patientId).ifPresent(patients::add);
+        }
+        return patients;
     }
 
     public List<Patient> findMergeCandidates(long sourcePatientId, String firstName, String lastName) {
@@ -277,6 +295,15 @@ public class AddressBookController {
 
     public List<PatientCondition> getConditionsByAnamnesisId(long anamnesisId) {
         return patientConditionDAO.findByAnamnesisId(anamnesisId);
+    }
+
+    public long resolveTherapistIdByUsername(String therapistUsername) {
+        String normalized = normalizeSingle(therapistUsername);
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException("Sessione terapista non valida");
+        }
+        return userDAO.findIdByUsernameAndRole(therapistUsername, UserRole.THERAPIST)
+                .orElseThrow(() -> new IllegalArgumentException("Terapista non valido"));
     }
 
     private String normalizeFullName(String firstName, String lastName) {

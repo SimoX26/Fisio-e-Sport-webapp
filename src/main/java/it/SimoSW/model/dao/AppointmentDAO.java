@@ -23,6 +23,8 @@ public interface AppointmentDAO {
 
     List<Appointment> findCancelledByTherapist(long therapistId);
 
+    List<Long> findDistinctPatientIdsByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end);
+
     int countByPatientId(long patientId);
 
     int detachPatientFromAppointments(long patientId, String fallbackTitle);

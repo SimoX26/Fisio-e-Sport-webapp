@@ -47,19 +47,19 @@
     <div class="row g-4 mb-4">
         <div class="col-md-3">
             <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Completati (mese)</div>
+                <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
                 <div class="kpi-value" id="kpiCompletedMonth">0</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Nuovi pazienti (mese)</div>
+                <div class="kpi-label mb-1">Nuovi pazienti (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
                 <div class="kpi-value" id="kpiNewPatientsMonth">0</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Ore prenotate (mese)</div>
+                <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
                 <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
             </div>
         </div>
@@ -111,6 +111,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const kpiNewPatientsMonth = document.getElementById('kpiNewPatientsMonth');
     const kpiBookedHoursMonth = document.getElementById('kpiBookedHoursMonth');
     const kpiCancellationRate = document.getElementById('kpiCancellationRate');
+    const kpiReferenceMonthLabel = document.getElementById('kpiReferenceMonthLabel');
+    const kpiReferenceMonthLabel2 = document.getElementById('kpiReferenceMonthLabel2');
+    const kpiReferenceMonthLabel3 = document.getElementById('kpiReferenceMonthLabel3');
     const chartCanvas = document.getElementById('kpiTrendChart');
     let trendChart = null;
 
@@ -130,6 +133,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function monthLabel(year, month) {
         const date = new Date(year, month - 1, 1);
         return date.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' });
+    }
+
+    function monthLabelLong(year, month) {
+        const date = new Date(year, month - 1, 1);
+        return date.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
     }
 
     function formatNumber(value) {
@@ -153,8 +161,15 @@ document.addEventListener('DOMContentLoaded', function () {
             kpiNewPatientsMonth.textContent = '0';
             kpiBookedHoursMonth.textContent = '0,0';
             kpiCancellationRate.textContent = '0%';
+            if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = 'mese corrente';
+            if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = 'mese corrente';
+            if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = 'mese corrente';
             return;
         }
+        const referenceMonth = monthLabelLong(latest.year, latest.month);
+        if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = referenceMonth;
+        if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = referenceMonth;
+        if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = referenceMonth;
         kpiCompletedMonth.textContent = formatNumber(latest.appointmentsCompleted);
         kpiNewPatientsMonth.textContent = formatNumber(latest.newPatientsMonth);
         kpiBookedHoursMonth.textContent = formatHoursFromMinutes(latest.totalBookedMinutes);

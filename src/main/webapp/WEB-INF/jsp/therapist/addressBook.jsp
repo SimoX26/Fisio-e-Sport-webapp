@@ -51,6 +51,13 @@
             </div>
         </c:if>
 
+        <c:if test="${not empty treatedMonthLabel}">
+            <div class="alert alert-info d-flex justify-content-between align-items-center" role="status">
+                <span>Filtro attivo: pazienti con appuntamenti in <strong><c:out value="${treatedMonthLabel}" /></strong></span>
+                <a href="<%= request.getContextPath() %>/address-book" class="btn btn-sm btn-outline-secondary">Rimuovi filtro</a>
+            </div>
+        </c:if>
+
         <c:if test="${param.created == '1'}">
             <div class="alert alert-success" role="alert">
                 Paziente inserito correttamente.
@@ -96,6 +103,9 @@
                                 <c:if test="${not empty param.q}">
                                     <c:param name="q" value="${param.q}" />
                                 </c:if>
+                                <c:if test="${not empty treatedMonthParam}">
+                                    <c:param name="treatedMonth" value="${treatedMonthParam}" />
+                                </c:if>
                                 <c:param name="sortName" value="${nameSort == 'asc' ? 'desc' : 'asc'}" />
                             </c:url>
                             <a class="text-decoration-none text-reset" href="${sortByNameUrl}">
@@ -108,6 +118,9 @@
                             <c:url var="sortByCreatedUrl" value="/address-book">
                                 <c:if test="${not empty param.q}">
                                     <c:param name="q" value="${param.q}" />
+                                </c:if>
+                                <c:if test="${not empty treatedMonthParam}">
+                                    <c:param name="treatedMonth" value="${treatedMonthParam}" />
                                 </c:if>
                                 <c:param name="sortCreated" value="${createdSort == 'asc' ? 'desc' : 'asc'}" />
                             </c:url>

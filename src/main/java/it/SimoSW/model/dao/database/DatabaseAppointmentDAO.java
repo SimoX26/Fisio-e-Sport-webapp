@@ -294,6 +294,36 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
     }
 
     @Override
+    public List<Long> findDistinctPatientIdsByTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end) {
+        String sql = """
+            SELECT DISTINCT patient_id
+            FROM appointments
+            WHERE therapist_id = ?
+              AND state <> 'CANCELLED'
+              AND patient_id IS NOT NULL
+              AND start_time >= ?
+              AND start_time < ?
+            ORDER BY patient_id
+        """;
+
+        List<Long> result = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, therapistId);
+            ps.setTimestamp(2, Timestamp.valueOf(start));
+            ps.setTimestamp(3, Timestamp.valueOf(end));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getLong("patient_id"));
+                }
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore caricamento pazienti trattati nel periodo", e);
+        }
+    }
+
+    @Override
     public int countByPatientId(long patientId) {
         String sql = """
             SELECT COUNT(*) AS total

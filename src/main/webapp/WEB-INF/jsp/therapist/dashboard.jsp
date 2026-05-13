@@ -35,9 +35,8 @@
                 <h1 class="page-title mb-1">
                     <c:out value="${greetingPrefix}" /> <c:out value="${loggedUserDisplay}" />
                 </h1>
-                <p class="page-subtitle mb-0">Panoramica generale e accesso rapido alle schermate principali.</p>
             </div>
-            <a class="btn btn-primary section-action-btn" href="<%= request.getContextPath() %>/calendar">
+            <a class="btn btn-outline-secondary section-action-btn" href="<%= request.getContextPath() %>/calendar">
                 Apri calendario
             </a>
         </div>
@@ -54,30 +53,30 @@
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-                <div class="kpi-value"><c:out value="${appointmentsToday}" /></div>
                 <div class="kpi-label">
-                    Appuntamenti oggi <c:out value="${todayLabel}" />
+                    Appuntamenti oggi - <c:out value="${todayLabel}" />
                 </div>
+                <div class="kpi-value"><c:out value="${appointmentsToday}" /></div>
             </a>
         </div>
 
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/address-book">
-                <div class="kpi-value"><c:out value="${patientsThisMonth}" /></div>
+               href="<%= request.getContextPath() %>/address-book?treatedMonth=${patientsMonthParam}">
                 <div class="kpi-label">
                     Pazienti trattati a <c:out value="${patientsMonthYearLabel}" />
                 </div>
+                <div class="kpi-value"><c:out value="${patientsThisMonth}" /></div>
             </a>
         </div>
 
         <div class="col-md-4">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/calendar?view=timeGridWeek&date=today">
-                <div class="kpi-value"><c:out value="${bookedHoursThisWeek}" /></div>
                 <div class="kpi-label">
                     Ore prenotate nella settimana <c:out value="${weekRangeLabel}" />
                 </div>
+                <div class="kpi-value"><c:out value="${bookedHoursThisWeek}" /></div>
             </a>
         </div>
     </div>

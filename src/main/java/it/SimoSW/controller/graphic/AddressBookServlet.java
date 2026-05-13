@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,13 +64,26 @@ public class AddressBookServlet extends HttpServlet {
 
         List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
+        String treatedMonthParam = normalizeOptional(request.getParameter("treatedMonth"));
         String nameSort = normalizeOptional(request.getParameter("sortName")).toLowerCase();
         String createdSort = normalizeOptional(request.getParameter("sortCreated")).toLowerCase();
 
         try {
-            patients = addressBookController.searchPatients(
-                    query != null ? query : ""
-            );
+            if (!treatedMonthParam.isEmpty()) {
+                YearMonth treatedMonth = parseYearMonth(treatedMonthParam);
+                String loggedUser = normalizeOptional((String) request.getSession().getAttribute("loggedUser"));
+                if (loggedUser.isEmpty()) {
+                    throw new IllegalArgumentException("Sessione terapista non valida");
+                }
+                long therapistId = addressBookController.resolveTherapistIdByUsername(loggedUser);
+                patients = addressBookController.getPatientsTreatedInMonth(therapistId, treatedMonth);
+                request.setAttribute("treatedMonthLabel", treatedMonth.format(java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy", java.util.Locale.ITALIAN)));
+                request.setAttribute("treatedMonthParam", treatedMonth.toString());
+            } else {
+                patients = addressBookController.searchPatients(
+                        query != null ? query : ""
+                );
+            }
             if ("asc".equals(nameSort) || "desc".equals(nameSort)) {
                 Comparator<Patient> byName = Comparator.comparing(
                         p -> p.getFullName().toLowerCase()
@@ -547,6 +561,14 @@ public class AddressBookServlet extends HttpServlet {
             return LocalDate.parse(normalized);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Data anamnesi non valida");
+        }
+    }
+
+    private YearMonth parseYearMonth(String value) {
+        try {
+            return YearMonth.parse(normalizeOptional(value));
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Formato mese non valido (atteso YYYY-MM)");
         }
     }
 
