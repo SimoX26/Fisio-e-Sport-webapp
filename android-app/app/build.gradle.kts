@@ -7,6 +7,10 @@ plugins {
 
 val fisioSportBaseUrl = (project.findProperty("FISIO_SPORT_BASE_URL") as String?)
     ?: "http://31.70.74.92:8080/Fisio-e-Sport-webapp"
+val fisioSportTestOverlayEnabled = ((project.findProperty("FISIO_SPORT_TEST_OVERLAY") as String?)
+    ?: "false").toBoolean()
+val fisioSportTestApp = ((project.findProperty("FISIO_SPORT_TEST_APP") as String?)
+    ?: "false").toBoolean()
 
 android {
     namespace = "it.simosw.fisioesport"
@@ -14,6 +18,10 @@ android {
 
     defaultConfig {
         applicationId = "it.simosw.fisioesport"
+        if (fisioSportTestApp) {
+            applicationIdSuffix = ".test"
+            resValue("string", "app_name", "Fisio e Sports Test")
+        }
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -22,6 +30,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "FISIO_SPORT_BASE_URL", "\"$fisioSportBaseUrl\"")
+        buildConfigField("boolean", "TEST_OVERLAY_ENABLED", fisioSportTestOverlayEnabled.toString())
     }
 
     buildTypes {
