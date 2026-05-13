@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     const notesInput = document.getElementById('notes');
+    const appointmentFormErrorEl = document.getElementById('appointmentFormError');
     const patientNameInput = document.getElementById('patientName');
     const patientSuggestionsMenuEl = document.getElementById('patientSuggestionsMenu');
     const allDayInput = document.getElementById('allDay');
@@ -96,6 +97,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let patientSuggestionItems = [];
     let highlightedSuggestionIndex = -1;
     let reminderPreviewData = [];
+    let noticeCounter = 0;
+
+    function showGlobalNotice(message, variant = 'error') {
+        const container = document.getElementById('appNoticeContainer');
+        if (!container) {
+            return;
+        }
+
+        const normalizedVariant = ['success', 'info', 'error'].includes(variant) ? variant : 'error';
+        const notice = document.createElement('div');
+        notice.className = `app-notice app-notice--${normalizedVariant}`;
+        notice.setAttribute('role', normalizedVariant === 'error' ? 'alert' : 'status');
+        notice.setAttribute('aria-live', normalizedVariant === 'error' ? 'assertive' : 'polite');
+        notice.dataset.noticeId = String(++noticeCounter);
+        notice.innerHTML = `
+            <div class="app-notice__body">${escapeHtml(message || 'Operazione non riuscita')}</div>
+            <button type="button" class="app-notice__close" aria-label="Chiudi notifica">&times;</button>
+        `;
+
+        const closeButton = notice.querySelector('.app-notice__close');
+        closeButton?.addEventListener('click', () => {
+            notice.remove();
+        });
+
+        container.appendChild(notice);
+        window.setTimeout(() => {
+            notice.classList.add('app-notice--visible');
+        }, 10);
+
+        window.setTimeout(() => {
+            notice.classList.remove('app-notice--visible');
+            window.setTimeout(() => notice.remove(), 220);
+        }, 5200);
+    }
 
     function applyViewClass(calendarInstance) {
         const viewType = calendarInstance.view ? calendarInstance.view.type : '';
@@ -159,6 +194,49 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`${fieldLabel} non valido`);
         }
         return parsed;
+    }
+
+    function hideAppointmentFormError() {
+        if (!appointmentFormErrorEl) {
+            return;
+        }
+        appointmentFormErrorEl.classList.add('d-none');
+        appointmentFormErrorEl.textContent = '';
+    }
+
+    function showAppointmentFormError(message) {
+        if (!appointmentFormErrorEl) {
+            showGlobalNotice(message, 'error');
+            return;
+        }
+        appointmentFormErrorEl.textContent = message || "Errore durante il salvataggio dell'appuntamento.";
+        appointmentFormErrorEl.classList.remove('d-none');
+    }
+
+    async function parseApiError(response, fallbackMessage) {
+        const text = await response.text();
+        let errorMessage = fallbackMessage || 'Operazione non riuscita';
+        let errorCode = '';
+
+        if (text) {
+            try {
+                const parsed = JSON.parse(text);
+                if (parsed?.error) {
+                    errorMessage = parsed.error;
+                }
+                if (parsed?.code) {
+                    errorCode = String(parsed.code);
+                }
+            } catch (e) {
+                errorMessage = text;
+            }
+        }
+
+        if (errorCode === 'TIME_SLOT_NOT_AVAILABLE') {
+            errorMessage = 'Questo orario e gia occupato. Scegli uno slot diverso.';
+        }
+
+        return new Error(errorMessage);
     }
 
     function escapeHtml(value) {
@@ -236,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             reminderPreviewData = [];
             renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
-            alert(error.message || 'Errore durante il caricamento dei reminder');
+            showGlobalNotice(error.message || 'Errore durante il caricamento dei reminder', 'error');
         }
     }
 
@@ -641,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const startDate = selectedEvent.start ? ceilToHour(new Date(selectedEvent.start)) : null;
             if (!startDate) {
-                alert('Impossibile modificare questo appuntamento.');
+                showGlobalNotice('Impossibile modificare questo appuntamento.', 'error');
                 return;
             }
             const eventIsAllDay = Boolean(selectedEvent.allDay || selectedEvent.extendedProps.allDay);
@@ -722,8 +800,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     selectedEvent = null;
                     calendar.refetchEvents();
+                    showGlobalNotice('Appuntamento eliminato correttamente.', 'success');
                 })
-                .catch((err) => alert(err.message));
+                .catch((err) => showGlobalNotice(err.message || 'Errore durante eliminazione appuntamento', 'error'));
         });
     }
 
@@ -872,10 +951,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         selectedEvent = null;
                         calendar.refetchEvents();
+                        showGlobalNotice('Trattamento completato con successo.', 'success');
                     })
-                    .catch((err) => alert(err.message));
+                    .catch((err) => showGlobalNotice(err.message || 'Errore durante completamento appuntamento', 'error'));
             } catch (err) {
-                alert(err.message || 'Dati trattamento non validi');
+                showGlobalNotice(err.message || 'Dati trattamento non validi', 'error');
             }
         });
     }
@@ -962,6 +1042,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (appointmentModalEl) {
         appointmentModalEl.addEventListener('hidden.bs.modal', () => {
             hidePatientSuggestions();
+            hideAppointmentFormError();
         });
     }
 
@@ -981,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sendReminderBtn.addEventListener('click', async () => {
             const dateValue = reminderDateInput ? reminderDateInput.value : '';
             if (!dateValue) {
-                alert('Seleziona prima un giorno dal calendario.');
+                showGlobalNotice('Seleziona prima un giorno dal calendario.', 'info');
                 return;
             }
             const templateValue = reminderTemplateInput && reminderTemplateInput.value.trim()
@@ -1009,19 +1090,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(message || 'Errore durante l\'invio dei reminder');
                 }
                 const payload = await response.json();
-                alert(`Reminder elaborati: ${payload.processedCount || 0} destinatari.`);
+                showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0} destinatari.`, 'success');
                 if (reminderModal) {
                     reminderModal.hide();
                 }
             } catch (error) {
-                alert(error.message || 'Errore durante l\'invio dei reminder');
+                showGlobalNotice(error.message || 'Errore durante l\'invio dei reminder', 'error');
             }
         });
     }
 
     saveButton.addEventListener('click', () => {
+        hideAppointmentFormError();
+
         if (!startInput || !startInput.value) {
-            alert("Inserisci un orario di inizio valido.");
+            showAppointmentFormError("Inserisci un orario di inizio valido.");
             return;
         }
 
@@ -1044,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             const patientName = patientNameInput?.value?.trim() || '';
             if (!patientName) {
-                alert("Inserisci il nome del paziente.");
+                showAppointmentFormError("Inserisci il nome del paziente.");
                 return;
             }
             data.append('action', 'create');
@@ -1062,15 +1145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then((res) => {
                 if (!res.ok) {
-                    return res.text().then((text) => {
-                        let message = '';
-                        try {
-                            const parsed = JSON.parse(text);
-                            message = parsed?.error || '';
-                        } catch (e) {
-                            message = text || '';
-                        }
-                        throw new Error(message || 'Errore nella creazione appuntamento');
+                    return parseApiError(res, 'Errore nel salvataggio appuntamento').then((error) => {
+                        throw error;
                     });
                 }
                 return res.text();
@@ -1086,6 +1162,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 calendar.refetchEvents();
             })
-            .catch((err) => alert(err.message));
+            .catch((err) => showAppointmentFormError(err.message));
     });
 });

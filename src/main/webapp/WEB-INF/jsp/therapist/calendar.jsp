@@ -23,10 +23,11 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260402-13">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-4" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260513-5" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>" class="calendar-gcal-page">
+<div id="appNoticeContainer" class="app-notice-container" aria-live="polite" aria-atomic="true"></div>
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
@@ -226,6 +227,7 @@
 
             <div class="modal-body">
                 <form id="appointmentForm">
+                    <div id="appointmentFormError" class="alert alert-danger d-none" role="alert"></div>
 
                     <!-- Paziente -->
                     <div class="mb-3 patient-search-wrap">

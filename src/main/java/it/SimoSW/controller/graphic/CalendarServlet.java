@@ -3,6 +3,7 @@ package it.SimoSW.controller.graphic;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.TreatmentController;
+import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.CalendarEventView;
@@ -104,6 +105,13 @@ public class CalendarServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
             }
 
+        } catch (TimeSlotNotAvailableException ex) {
+            sendClientError(
+                    response,
+                    HttpServletResponse.SC_CONFLICT,
+                    "Lo slot selezionato non e disponibile. Scegli un altro orario.",
+                    "TIME_SLOT_NOT_AVAILABLE"
+            );
         } catch (RuntimeException ex) {
             sendClientError(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         }
@@ -422,11 +430,18 @@ public class CalendarServlet extends HttpServlet {
     }
 
     private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {
+        sendClientError(response, status, message, null);
+    }
+
+    private void sendClientError(HttpServletResponse response, int status, String message, String errorCode) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         Map<String, String> payload = new HashMap<>();
         payload.put("error", message == null || message.isBlank() ? "Richiesta non valida" : message);
+        if (errorCode != null && !errorCode.isBlank()) {
+            payload.put("code", errorCode);
+        }
         mapper.writeValue(response.getWriter(), payload);
     }
 }

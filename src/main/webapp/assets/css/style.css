@@ -87,6 +87,75 @@ body.auth-page{
     color: var(--brand-primary);
 }
 
+.app-notice-container{
+    position: fixed;
+    top: 84px;
+    right: 18px;
+    z-index: 2200;
+    width: min(380px, calc(100vw - 24px));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.app-notice{
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(0,0,0,.10);
+    color: var(--text-main);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.app-notice--visible{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.app-notice__body{
+    flex: 1;
+    font-size: .92rem;
+    line-height: 1.35;
+}
+
+.app-notice__close{
+    border: 0;
+    background: transparent;
+    color: inherit;
+    opacity: .7;
+    line-height: 1;
+    padding: 1px 2px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.app-notice__close:hover{
+    opacity: 1;
+}
+
+.app-notice--error{
+    border-color: #e8b3b3;
+    background: #fff6f6;
+}
+
+.app-notice--success{
+    border-color: #b8e0c3;
+    background: #f3fff6;
+}
+
+.app-notice--info{
+    border-color: #b6d7ff;
+    background: #f3f8ff;
+}
+
 
 
 
