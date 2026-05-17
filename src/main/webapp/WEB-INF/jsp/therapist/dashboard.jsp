@@ -120,7 +120,7 @@
         <div class="col-md-3">
             <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
                href="<%= request.getContextPath() %>/dashboard/insights">
-                <h5>Statistiche KPI</h5>
+                <h5>Statistiche e Dati</h5>
                 <p class="page-subtitle">
                     Visualizza analisi mensili, grafici e indicatori storici.
                 </p>

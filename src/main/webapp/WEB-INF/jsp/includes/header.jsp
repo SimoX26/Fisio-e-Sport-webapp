@@ -15,7 +15,7 @@
         <a class="navbar-brand fw-bold"
            href="<%= request.getContextPath() %>/index.jsp">
             <span class="brand-dot"></span>
-            Fisio e Sports
+            FISIO E SPORTS
         </a>
 
         <!-- TOGGLER -->
@@ -26,6 +26,7 @@
                 aria-controls="navbarNav"
                 aria-expanded="false"
                 aria-label="Apri menu di navigazione">
+            <span class="navbar-toggler-label">MENU</span>
             <span class="navbar-toggler-icon"></span>
         </button>
 
