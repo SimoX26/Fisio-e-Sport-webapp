@@ -1,18 +1,75 @@
-# Build outputs
+# =========================
+# Build outputs (Java/Maven)
+# =========================
 target/
-**/build/
+*.class
+*.war
+*.jar
 
+# =========================
+# Android / Gradle outputs
+# =========================
+.gradle/
+build/
+**/build/
+android-app/.gradle/
+android-app/build/
+android-app/app/build/
+android-app/local.properties
+
+# =========================
 # IDE / Editor
+# =========================
 .vscode/
 .idea/
 *.iml
+*.ipr
+*.iws
 
-# OS / local noise
+# =========================
+# OS / temporary files
+# =========================
 .DS_Store
 Thumbs.db
-
-# Logs / temp files
-*.log
 *.tmp
+*.temp
 *.swp
 *.swo
+*~
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Secrets / env / credentials
+# =========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+id_rsa
+id_rsa.pub
+
+# Local runtime config with credentials (keep only template in repo)
+src/main/resources/config.properties
+!src/main/resources/config.properties.example
+
+# Local scripts with real credentials
+backup-db.sh
+
+# =========================
+# Database dumps / backups
+# =========================
+*.sql.gz
+backups/
+
+# =========================
+# Local tool artifacts
+# =========================
+.codex
