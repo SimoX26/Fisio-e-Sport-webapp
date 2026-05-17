@@ -265,6 +265,15 @@ public class CalendarController {
                 .orElse(null);
     }
 
+    public String resolvePatientPhone(Long patientId) {
+        if (patientId == null) {
+            return null;
+        }
+        return patientDAO.findById(patientId)
+                .map(Patient::getPhone)
+                .orElse(null);
+    }
+
     public List<String> searchPatientNames(String query, int limit) {
         int normalizedLimit = Math.max(1, Math.min(limit, 20));
         List<Patient> matches = patientDAO.search(query);

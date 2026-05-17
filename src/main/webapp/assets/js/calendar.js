@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeTreatmentModalEl = document.getElementById('completeTreatmentModal');
     const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
     const reminderModalEl = document.getElementById('reminderModal');
+    const whatsAppSetupModalEl = document.getElementById('whatsAppSetupModal');
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     const appointmentDateInput = document.getElementById('appointmentDate');
@@ -93,6 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const reminderPreviewEmptyEl = document.getElementById('reminderPreviewEmpty');
     const sendReminderBtn = document.getElementById('sendReminderBtn');
     const refreshReminderPreviewBtn = document.getElementById('refreshReminderPreviewBtn');
+    const saveWhatsAppSetupBtn = document.getElementById('saveWhatsAppSetupBtn');
+    const whatsAppAccessTokenInput = document.getElementById('whatsAppAccessToken');
+    const whatsAppPhoneNumberIdInput = document.getElementById('whatsAppPhoneNumberId');
+    const whatsAppBusinessAccountIdInput = document.getElementById('whatsAppBusinessAccountId');
+    const whatsAppDailyTemplateNameInput = document.getElementById('whatsAppDailyTemplateName');
+    const whatsAppWeeklyTemplateNameInput = document.getElementById('whatsAppWeeklyTemplateName');
+    const whatsAppTemplateLanguageInput = document.getElementById('whatsAppTemplateLanguage');
     const searchHighlightNoticeEl = document.getElementById('searchHighlightNotice');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
@@ -109,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeTreatmentModal = completeTreatmentModalEl ? new bootstrap.Modal(completeTreatmentModalEl) : null;
     const confirmDeleteModal = confirmDeleteModalEl ? new bootstrap.Modal(confirmDeleteModalEl) : null;
     const reminderModal = reminderModalEl ? new bootstrap.Modal(reminderModalEl) : null;
+    const whatsAppSetupModal = whatsAppSetupModalEl ? new bootstrap.Modal(whatsAppSetupModalEl) : null;
     let selectedEvent = null;
     let editingAppointmentId = null;
     let currentHeightMode = 'auto';
@@ -116,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let patientSuggestionItems = [];
     let highlightedSuggestionIndex = -1;
     let reminderPreviewData = [];
+    let pendingReminderPayload = null;
     let noticeCounter = 0;
 
     function pad2(value) {
@@ -1241,33 +1251,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? reminderTemplateInput.value.trim()
                 : defaultReminderTemplate();
             try {
+                const payload = await executeReminderSend(dateValue, templateValue);
+                showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0}, inviati: ${payload.sentCount || 0}.`, 'success');
+                if (reminderModal) {
+                    reminderModal.hide();
+                }
+            } catch (error) {
+                if (error?.code === 'WHATSAPP_CONFIG_MISSING' && whatsAppSetupModal) {
+                    pendingReminderPayload = { dateValue, templateValue };
+                    if (whatsAppDailyTemplateNameInput && !whatsAppDailyTemplateNameInput.value.trim()) {
+                        whatsAppDailyTemplateNameInput.value = 'daily_reminder';
+                    }
+                    if (whatsAppWeeklyTemplateNameInput && !whatsAppWeeklyTemplateNameInput.value.trim()) {
+                        whatsAppWeeklyTemplateNameInput.value = 'weekly_reminder';
+                    }
+                    if (whatsAppTemplateLanguageInput && !whatsAppTemplateLanguageInput.value.trim()) {
+                        whatsAppTemplateLanguageInput.value = 'it';
+                    }
+                    whatsAppSetupModal.show();
+                    return;
+                }
+                showGlobalNotice(error.message || 'Errore durante l\'invio dei reminder', 'error');
+            }
+        });
+    }
+
+    if (saveWhatsAppSetupBtn) {
+        saveWhatsAppSetupBtn.addEventListener('click', async () => {
+            const accessToken = whatsAppAccessTokenInput ? whatsAppAccessTokenInput.value.trim() : '';
+            const phoneNumberId = whatsAppPhoneNumberIdInput ? whatsAppPhoneNumberIdInput.value.trim() : '';
+            const businessAccountId = whatsAppBusinessAccountIdInput ? whatsAppBusinessAccountIdInput.value.trim() : '';
+            const dailyTemplateName = whatsAppDailyTemplateNameInput ? whatsAppDailyTemplateNameInput.value.trim() : '';
+            const weeklyTemplateName = whatsAppWeeklyTemplateNameInput ? whatsAppWeeklyTemplateNameInput.value.trim() : '';
+            const templateLanguage = whatsAppTemplateLanguageInput ? whatsAppTemplateLanguageInput.value.trim() : '';
+
+            if (!accessToken || !phoneNumberId || !businessAccountId || !dailyTemplateName || !weeklyTemplateName || !templateLanguage) {
+                showGlobalNotice('Compila tutti i campi della configurazione WhatsApp.', 'info');
+                return;
+            }
+
+            try {
                 const data = new URLSearchParams();
-                data.append('action', 'send-reminders');
-                data.append('date', dateValue);
-                data.append('template', templateValue);
+                data.append('action', 'save-whatsapp-config');
+                data.append('accessToken', accessToken);
+                data.append('phoneNumberId', phoneNumberId);
+                data.append('businessAccountId', businessAccountId);
+                data.append('dailyTemplateName', dailyTemplateName);
+                data.append('weeklyTemplateName', weeklyTemplateName);
+                data.append('templateLanguage', templateLanguage);
 
                 const response = await fetch(contextPath + '/calendar', {
                     method: 'POST',
                     body: data
                 });
                 if (!response.ok) {
-                    const text = await response.text();
-                    let message = '';
-                    try {
-                        const parsed = JSON.parse(text);
-                        message = parsed?.error || '';
-                    } catch (e) {
-                        message = text || '';
-                    }
-                    throw new Error(message || 'Errore durante l\'invio dei reminder');
+                    throw new Error('Impossibile salvare la configurazione WhatsApp');
                 }
-                const payload = await response.json();
-                showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0} destinatari.`, 'success');
-                if (reminderModal) {
-                    reminderModal.hide();
+                if (whatsAppAccessTokenInput) {
+                    whatsAppAccessTokenInput.value = '';
+                }
+                if (whatsAppSetupModal) {
+                    whatsAppSetupModal.hide();
+                }
+                showGlobalNotice('Configurazione WhatsApp salvata.', 'success');
+
+                if (pendingReminderPayload) {
+                    const payload = await executeReminderSend(
+                        pendingReminderPayload.dateValue,
+                        pendingReminderPayload.templateValue
+                    );
+                    showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0}, inviati: ${payload.sentCount || 0}.`, 'success');
+                    pendingReminderPayload = null;
+                    if (reminderModal) {
+                        reminderModal.hide();
+                    }
                 }
             } catch (error) {
-                showGlobalNotice(error.message || 'Errore durante l\'invio dei reminder', 'error');
+                showGlobalNotice(error.message || 'Errore durante il salvataggio della configurazione', 'error');
             }
         });
     }
@@ -1346,3 +1406,30 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch((err) => showAppointmentFormError(err.message));
     });
 });
+    async function executeReminderSend(dateValue, templateValue) {
+        const data = new URLSearchParams();
+        data.append('action', 'send-reminders');
+        data.append('date', dateValue);
+        data.append('template', templateValue);
+
+        const response = await fetch(contextPath + '/calendar', {
+            method: 'POST',
+            body: data
+        });
+        if (!response.ok) {
+            const text = await response.text();
+            let message = '';
+            let code = '';
+            try {
+                const parsed = JSON.parse(text);
+                message = parsed?.error || '';
+                code = parsed?.code || '';
+            } catch (e) {
+                message = text || '';
+            }
+            const error = new Error(message || 'Errore durante l\'invio dei reminder');
+            error.code = code;
+            throw error;
+        }
+        return response.json();
+    }

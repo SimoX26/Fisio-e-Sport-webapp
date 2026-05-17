@@ -7,6 +7,9 @@ import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.CalendarEventView;
+import it.SimoSW.model.WhatsAppBusinessConfig;
+import it.SimoSW.service.whatsapp.WhatsAppCloudApiService;
+import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,6 +38,8 @@ public class CalendarServlet extends HttpServlet {
 
     private CalendarController calendarController;
     private TreatmentController treatmentController;
+    private WhatsAppConfigurationService whatsAppConfigurationService;
+    private WhatsAppCloudApiService whatsAppCloudApiService;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -43,6 +48,8 @@ public class CalendarServlet extends HttpServlet {
 
         this.calendarController = initializer.getCalendarController();
         this.treatmentController = initializer.getTreatmentController();
+        this.whatsAppConfigurationService = initializer.getWhatsAppConfigurationService();
+        this.whatsAppCloudApiService = initializer.getWhatsAppCloudApiService();
     }
 
     /* =========================
@@ -98,10 +105,11 @@ public class CalendarServlet extends HttpServlet {
                 case "cancel" -> cancelAppointment(request);
                 case "complete" -> completeAppointmentAndCreateTreatment(request);
                 case "send-reminders" -> sendReminders(request, response);
+                case "save-whatsapp-config" -> saveWhatsAppConfiguration(request, response);
                 default -> throw new IllegalArgumentException("Unknown action");
             }
 
-            if (!"send-reminders".equals(action)) {
+            if (!"send-reminders".equals(action) && !"save-whatsapp-config".equals(action)) {
                 response.setStatus(HttpServletResponse.SC_OK);
             }
 
@@ -267,28 +275,85 @@ public class CalendarServlet extends HttpServlet {
     }
 
     private void sendReminders(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        resolveTherapistIdFromSession(request);
+        long therapistId = resolveTherapistIdFromSession(request);
         LocalDate targetDate = parseRequiredDate(request.getParameter("date"));
-        String template = normalizeNotes(request.getParameter("template"));
-        if (template == null) {
-            template = DEFAULT_REMINDER_TEMPLATE;
+        WhatsAppBusinessConfig config = whatsAppConfigurationService.getConfiguration(therapistId)
+                .orElse(null);
+        if (config == null) {
+            sendClientError(
+                    response,
+                    428,
+                    "Configurazione WhatsApp mancante. Completa il setup iniziale.",
+                    "WHATSAPP_CONFIG_MISSING"
+            );
+            return;
         }
 
-        List<Map<String, Object>> recipients = buildReminderRecipients(targetDate, template);
+        List<Map<String, Object>> recipients = buildReminderRecipients(targetDate, DEFAULT_REMINDER_TEMPLATE);
+        int sentCount = 0;
+        int skippedCount = 0;
+        int failedCount = 0;
         for (Map<String, Object> recipient : recipients) {
             String patientName = String.valueOf(recipient.get("patientName"));
-            String email = String.valueOf(recipient.get("patientEmail"));
-            String message = String.valueOf(recipient.get("message"));
-            getServletContext().log("[REMINDER] date=" + targetDate + " patient=" + patientName + " email=" + email + " message=" + message);
+            String patientPhone = valueAsOptional(recipient.get("patientPhone"));
+            String dayLabel = valueAsOptional(recipient.get("dayLabel"));
+            String timeRange = valueAsOptional(recipient.get("timeRange"));
+            if (patientPhone == null) {
+                skippedCount++;
+                continue;
+            }
+            try {
+                whatsAppCloudApiService.sendDailyReminderTemplate(
+                        config,
+                        patientPhone,
+                        patientName,
+                        dayLabel,
+                        timeRange
+                );
+                sentCount++;
+            } catch (RuntimeException ex) {
+                failedCount++;
+                getServletContext().log("[WHATSAPP_REMINDER_ERROR] patient=" + patientName + " reason=" + safeLogMessage(ex.getMessage()));
+            }
         }
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("date", targetDate.toString());
         payload.put("dayLabel", formatReminderDayLabel(targetDate));
         payload.put("processedCount", recipients.size());
-        payload.put("channel", "LOG");
-        payload.put("note", "Promemoria elaborati e registrati nel log applicativo.");
+        payload.put("sentCount", sentCount);
+        payload.put("skippedCount", skippedCount);
+        payload.put("failedCount", failedCount);
+        payload.put("channel", "WHATSAPP_CLOUD_API");
 
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        mapper.writeValue(response.getWriter(), payload);
+    }
+
+    private void saveWhatsAppConfiguration(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        long therapistId = resolveTherapistIdFromSession(request);
+        String accessToken = request.getParameter("accessToken");
+        String phoneNumberId = request.getParameter("phoneNumberId");
+        String businessAccountId = request.getParameter("businessAccountId");
+        String dailyTemplateName = request.getParameter("dailyTemplateName");
+        String weeklyTemplateName = request.getParameter("weeklyTemplateName");
+        String templateLanguage = request.getParameter("templateLanguage");
+
+        whatsAppConfigurationService.saveConfiguration(
+                therapistId,
+                accessToken,
+                phoneNumberId,
+                businessAccountId,
+                dailyTemplateName,
+                weeklyTemplateName,
+                templateLanguage
+        );
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("saved", true);
+        payload.put("maskedAccessToken", whatsAppConfigurationService.maskAccessToken(accessToken));
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -421,6 +486,7 @@ public class CalendarServlet extends HttpServlet {
             row.put("appointmentId", appointment.getId());
             row.put("patientName", patientName);
             row.put("patientEmail", calendarController.resolvePatientEmail(appointment.getPatientId()));
+            row.put("patientPhone", calendarController.resolvePatientPhone(appointment.getPatientId()));
             row.put("dayLabel", dayLabel);
             row.put("startTime", startTime);
             row.put("endTime", endTime);
@@ -446,6 +512,21 @@ public class CalendarServlet extends HttpServlet {
         result = result.replace("{ora fine}", endTime == null ? "" : endTime);
         result = result.replace("{ora inizio - ora fine}", timeRange == null ? "" : timeRange);
         return result;
+    }
+
+    private String valueAsOptional(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String raw = String.valueOf(value).trim();
+        return raw.isEmpty() || "null".equalsIgnoreCase(raw) ? null : raw;
+    }
+
+    private String safeLogMessage(String message) {
+        if (message == null || message.isBlank()) {
+            return "Errore sconosciuto";
+        }
+        return message.length() > 180 ? message.substring(0, 180) : message;
     }
 
     private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {

@@ -103,6 +103,54 @@
     </div>
 </div>
 
+<div class="modal fade" id="whatsAppSetupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Configurazione iniziale WhatsApp Business</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="whatsAppSetupForm">
+                    <div class="alert alert-info py-2 small">
+                        Configurazione richiesta una sola volta prima dell'invio reminder WhatsApp.
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="whatsAppAccessToken">Access Token</label>
+                            <input type="password" class="form-control" id="whatsAppAccessToken" autocomplete="new-password" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="whatsAppPhoneNumberId">Phone Number ID</label>
+                            <input type="text" class="form-control" id="whatsAppPhoneNumberId" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="whatsAppBusinessAccountId">WhatsApp Business Account ID</label>
+                            <input type="text" class="form-control" id="whatsAppBusinessAccountId" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="whatsAppDailyTemplateName">Template giornaliero</label>
+                            <input type="text" class="form-control" id="whatsAppDailyTemplateName" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="whatsAppWeeklyTemplateName">Template settimanale</label>
+                            <input type="text" class="form-control" id="whatsAppWeeklyTemplateName" required>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label" for="whatsAppTemplateLanguage">Lingua template</label>
+                            <input type="text" class="form-control" id="whatsAppTemplateLanguage" value="it" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id="saveWhatsAppSetupBtn">Salva configurazione</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- =========================
      MODALE DETTAGLI EVENTO
      ========================= -->
