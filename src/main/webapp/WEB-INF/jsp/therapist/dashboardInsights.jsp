@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="FisioSport">
 
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260513-20">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-1">
 </head>
 <body class="app-page" data-context-path="<%= request.getContextPath() %>">
 

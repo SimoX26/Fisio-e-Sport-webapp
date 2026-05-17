@@ -15,7 +15,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="FisioSport">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-1">
 </head>
 <body class="auth-page app-page d-flex align-items-center justify-content-center">
 

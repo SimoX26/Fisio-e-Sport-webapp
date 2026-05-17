@@ -20,7 +20,7 @@
     <meta name="apple-mobile-web-app-title" content="FisioSport">
 
       <!-- Custom CSS -->
-       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260322-2">
+       <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-1">
 </head>
 
 <body class="app-page">
