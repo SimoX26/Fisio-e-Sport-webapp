@@ -1405,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch((err) => showAppointmentFormError(err.message));
     });
-});
+
     async function executeReminderSend(dateValue, templateValue) {
         const data = new URLSearchParams();
         data.append('action', 'send-reminders');
@@ -1433,3 +1433,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return response.json();
     }
+});
