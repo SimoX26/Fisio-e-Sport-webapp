@@ -145,17 +145,17 @@
                     <th colspan="6">Dati gestionali</th>
                 </tr>
                 <tr>
-                    <th class="text-nowrap">Appuntamenti mese</th>
-                    <th class="text-nowrap">Trattamenti completati</th>
-                    <th class="text-nowrap">Appuntamenti cancellati</th>
-                    <th class="text-nowrap">Ore prenotate</th>
-                    <th class="text-nowrap">Tasso cancellazione</th>
-                    <th class="text-nowrap">Nuovi appuntamenti</th>
-                    <th class="text-nowrap">Nuovi pazienti</th>
-                    <th class="text-nowrap">Pazienti attivi</th>
-                    <th class="text-nowrap">Pazienti di ritorno</th>
-                    <th class="text-nowrap">Saturazione agenda</th>
-                    <th class="text-nowrap">Media app./paziente</th>
+                    <th>Appuntamenti mese</th>
+                    <th>Trattamenti completati</th>
+                    <th>Appuntamenti cancellati</th>
+                    <th>Ore prenotate</th>
+                    <th>Tasso cancellazione</th>
+                    <th>Nuovi appuntamenti</th>
+                    <th>Nuovi pazienti</th>
+                    <th>Pazienti attivi</th>
+                    <th>Pazienti di ritorno</th>
+                    <th>Saturazione agenda</th>
+                    <th>Media app./paziente</th>
                 </tr>
                 </thead>
                 <tbody id="kpiTableBody">

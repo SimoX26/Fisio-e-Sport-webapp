@@ -437,13 +437,24 @@ body.calendar-gcal-page{
 }
 
 .kpi-table-groups + tr th{
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.15;
+    word-break: normal;
+    overflow-wrap: break-word;
+    vertical-align: middle;
+    min-width: 90px;
+    max-width: 120px;
+    padding-left: .45rem !important;
+    padding-right: .45rem !important;
 }
 
 @media (max-width: 991.98px){
     .kpi-table-groups + tr th{
         font-size: .76rem !important;
         letter-spacing: .15px !important;
+        min-width: 82px;
+        max-width: 105px;
+        line-height: 1.1;
     }
 }
 
