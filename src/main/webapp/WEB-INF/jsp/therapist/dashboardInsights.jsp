@@ -96,8 +96,32 @@
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Nuovi pazienti acquisiti (<span id="kpiReferenceMonthLabel6">mese corrente</span>)</div>
-                    <div class="kpi-value" id="kpiNewPatientsMonth">0</div>
+                    <div class="kpi-label mb-1">Pazienti attivi nel mese (<span id="kpiReferenceMonthLabel6">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiActivePatientsMonth">0</div>
+                </div>
+            </div>
+            <div class="kpi-grid__item">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Nuovi pazienti (primo appuntamento)</div>
+                    <div class="kpi-value" id="kpiNewPatientsFirstMonth">0</div>
+                </div>
+            </div>
+            <div class="kpi-grid__item">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Pazienti di ritorno</div>
+                    <div class="kpi-value" id="kpiReturningPatientsMonth">0</div>
+                </div>
+            </div>
+            <div class="kpi-grid__item">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Saturazione agenda</div>
+                    <div class="kpi-value" id="kpiAgendaSaturation">0%</div>
+                </div>
+            </div>
+            <div class="kpi-grid__item">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Media appuntamenti per paziente</div>
+                    <div class="kpi-value" id="kpiAppointmentsPerPatient">0,0</div>
                 </div>
             </div>
         </div>
@@ -151,7 +175,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const kpiBookedHoursMonth = document.getElementById('kpiBookedHoursMonth');
     const kpiCancellationRate = document.getElementById('kpiCancellationRate');
     const kpiCreatedMonth = document.getElementById('kpiCreatedMonth');
-    const kpiNewPatientsMonth = document.getElementById('kpiNewPatientsMonth');
+    const kpiActivePatientsMonth = document.getElementById('kpiActivePatientsMonth');
+    const kpiNewPatientsFirstMonth = document.getElementById('kpiNewPatientsFirstMonth');
+    const kpiReturningPatientsMonth = document.getElementById('kpiReturningPatientsMonth');
+    const kpiAgendaSaturation = document.getElementById('kpiAgendaSaturation');
+    const kpiAppointmentsPerPatient = document.getElementById('kpiAppointmentsPerPatient');
     const kpiReferenceMonthLabel = document.getElementById('kpiReferenceMonthLabel');
     const kpiReferenceMonthLabel2 = document.getElementById('kpiReferenceMonthLabel2');
     const kpiReferenceMonthLabel3 = document.getElementById('kpiReferenceMonthLabel3');
@@ -198,13 +226,24 @@ document.addEventListener('DOMContentLoaded', function () {
         return Math.round(value).toLocaleString('it-IT');
     }
 
+    function formatFixed(value, digits) {
+        return Number(value || 0).toLocaleString('it-IT', {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits
+        });
+    }
+
     function updateCards(series) {
         const latest = series[0];
         if (!latest) {
             kpiAppointmentsMonth.textContent = '0';
             kpiCompletedMonth.textContent = '0';
             kpiCancelledMonth.textContent = '0';
-            kpiNewPatientsMonth.textContent = '0';
+            kpiActivePatientsMonth.textContent = '0';
+            kpiNewPatientsFirstMonth.textContent = '0';
+            kpiReturningPatientsMonth.textContent = '0';
+            kpiAgendaSaturation.textContent = '0%';
+            kpiAppointmentsPerPatient.textContent = '0,0';
             kpiBookedHoursMonth.textContent = '0';
             kpiCancellationRate.textContent = '0%';
             kpiCreatedMonth.textContent = '0';
@@ -226,7 +265,11 @@ document.addEventListener('DOMContentLoaded', function () {
         kpiAppointmentsMonth.textContent = formatNumber(latest.appointmentsInMonth);
         kpiCompletedMonth.textContent = formatNumber(latest.appointmentsCompleted);
         kpiCancelledMonth.textContent = formatNumber(latest.appointmentsCancelled);
-        kpiNewPatientsMonth.textContent = formatNumber(latest.newPatientsMonth);
+        kpiActivePatientsMonth.textContent = formatNumber(latest.activePatientsMonth);
+        kpiNewPatientsFirstMonth.textContent = formatNumber(latest.newPatientsFirstAppointmentMonth);
+        kpiReturningPatientsMonth.textContent = formatNumber(latest.returningPatientsMonth);
+        kpiAgendaSaturation.textContent = formatFixed(latest.agendaSaturationPct, 1) + '%';
+        kpiAppointmentsPerPatient.textContent = formatFixed(latest.appointmentsPerActivePatient, 1);
         kpiBookedHoursMonth.textContent = formatHoursFromMinutes(latest.totalBookedMinutes);
         kpiCancellationRate.textContent = formatPercent(latest.appointmentsCancelled, latest.appointmentsInMonth);
         kpiCreatedMonth.textContent = formatNumber(latest.appointmentsCreated);

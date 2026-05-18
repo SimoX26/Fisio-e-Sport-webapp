@@ -21,6 +21,8 @@ import java.util.Map;
 public class KpiSnapshotController {
 
     private static final String SOURCE_VERSION = "v1";
+    // Placeholder temporaneo: capacità mensile per terapista (ore agenda disponibili).
+    private static final int MONTHLY_AVAILABLE_MINUTES_PER_THERAPIST = 160 * 60;
 
     private final KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO;
 
@@ -50,12 +52,14 @@ public class KpiSnapshotController {
     public List<KpiMonthlySnapshot> getRecentGlobalSnapshots(int months) {
         List<KpiMonthlySnapshot> snapshots = kpiMonthlySnapshotDAO.findRecentGlobal(months);
         enrichAppointmentsInMonth(snapshots, null);
+        enrichManagementMetrics(snapshots, null);
         return snapshots;
     }
 
     public List<KpiMonthlySnapshot> getRecentTherapistSnapshots(long therapistId, int months) {
         List<KpiMonthlySnapshot> snapshots = kpiMonthlySnapshotDAO.findRecentByTherapist(therapistId, months);
         enrichAppointmentsInMonth(snapshots, therapistId);
+        enrichManagementMetrics(snapshots, therapistId);
         return snapshots;
     }
 
@@ -222,6 +226,96 @@ public class KpiSnapshotController {
         } catch (SQLException e) {
             throw new RuntimeException("Errore calcolo appuntamenti mensili operativi", e);
         }
+    }
+
+    private void enrichManagementMetrics(List<KpiMonthlySnapshot> snapshots, Long therapistId) {
+        if (snapshots == null || snapshots.isEmpty()) {
+            return;
+        }
+
+        YearMonth min = null;
+        YearMonth max = null;
+        for (KpiMonthlySnapshot snapshot : snapshots) {
+            YearMonth current = YearMonth.of(snapshot.getYear(), snapshot.getMonth());
+            if (min == null || current.isBefore(min)) {
+                min = current;
+            }
+            if (max == null || current.isAfter(max)) {
+                max = current;
+            }
+        }
+        if (min == null || max == null) {
+            return;
+        }
+
+        LocalDateTime rangeStart = min.atDay(1).atStartOfDay();
+        LocalDateTime rangeEnd = max.plusMonths(1).atDay(1).atStartOfDay();
+        Map<String, Integer> newPatientsByFirstAppointmentMonth =
+                queryNewPatientsByFirstAppointmentMonth(rangeStart, rangeEnd, therapistId);
+
+        int therapistCapacityMultiplier = (therapistId == null) ? Math.max(findActiveTherapistIds().size(), 1) : 1;
+        double availableMinutes = (double) MONTHLY_AVAILABLE_MINUTES_PER_THERAPIST * therapistCapacityMultiplier;
+
+        for (KpiMonthlySnapshot snapshot : snapshots) {
+            String key = snapshot.getYear() + "-" + snapshot.getMonth();
+            int activePatients = Math.max(snapshot.getActivePatientsMonth(), 0);
+            int newPatientsFirst = Math.max(newPatientsByFirstAppointmentMonth.getOrDefault(key, 0), 0);
+            int returning = Math.max(activePatients - newPatientsFirst, 0);
+
+            snapshot.setNewPatientsFirstAppointmentMonth(newPatientsFirst);
+            snapshot.setReturningPatientsMonth(returning);
+
+            double saturation = (availableMinutes <= 0D)
+                    ? 0D
+                    : ((double) Math.max(snapshot.getTotalBookedMinutes(), 0) / availableMinutes) * 100D;
+            snapshot.setAgendaSaturationPct(roundOneDecimal(saturation));
+
+            double appointmentsPerPatient = (activePatients == 0)
+                    ? 0D
+                    : ((double) Math.max(snapshot.getAppointmentsInMonth(), 0) / activePatients);
+            snapshot.setAppointmentsPerActivePatient(roundOneDecimal(appointmentsPerPatient));
+        }
+    }
+
+    private Map<String, Integer> queryNewPatientsByFirstAppointmentMonth(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT YEAR(first_start) AS y, MONTH(first_start) AS m, COUNT(*) AS total
+                FROM (
+                    SELECT patient_id, MIN(start_time) AS first_start
+                    FROM appointments
+                    WHERE state <> 'CANCELLED'
+                      AND patient_id IS NOT NULL
+                """ + therapistFilterSql("therapist_id", therapistId) + """
+                    GROUP BY patient_id
+                ) first_appointments
+                WHERE first_start >= ? AND first_start < ?
+                GROUP BY YEAR(first_start), MONTH(first_start)
+                """;
+
+        Map<String, Integer> result = new HashMap<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int index = 1;
+            if (therapistId != null) {
+                stmt.setLong(index++, therapistId);
+            }
+            stmt.setTimestamp(index++, Timestamp.valueOf(start));
+            stmt.setTimestamp(index, Timestamp.valueOf(end));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String key = rs.getInt("y") + "-" + rs.getInt("m");
+                    result.put(key, rs.getInt("total"));
+                }
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore calcolo nuovi pazienti da primo appuntamento", e);
+        }
+    }
+
+    private double roundOneDecimal(double value) {
+        return Math.round(value * 10D) / 10D;
     }
 
     private int countAppointmentsCancelled(LocalDateTime start, LocalDateTime end, Long therapistId) {

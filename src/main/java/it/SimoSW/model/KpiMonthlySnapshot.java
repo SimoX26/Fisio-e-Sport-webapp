@@ -20,6 +20,10 @@ public class KpiMonthlySnapshot {
     private int treatmentSessionsCompleted;
     private int totalBookedMinutes;
     private int appointmentsInMonth;
+    private int newPatientsFirstAppointmentMonth;
+    private int returningPatientsMonth;
+    private double agendaSaturationPct;
+    private double appointmentsPerActivePatient;
 
     private LocalDateTime computedAt;
     private String sourceVersion;
@@ -144,6 +148,38 @@ public class KpiMonthlySnapshot {
 
     public void setAppointmentsInMonth(int appointmentsInMonth) {
         this.appointmentsInMonth = appointmentsInMonth;
+    }
+
+    public int getNewPatientsFirstAppointmentMonth() {
+        return newPatientsFirstAppointmentMonth;
+    }
+
+    public void setNewPatientsFirstAppointmentMonth(int newPatientsFirstAppointmentMonth) {
+        this.newPatientsFirstAppointmentMonth = newPatientsFirstAppointmentMonth;
+    }
+
+    public int getReturningPatientsMonth() {
+        return returningPatientsMonth;
+    }
+
+    public void setReturningPatientsMonth(int returningPatientsMonth) {
+        this.returningPatientsMonth = returningPatientsMonth;
+    }
+
+    public double getAgendaSaturationPct() {
+        return agendaSaturationPct;
+    }
+
+    public void setAgendaSaturationPct(double agendaSaturationPct) {
+        this.agendaSaturationPct = agendaSaturationPct;
+    }
+
+    public double getAppointmentsPerActivePatient() {
+        return appointmentsPerActivePatient;
+    }
+
+    public void setAppointmentsPerActivePatient(double appointmentsPerActivePatient) {
+        this.appointmentsPerActivePatient = appointmentsPerActivePatient;
     }
 
     public LocalDateTime getComputedAt() {
