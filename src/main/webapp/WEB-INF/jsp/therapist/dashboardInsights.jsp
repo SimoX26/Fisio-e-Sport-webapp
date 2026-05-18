@@ -45,35 +45,35 @@
 
     <div class="kpi-section mb-4">
         <div class="kpi-section-head mb-3">
-            <h5 class="mb-1">KPI Operativi</h5>
+            <h5 class="mb-1">Dati operativi</h5>
             <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
         </div>
         <div class="row g-4">
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCompletedMonth">0</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCancelledMonth">0</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Tasso di cancellazione</div>
                     <div class="kpi-value" id="kpiCancellationRate">0%</div>
@@ -84,7 +84,7 @@
 
     <div class="kpi-section mb-4">
         <div class="kpi-section-head mb-3">
-            <h5 class="mb-1">KPI Business</h5>
+            <h5 class="mb-1">Dati gestionali</h5>
             <p class="kpi-section-note mb-0">Metriche di crescita gestionale basate su creazione dei record nel mese.</p>
         </div>
         <div class="row g-4">
@@ -104,8 +104,8 @@
     </div>
 
     <div class="glass-card section-card p-4 mb-4">
-        <h5 class="mb-1">Andamento operativo mensile</h5>
-        <p class="kpi-section-note mb-3">Volumi mensili di trattamenti, cancellazioni e nuovi pazienti acquisiti.</p>
+        <h5 class="mb-1">Andamento KPI mensile</h5>
+        <p class="kpi-section-note mb-3">Trend mensile dei principali dati operativi e gestionali (tasso di cancellazione escluso).</p>
         <div class="kpi-chart-wrap">
             <canvas id="kpiTrendChart"></canvas>
         </div>
@@ -254,8 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const isMobile = window.matchMedia('(max-width: 576px)').matches;
         const ordered = series.slice().reverse();
         const labels = ordered.map(function (r) { return monthLabel(r.year, r.month); });
+        const appointmentsMonth = ordered.map(function (r) { return r.appointmentsInMonth || 0; });
         const completed = ordered.map(function (r) { return r.appointmentsCompleted || 0; });
         const cancelled = ordered.map(function (r) { return r.appointmentsCancelled || 0; });
+        const bookedHours = ordered.map(function (r) { return Math.round((Number(r.totalBookedMinutes || 0) / 60) * 10) / 10; });
+        const created = ordered.map(function (r) { return r.appointmentsCreated || 0; });
         const newPatients = ordered.map(function (r) { return r.newPatientsMonth || 0; });
 
         if (trendChart) trendChart.destroy();
@@ -264,9 +267,12 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Trattamenti completati', data: completed, borderColor: '#1f8f47', backgroundColor: 'rgba(31,143,71,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 },
-                    { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#c53929', backgroundColor: 'rgba(197,57,41,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 },
-                    { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 }
+                    { label: 'Appuntamenti del mese', data: appointmentsMonth, borderColor: '#7950f2', backgroundColor: 'rgba(121,80,242,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
+                    { label: 'Trattamenti completati', data: completed, borderColor: '#1f8f47', backgroundColor: 'rgba(31,143,71,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
+                    { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#c53929', backgroundColor: 'rgba(197,57,41,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
+                    { label: 'Ore prenotate', data: bookedHours, borderColor: '#0b7285', backgroundColor: 'rgba(11,114,133,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [6, 4], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'yHours' },
+                    { label: 'Nuovi appuntamenti creati', data: created, borderColor: '#e67700', backgroundColor: 'rgba(230,119,0,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [4, 3], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
+                    { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [4, 3], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' }
                 ]
             },
             options: {
@@ -296,7 +302,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 return items[0] ? items[0].label : '';
                             },
                             label: function (context) {
-                                return context.dataset.label + ': ' + formatNumber(context.parsed.y);
+                                const value = context.dataset.yAxisID === 'yHours'
+                                    ? Number(context.parsed.y || 0).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' h'
+                                    : formatNumber(context.parsed.y);
+                                return context.dataset.label + ': ' + value;
                             }
                         }
                     }
@@ -320,6 +329,16 @@ document.addEventListener('DOMContentLoaded', function () {
                             font: { size: isMobile ? 10 : 11 }
                         },
                         grid: { color: 'rgba(60,64,67,.12)' }
+                    },
+                    yHours: {
+                        beginAtZero: true,
+                        position: 'right',
+                        ticks: {
+                            color: '#5f6368',
+                            font: { size: isMobile ? 10 : 11 },
+                            callback: function (value) { return value + ' h'; }
+                        },
+                        grid: { drawOnChartArea: false }
                     }
                 }
             }

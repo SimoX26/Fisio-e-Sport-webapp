@@ -436,6 +436,30 @@ body.calendar-gcal-page{
     border-bottom: 0 !important;
 }
 
+@media (min-width: 992px){
+    .kpi-col-5{
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+
+    .kpi-section .section-card{
+        padding: 1rem !important;
+    }
+
+    .kpi-section .kpi-label{
+        font-size: .84rem;
+    }
+
+    .kpi-section .kpi-value{
+        font-size: 1.75rem;
+    }
+
+    .kpi-section .row.g-4{
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
+    }
+}
+
 .action-card{
     cursor: pointer;
     transition: .25s ease;
