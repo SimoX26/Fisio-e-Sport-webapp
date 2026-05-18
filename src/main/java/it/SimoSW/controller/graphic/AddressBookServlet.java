@@ -64,12 +64,23 @@ public class AddressBookServlet extends HttpServlet {
 
         List<Patient> patients = Collections.emptyList();
         String query = request.getParameter("q");
+        String treatedDateParam = normalizeOptional(request.getParameter("treatedDate"));
         String treatedMonthParam = normalizeOptional(request.getParameter("treatedMonth"));
         String nameSort = normalizeOptional(request.getParameter("sortName")).toLowerCase();
         String createdSort = normalizeOptional(request.getParameter("sortCreated")).toLowerCase();
 
         try {
-            if (!treatedMonthParam.isEmpty()) {
+            if (!treatedDateParam.isEmpty()) {
+                LocalDate treatedDate = parseDate(treatedDateParam);
+                String loggedUser = normalizeOptional((String) request.getSession().getAttribute("loggedUser"));
+                if (loggedUser.isEmpty()) {
+                    throw new IllegalArgumentException("Sessione terapista non valida");
+                }
+                long therapistId = addressBookController.resolveTherapistIdByUsername(loggedUser);
+                patients = addressBookController.getPatientsTreatedOnDate(therapistId, treatedDate);
+                request.setAttribute("treatedDateLabel", treatedDate.format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", java.util.Locale.ITALIAN)));
+                request.setAttribute("treatedDateParam", treatedDate.toString());
+            } else if (!treatedMonthParam.isEmpty()) {
                 YearMonth treatedMonth = parseYearMonth(treatedMonthParam);
                 String loggedUser = normalizeOptional((String) request.getSession().getAttribute("loggedUser"));
                 if (loggedUser.isEmpty()) {
@@ -569,6 +580,14 @@ public class AddressBookServlet extends HttpServlet {
             return YearMonth.parse(normalizeOptional(value));
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Formato mese non valido (atteso YYYY-MM)");
+        }
+    }
+
+    private LocalDate parseDate(String value) {
+        try {
+            return LocalDate.parse(normalizeOptional(value));
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Formato data non valido (atteso YYYY-MM-DD)");
         }
     }
 

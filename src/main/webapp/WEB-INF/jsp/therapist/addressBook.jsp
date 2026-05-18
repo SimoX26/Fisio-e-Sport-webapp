@@ -51,7 +51,14 @@
             </div>
         </c:if>
 
-        <c:if test="${not empty treatedMonthLabel}">
+        <c:if test="${not empty treatedDateLabel}">
+            <div class="alert alert-info d-flex justify-content-between align-items-center" role="status">
+                <span>Filtro attivo: pazienti con appuntamenti il <strong><c:out value="${treatedDateLabel}" /></strong></span>
+                <a href="<%= request.getContextPath() %>/address-book" class="btn btn-sm btn-outline-secondary">Rimuovi filtro</a>
+            </div>
+        </c:if>
+
+        <c:if test="${empty treatedDateLabel and not empty treatedMonthLabel}">
             <div class="alert alert-info d-flex justify-content-between align-items-center" role="status">
                 <span>Filtro attivo: pazienti con appuntamenti in <strong><c:out value="${treatedMonthLabel}" /></strong></span>
                 <a href="<%= request.getContextPath() %>/address-book" class="btn btn-sm btn-outline-secondary">Rimuovi filtro</a>
@@ -106,6 +113,9 @@
                                 <c:if test="${not empty treatedMonthParam}">
                                     <c:param name="treatedMonth" value="${treatedMonthParam}" />
                                 </c:if>
+                                <c:if test="${not empty treatedDateParam}">
+                                    <c:param name="treatedDate" value="${treatedDateParam}" />
+                                </c:if>
                                 <c:param name="sortName" value="${nameSort == 'asc' ? 'desc' : 'asc'}" />
                             </c:url>
                             <a class="text-decoration-none text-reset" href="${sortByNameUrl}">
@@ -121,6 +131,9 @@
                                 </c:if>
                                 <c:if test="${not empty treatedMonthParam}">
                                     <c:param name="treatedMonth" value="${treatedMonthParam}" />
+                                </c:if>
+                                <c:if test="${not empty treatedDateParam}">
+                                    <c:param name="treatedDate" value="${treatedDateParam}" />
                                 </c:if>
                                 <c:param name="sortCreated" value="${createdSort == 'asc' ? 'desc' : 'asc'}" />
                             </c:url>

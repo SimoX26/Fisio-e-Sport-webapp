@@ -49,7 +49,7 @@
             <span class="home-kpi-chip__label">Appuntamenti oggi</span>
             <span class="home-kpi-chip__value"><c:out value="${appointmentsToday}" /></span>
         </a>
-        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/address-book?treatedMonth=${patientsMonthParam}">
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/address-book?treatedDate=${patientsTodayParam}">
             <span class="home-kpi-chip__label">Pazienti oggi</span>
             <span class="home-kpi-chip__value"><c:out value="${patientsToday}" /></span>
         </a>

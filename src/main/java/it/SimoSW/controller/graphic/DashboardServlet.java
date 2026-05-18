@@ -77,6 +77,7 @@ public class DashboardServlet extends HttpServlet {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         String todayLabel = formatFullDateLabel(today);
+        String patientsTodayParam = today.toString();
         String patientsMonthYearLabel = formatMonthYearLabel(today);
         String patientsMonthParam = YearMonth.from(today).toString();
         String weekRangeLabel = formatWeekRangeLabel(today);
@@ -176,6 +177,7 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("remindersToSendToday", remindersToSendToday);
         request.setAttribute("bookedHoursToday", bookedHoursToday);
         request.setAttribute("todayLabel", todayLabel);
+        request.setAttribute("patientsTodayParam", patientsTodayParam);
         request.setAttribute("patientsThisMonth", patientsThisMonth);
         request.setAttribute("bookedHoursThisWeek", bookedHoursThisWeek);
         request.setAttribute("patientsMonthYearLabel", patientsMonthYearLabel);

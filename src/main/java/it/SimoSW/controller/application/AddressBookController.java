@@ -16,6 +16,7 @@ import it.SimoSW.model.dao.UserDAO;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 /**
@@ -148,6 +149,19 @@ public class AddressBookController {
         }
         java.time.LocalDateTime start = yearMonth.atDay(1).atStartOfDay();
         java.time.LocalDateTime end = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
+        return getPatientsTreatedInPeriod(therapistId, start, end);
+    }
+
+    public List<Patient> getPatientsTreatedOnDate(long therapistId, LocalDate date) {
+        if (therapistId <= 0 || date == null) {
+            throw new IllegalArgumentException("Parametri filtro giorno non validi");
+        }
+        java.time.LocalDateTime start = date.atStartOfDay();
+        java.time.LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return getPatientsTreatedInPeriod(therapistId, start, end);
+    }
+
+    private List<Patient> getPatientsTreatedInPeriod(long therapistId, java.time.LocalDateTime start, java.time.LocalDateTime end) {
         List<Long> patientIds = appointmentDAO.findDistinctPatientIdsByTherapistInPeriod(therapistId, start, end);
         List<Patient> patients = new java.util.ArrayList<>();
         for (Long patientId : patientIds) {
