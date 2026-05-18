@@ -78,7 +78,7 @@
     </div>
 
     <div class="glass-card section-card p-4">
-        <h5 class="mb-3">Dettaglio mensile appuntamenti</h5>
+        <h5 class="mb-3">Dettaglio mensile</h5>
         <div class="table-responsive">
             <table class="table table-borderless align-middle mb-0">
                 <thead>
