@@ -48,7 +48,7 @@
             <h5 class="mb-1">Dati operativi</h5>
             <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 kpi-operatives-grid">
             <div class="col-md-6 col-sm-6 kpi-col-5">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
