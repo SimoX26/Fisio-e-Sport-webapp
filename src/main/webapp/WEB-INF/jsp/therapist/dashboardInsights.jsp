@@ -48,33 +48,33 @@
             <h5 class="mb-1">Dati operativi</h5>
             <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
         </div>
-        <div class="kpi-grid kpi-grid--operativi">
+        <div class="kpi-grid kpi-grid--operativi stats-kpi-grid">
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCompletedMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCancelledMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Tasso di cancellazione</div>
                     <div class="kpi-value" id="kpiCancellationRate">0%</div>
                 </div>

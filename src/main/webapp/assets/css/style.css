@@ -446,6 +446,21 @@ body.calendar-gcal-page{
     min-width: 0;
 }
 
+.stats-kpi-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .9rem;
+}
+
+.stats-kpi-grid > .kpi-grid__item{
+    min-width: 0;
+}
+
+.stats-kpi-card{
+    min-width: 0;
+    padding: 1rem !important;
+}
+
 .kpi-section .section-card{
     padding: 1rem !important;
 }
@@ -463,17 +478,21 @@ body.calendar-gcal-page{
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
     }
-}
 
-@media (min-width: 992px){
-    .kpi-grid--operativi{
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+    .stats-kpi-grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
     }
 }
 
-@media (min-width: 1280px){
-    .kpi-grid--operativi{
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+@media (min-width: 992px){
+    .stats-kpi-grid{
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: 1rem;
+    }
+
+    .stats-kpi-card{
+        padding: 1rem !important;
     }
 }
 
