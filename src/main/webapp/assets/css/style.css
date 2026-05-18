@@ -413,6 +413,23 @@ body.calendar-gcal-page{
     font-size: .9rem;
 }
 
+.kpi-section-head h5{
+    font-weight: 700;
+}
+
+.kpi-section-note{
+    color: var(--text-muted);
+    font-size: .92rem;
+}
+
+.kpi-table-groups th{
+    text-transform: none !important;
+    font-size: .88rem !important;
+    letter-spacing: .2px !important;
+    color: #3c4043 !important;
+    border-bottom: 0 !important;
+}
+
 .action-card{
     cursor: pointer;
     transition: .25s ease;

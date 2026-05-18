@@ -14,7 +14,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class KpiSnapshotController {
 
@@ -46,11 +48,15 @@ public class KpiSnapshotController {
     }
 
     public List<KpiMonthlySnapshot> getRecentGlobalSnapshots(int months) {
-        return kpiMonthlySnapshotDAO.findRecentGlobal(months);
+        List<KpiMonthlySnapshot> snapshots = kpiMonthlySnapshotDAO.findRecentGlobal(months);
+        enrichAppointmentsInMonth(snapshots, null);
+        return snapshots;
     }
 
     public List<KpiMonthlySnapshot> getRecentTherapistSnapshots(long therapistId, int months) {
-        return kpiMonthlySnapshotDAO.findRecentByTherapist(therapistId, months);
+        List<KpiMonthlySnapshot> snapshots = kpiMonthlySnapshotDAO.findRecentByTherapist(therapistId, months);
+        enrichAppointmentsInMonth(snapshots, therapistId);
+        return snapshots;
     }
 
     private void saveSnapshot(KpiMonthlySnapshot snapshot) {
@@ -65,6 +71,7 @@ public class KpiSnapshotController {
         LocalDate endDate = yearMonth.plusMonths(1).atDay(1);
 
         snapshot.setAppointmentsCreated(countAppointmentsCreated(start, end, null));
+        snapshot.setAppointmentsInMonth(countAppointmentsInMonth(start, end, null));
         snapshot.setAppointmentsCompleted(countAppointmentsCompleted(start, end, null));
         snapshot.setAppointmentsCancelled(countAppointmentsCancelled(start, end, null));
         snapshot.setActivePatientsMonth(countActivePatientsMonth(start, end, null));
@@ -83,6 +90,7 @@ public class KpiSnapshotController {
         LocalDate endDate = yearMonth.plusMonths(1).atDay(1);
 
         snapshot.setAppointmentsCreated(countAppointmentsCreated(start, end, therapistId));
+        snapshot.setAppointmentsInMonth(countAppointmentsInMonth(start, end, therapistId));
         snapshot.setAppointmentsCompleted(countAppointmentsCompleted(start, end, therapistId));
         snapshot.setAppointmentsCancelled(countAppointmentsCancelled(start, end, therapistId));
         snapshot.setActivePatientsMonth(countActivePatientsMonth(start, end, therapistId));
@@ -142,6 +150,78 @@ public class KpiSnapshotController {
                   AND end_time >= ? AND end_time < ?
                 """ + therapistFilterSql("therapist_id", therapistId);
         return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private int countAppointmentsInMonth(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT COUNT(*) AS total
+                FROM appointments
+                WHERE state <> 'CANCELLED'
+                  AND patient_id IS NOT NULL
+                  AND start_time >= ? AND start_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId);
+        return runCountByDateTime(sql, start, end, therapistId);
+    }
+
+    private void enrichAppointmentsInMonth(List<KpiMonthlySnapshot> snapshots, Long therapistId) {
+        if (snapshots == null || snapshots.isEmpty()) {
+            return;
+        }
+        YearMonth min = null;
+        YearMonth max = null;
+        for (KpiMonthlySnapshot snapshot : snapshots) {
+            YearMonth current = YearMonth.of(snapshot.getYear(), snapshot.getMonth());
+            if (min == null || current.isBefore(min)) {
+                min = current;
+            }
+            if (max == null || current.isAfter(max)) {
+                max = current;
+            }
+        }
+        if (min == null || max == null) {
+            return;
+        }
+
+        LocalDateTime start = min.atDay(1).atStartOfDay();
+        LocalDateTime end = max.plusMonths(1).atDay(1).atStartOfDay();
+        Map<String, Integer> totalsByMonth = queryAppointmentsInMonthTotals(start, end, therapistId);
+
+        for (KpiMonthlySnapshot snapshot : snapshots) {
+            String key = snapshot.getYear() + "-" + snapshot.getMonth();
+            snapshot.setAppointmentsInMonth(totalsByMonth.getOrDefault(key, 0));
+        }
+    }
+
+    private Map<String, Integer> queryAppointmentsInMonthTotals(LocalDateTime start, LocalDateTime end, Long therapistId) {
+        String sql = """
+                SELECT YEAR(start_time) AS y, MONTH(start_time) AS m, COUNT(*) AS total
+                FROM appointments
+                WHERE state <> 'CANCELLED'
+                  AND patient_id IS NOT NULL
+                  AND start_time >= ? AND start_time < ?
+                """ + therapistFilterSql("therapist_id", therapistId) + """
+                GROUP BY YEAR(start_time), MONTH(start_time)
+                """;
+
+        Map<String, Integer> result = new HashMap<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(start));
+            stmt.setTimestamp(2, Timestamp.valueOf(end));
+            if (therapistId != null) {
+                stmt.setLong(3, therapistId);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String key = rs.getInt("y") + "-" + rs.getInt("m");
+                    result.put(key, rs.getInt("total"));
+                }
+            }
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore calcolo appuntamenti mensili operativi", e);
+        }
     }
 
     private int countAppointmentsCancelled(LocalDateTime start, LocalDateTime end, Long therapistId) {

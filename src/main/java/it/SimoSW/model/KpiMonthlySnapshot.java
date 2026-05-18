@@ -19,6 +19,7 @@ public class KpiMonthlySnapshot {
     private int treatmentPlansStarted;
     private int treatmentSessionsCompleted;
     private int totalBookedMinutes;
+    private int appointmentsInMonth;
 
     private LocalDateTime computedAt;
     private String sourceVersion;
@@ -137,6 +138,14 @@ public class KpiMonthlySnapshot {
         this.totalBookedMinutes = totalBookedMinutes;
     }
 
+    public int getAppointmentsInMonth() {
+        return appointmentsInMonth;
+    }
+
+    public void setAppointmentsInMonth(int appointmentsInMonth) {
+        this.appointmentsInMonth = appointmentsInMonth;
+    }
+
     public LocalDateTime getComputedAt() {
         return computedAt;
     }
@@ -169,4 +178,3 @@ public class KpiMonthlySnapshot {
         this.updatedAt = updatedAt;
     }
 }
-

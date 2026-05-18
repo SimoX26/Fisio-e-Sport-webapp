@@ -43,29 +43,68 @@
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
-                <div class="kpi-value" id="kpiCompletedMonth">0</div>
+    <div class="kpi-section mb-4">
+        <div class="kpi-section-head mb-3">
+            <h5 class="mb-1">KPI Operativi</h5>
+            <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiCompletedMonth">0</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiCancelledMonth">0</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Nuovi pazienti (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
-                <div class="kpi-value" id="kpiNewPatientsMonth">0</div>
-            </div>
+    </div>
+
+    <div class="kpi-section mb-4">
+        <div class="kpi-section-head mb-3">
+            <h5 class="mb-1">KPI Business</h5>
+            <p class="kpi-section-note mb-0">Crescita e attivita gestionale (basati su creazione record e andamento rispetto al mese precedente).</p>
         </div>
-        <div class="col-md-3">
-            <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
-                <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Nuovi appuntamenti creati (<span id="kpiReferenceMonthLabel5">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiCreatedMonth">0</div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="glass-card section-card p-4 h-100">
-                <div class="kpi-label mb-1">Tasso cancellazione</div>
-                <div class="kpi-value" id="kpiCancellationRate">0%</div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Nuovi pazienti acquisiti (<span id="kpiReferenceMonthLabel6">mese corrente</span>)</div>
+                    <div class="kpi-value" id="kpiNewPatientsMonth">0</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Crescita pazienti</div>
+                    <div class="kpi-value" id="kpiPatientGrowth">0%</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="glass-card section-card p-4 h-100">
+                    <div class="kpi-label mb-1">Trend attivita</div>
+                    <div class="kpi-value" id="kpiActivityTrend">0%</div>
+                </div>
             </div>
         </div>
     </div>
@@ -82,17 +121,22 @@
         <div class="table-responsive">
             <table class="table table-borderless align-middle mb-0">
                 <thead>
+                <tr class="kpi-table-groups">
+                    <th rowspan="2">Mese</th>
+                    <th colspan="4">KPI Operativi</th>
+                    <th colspan="2">KPI Business</th>
+                </tr>
                 <tr>
-                    <th>Mese</th>
-                    <th>Creati</th>
-                    <th>Completati</th>
-                    <th>Cancellati</th>
-                    <th>Nuovi pazienti</th>
+                    <th>Appuntamenti del mese</th>
+                    <th>Trattamenti completati</th>
+                    <th>Appuntamenti cancellati</th>
                     <th>Ore prenotate</th>
+                    <th>Nuovi appuntamenti creati</th>
+                    <th>Nuovi pazienti acquisiti</th>
                 </tr>
                 </thead>
                 <tbody id="kpiTableBody">
-                <tr><td colspan="6" class="text-muted">Nessun dato disponibile</td></tr>
+                <tr><td colspan="7" class="text-muted">Nessun dato disponibile</td></tr>
                 </tbody>
             </table>
         </div>
@@ -106,13 +150,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const scopeSelect = document.getElementById('kpiScopeSelect');
     const monthsSelect = document.getElementById('kpiMonthsSelect');
     const tableBody = document.getElementById('kpiTableBody');
+    const kpiAppointmentsMonth = document.getElementById('kpiAppointmentsMonth');
     const kpiCompletedMonth = document.getElementById('kpiCompletedMonth');
-    const kpiNewPatientsMonth = document.getElementById('kpiNewPatientsMonth');
+    const kpiCancelledMonth = document.getElementById('kpiCancelledMonth');
     const kpiBookedHoursMonth = document.getElementById('kpiBookedHoursMonth');
-    const kpiCancellationRate = document.getElementById('kpiCancellationRate');
+    const kpiCreatedMonth = document.getElementById('kpiCreatedMonth');
+    const kpiNewPatientsMonth = document.getElementById('kpiNewPatientsMonth');
+    const kpiPatientGrowth = document.getElementById('kpiPatientGrowth');
+    const kpiActivityTrend = document.getElementById('kpiActivityTrend');
     const kpiReferenceMonthLabel = document.getElementById('kpiReferenceMonthLabel');
     const kpiReferenceMonthLabel2 = document.getElementById('kpiReferenceMonthLabel2');
     const kpiReferenceMonthLabel3 = document.getElementById('kpiReferenceMonthLabel3');
+    const kpiReferenceMonthLabel4 = document.getElementById('kpiReferenceMonthLabel4');
+    const kpiReferenceMonthLabel5 = document.getElementById('kpiReferenceMonthLabel5');
+    const kpiReferenceMonthLabel6 = document.getElementById('kpiReferenceMonthLabel6');
     const chartCanvas = document.getElementById('kpiTrendChart');
     let trendChart = null;
 
@@ -148,6 +199,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return ((num / den) * 100).toFixed(1).replace('.', ',') + '%';
     }
 
+    function formatChange(current, previous) {
+        const now = Number(current || 0);
+        const before = Number(previous || 0);
+        if (!before) {
+            if (!now) return '0%';
+            return '+100,0%';
+        }
+        const change = ((now - before) / before) * 100;
+        const sign = change > 0 ? '+' : '';
+        return sign + change.toFixed(1).replace('.', ',') + '%';
+    }
+
     function formatHoursFromMinutes(minutes) {
         const value = Number(minutes || 0) / 60;
         return Math.round(value).toLocaleString('it-IT');
@@ -155,39 +218,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateCards(series) {
         const latest = series[0];
+        const previous = series[1];
         if (!latest) {
+            kpiAppointmentsMonth.textContent = '0';
             kpiCompletedMonth.textContent = '0';
+            kpiCancelledMonth.textContent = '0';
             kpiNewPatientsMonth.textContent = '0';
             kpiBookedHoursMonth.textContent = '0';
-            kpiCancellationRate.textContent = '0%';
+            kpiCreatedMonth.textContent = '0';
+            kpiPatientGrowth.textContent = '0%';
+            kpiActivityTrend.textContent = '0%';
             if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = 'mese corrente';
             if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = 'mese corrente';
             if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = 'mese corrente';
+            if (kpiReferenceMonthLabel4) kpiReferenceMonthLabel4.textContent = 'mese corrente';
+            if (kpiReferenceMonthLabel5) kpiReferenceMonthLabel5.textContent = 'mese corrente';
+            if (kpiReferenceMonthLabel6) kpiReferenceMonthLabel6.textContent = 'mese corrente';
             return;
         }
         const referenceMonth = monthLabelLong(latest.year, latest.month);
         if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = referenceMonth;
         if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = referenceMonth;
         if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = referenceMonth;
+        if (kpiReferenceMonthLabel4) kpiReferenceMonthLabel4.textContent = referenceMonth;
+        if (kpiReferenceMonthLabel5) kpiReferenceMonthLabel5.textContent = referenceMonth;
+        if (kpiReferenceMonthLabel6) kpiReferenceMonthLabel6.textContent = referenceMonth;
+        kpiAppointmentsMonth.textContent = formatNumber(latest.appointmentsInMonth);
         kpiCompletedMonth.textContent = formatNumber(latest.appointmentsCompleted);
+        kpiCancelledMonth.textContent = formatNumber(latest.appointmentsCancelled);
         kpiNewPatientsMonth.textContent = formatNumber(latest.newPatientsMonth);
         kpiBookedHoursMonth.textContent = formatHoursFromMinutes(latest.totalBookedMinutes);
-        kpiCancellationRate.textContent = formatPercent(latest.appointmentsCancelled, latest.appointmentsCreated);
+        kpiCreatedMonth.textContent = formatNumber(latest.appointmentsCreated);
+        kpiPatientGrowth.textContent = formatChange(latest.activePatientsMonth, previous ? previous.activePatientsMonth : 0);
+        kpiActivityTrend.textContent = formatChange(latest.appointmentsCreated, previous ? previous.appointmentsCreated : 0);
     }
 
     function updateTable(series) {
         if (!series.length) {
-            tableBody.innerHTML = '<tr><td colspan="6" class="text-muted">Nessun dato disponibile</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-muted">Nessun dato disponibile</td></tr>';
             return;
         }
         tableBody.innerHTML = series.map(function (row) {
             return '<tr>'
                 + '<td>' + monthLabel(row.year, row.month) + '</td>'
-                + '<td>' + formatNumber(row.appointmentsCreated) + '</td>'
+                + '<td>' + formatNumber(row.appointmentsInMonth) + '</td>'
                 + '<td>' + formatNumber(row.appointmentsCompleted) + '</td>'
                 + '<td>' + formatNumber(row.appointmentsCancelled) + '</td>'
-                + '<td>' + formatNumber(row.newPatientsMonth) + '</td>'
                 + '<td>' + formatHoursFromMinutes(row.totalBookedMinutes) + '</td>'
+                + '<td>' + formatNumber(row.appointmentsCreated) + '</td>'
+                + '<td>' + formatNumber(row.newPatientsMonth) + '</td>'
                 + '</tr>';
         }).join('');
     }
