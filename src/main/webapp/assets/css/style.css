@@ -196,6 +196,8 @@ body.calendar-gcal-page{
 }
 
 .calendar-gcal-wrap{
+    max-width: 1200px;
+    margin: 0 auto;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 0;
@@ -243,6 +245,7 @@ body.calendar-gcal-page{
 }
 
 #calendar{
+    width: 100%;
     min-width: 1100px;
     min-height: 760px;
 }
@@ -327,8 +330,18 @@ body.calendar-gcal-page{
     }
 
     .calendar-scroll-shell{
-        overflow: visible;
+        overflow-x: auto;
+        overflow-y: visible;
         max-height: none;
+    }
+
+    #calendar{
+        min-width: 0;
+    }
+
+    .calendar-gcal-page .fc .fc-toolbar{
+        flex-wrap: wrap;
+        row-gap: .5rem;
     }
 
     /* Desktop compact mode: more events visible without sacrificing readability */
