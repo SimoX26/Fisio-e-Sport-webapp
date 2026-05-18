@@ -563,8 +563,8 @@ body.calendar-gcal-page{
 .kpi-info-btn:hover::before,
 .kpi-info-btn:focus-visible::after,
 .kpi-info-btn:focus-visible::before,
-.kpi-info-btn:active::after,
-.kpi-info-btn:active::before{
+.kpi-info-btn.is-open::after,
+.kpi-info-btn.is-open::before{
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
@@ -583,7 +583,7 @@ body.calendar-gcal-page{
 
     .kpi-info-btn:hover::after,
     .kpi-info-btn:focus-visible::after,
-    .kpi-info-btn:active::after{
+    .kpi-info-btn.is-open::after{
         transform: translateX(0) translateY(0);
     }
 }

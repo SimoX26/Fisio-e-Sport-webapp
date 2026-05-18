@@ -258,8 +258,56 @@ document.addEventListener('DOMContentLoaded', function () {
             if (item.details) parts.push(item.details);
             const text = parts.join('\n');
             button.setAttribute('data-tooltip', text);
-            button.setAttribute('title', text);
+            button.setAttribute('aria-label', item.title + '. ' + item.description + ' Formula: ' + item.formula + (item.details ? ' ' + item.details : ''));
+            button.removeAttribute('title');
         });
+    }
+
+    function initKpiTooltipInteractions() {
+        const buttons = Array.from(document.querySelectorAll('.kpi-info-btn'));
+        if (!buttons.length) return;
+
+        function closeAll(except) {
+            buttons.forEach(function (btn) {
+                if (except && btn === except) return;
+                btn.classList.remove('is-open');
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        buttons.forEach(function (button) {
+            button.setAttribute('aria-expanded', 'false');
+
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const willOpen = !button.classList.contains('is-open');
+                closeAll(button);
+                if (willOpen) {
+                    button.classList.add('is-open');
+                    button.setAttribute('aria-expanded', 'true');
+                } else {
+                    button.classList.remove('is-open');
+                    button.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            button.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    button.classList.remove('is-open');
+                    button.setAttribute('aria-expanded', 'false');
+                    button.blur();
+                }
+            });
+        });
+
+        document.addEventListener('click', function () { closeAll(null); });
+        document.addEventListener('touchstart', function (event) {
+            const target = event.target;
+            if (!(target instanceof Element) || !target.closest('.kpi-info-btn')) {
+                closeAll(null);
+            }
+        }, { passive: true });
     }
 
     function showNotice(message, variant) {
@@ -470,6 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
     scopeSelect.addEventListener('change', loadKpis);
     monthsSelect.addEventListener('change', loadKpis);
     applyKpiHelp();
+    initKpiTooltipInteractions();
     loadKpis();
 });
 </script>
