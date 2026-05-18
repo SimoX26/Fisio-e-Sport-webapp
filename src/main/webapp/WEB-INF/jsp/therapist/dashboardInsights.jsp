@@ -104,7 +104,7 @@
     </div>
 
     <div class="glass-card section-card p-4 mb-4">
-        <h5 class="mb-1">Andamento KPI mensile</h5>
+        <h5 class="mb-1">Grafico mensile</h5>
         <p class="kpi-section-note mb-3">Trend mensile dei principali dati operativi e gestionali (tasso di cancellazione escluso).</p>
         <div class="kpi-chart-wrap">
             <canvas id="kpiTrendChart"></canvas>
@@ -270,9 +270,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     { label: 'Appuntamenti del mese', data: appointmentsMonth, borderColor: '#7950f2', backgroundColor: 'rgba(121,80,242,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
                     { label: 'Trattamenti completati', data: completed, borderColor: '#1f8f47', backgroundColor: 'rgba(31,143,71,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
                     { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#c53929', backgroundColor: 'rgba(197,57,41,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
-                    { label: 'Ore prenotate', data: bookedHours, borderColor: '#0b7285', backgroundColor: 'rgba(11,114,133,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [6, 4], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'yHours' },
-                    { label: 'Nuovi appuntamenti creati', data: created, borderColor: '#e67700', backgroundColor: 'rgba(230,119,0,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [4, 3], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
-                    { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.10)', tension: .28, fill: false, borderWidth: 2.2, borderDash: [4, 3], pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' }
+                    { label: 'Ore prenotate', data: bookedHours, borderColor: '#0b7285', backgroundColor: 'rgba(11,114,133,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'yHours' },
+                    { label: 'Nuovi appuntamenti creati', data: created, borderColor: '#e67700', backgroundColor: 'rgba(230,119,0,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
+                    { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' }
                 ]
             },
             options: {
