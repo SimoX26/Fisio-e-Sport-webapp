@@ -48,32 +48,32 @@
             <h5 class="mb-1">Dati operativi</h5>
             <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
         </div>
-        <div class="row g-4 kpi-operatives-grid">
-            <div class="col-md-6 col-sm-6 kpi-col-5">
+        <div class="kpi-grid kpi-grid--operativi">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 kpi-col-5">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCompletedMonth">0</div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 kpi-col-5">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCancelledMonth">0</div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 kpi-col-5">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 kpi-col-5">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Tasso di cancellazione</div>
                     <div class="kpi-value" id="kpiCancellationRate">0%</div>
@@ -87,14 +87,14 @@
             <h5 class="mb-1">Dati gestionali</h5>
             <p class="kpi-section-note mb-0">Metriche di crescita gestionale basate su creazione dei record nel mese.</p>
         </div>
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="kpi-grid kpi-grid--gestionali">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Nuovi appuntamenti creati (<span id="kpiReferenceMonthLabel5">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiCreatedMonth">0</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
                     <div class="kpi-label mb-1">Nuovi pazienti acquisiti (<span id="kpiReferenceMonthLabel6">mese corrente</span>)</div>
                     <div class="kpi-value" id="kpiNewPatientsMonth">0</div>
