@@ -28,107 +28,124 @@
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
 
 <div class="container app-shell mt-4">
-
-    <div class="glass-card section-card p-4 p-md-5 mb-4">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-            <div>
-                <h1 class="page-title mb-1">
-                    <c:out value="${greetingPrefix}" /> <c:out value="${loggedUserDisplay}" />
-                </h1>
-            </div>
-            <a class="btn btn-outline-secondary section-action-btn" href="<%= request.getContextPath() %>/calendar">
-                Apri calendario
-            </a>
+    <div class="home-topbar mb-3">
+        <div>
+            <h1 class="home-title mb-1"><c:out value="${greetingPrefix}" />, <c:out value="${loggedUserDisplay}" /></h1>
+            <div class="home-subtitle"><c:out value="${todayLabel}" /></div>
         </div>
+        <a class="btn btn-outline-secondary btn-sm home-calendar-btn" href="<%= request.getContextPath() %>/calendar">
+            Apri calendario
+        </a>
     </div>
 
     <c:if test="${not empty error}">
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning mb-3" role="alert">
             <c:out value="${error}" />
         </div>
     </c:if>
 
-    <!-- KPI principali -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-                <div class="kpi-label">
-                    Appuntamenti oggi - <c:out value="${todayLabel}" />
-                </div>
-                <div class="kpi-value"><c:out value="${appointmentsToday}" /></div>
-            </a>
-        </div>
-
-        <div class="col-md-4">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/address-book?treatedMonth=${patientsMonthParam}">
-                <div class="kpi-label">
-                    Pazienti trattati a <c:out value="${patientsMonthYearLabel}" />
-                </div>
-                <div class="kpi-value"><c:out value="${patientsThisMonth}" /></div>
-            </a>
-        </div>
-
-        <div class="col-md-4">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/calendar?view=timeGridWeek&date=today">
-                <div class="kpi-label">
-                    Ore prenotate nella settimana <c:out value="${weekRangeLabel}" />
-                </div>
-                <div class="kpi-value"><c:out value="${bookedHoursThisWeek}" /></div>
-            </a>
-        </div>
+    <div class="home-kpi-row mb-4">
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
+            <span class="home-kpi-chip__label">Appuntamenti oggi</span>
+            <span class="home-kpi-chip__value"><c:out value="${appointmentsToday}" /></span>
+        </a>
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/address-book?treatedMonth=${patientsMonthParam}">
+            <span class="home-kpi-chip__label">Pazienti oggi</span>
+            <span class="home-kpi-chip__value"><c:out value="${patientsToday}" /></span>
+        </a>
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
+            <span class="home-kpi-chip__label">Ore prenotate oggi</span>
+            <span class="home-kpi-chip__value"><c:out value="${bookedHoursToday}" /></span>
+        </a>
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
+            <span class="home-kpi-chip__label">Reminder da inviare</span>
+            <span class="home-kpi-chip__value"><c:out value="${remindersToSendToday}" /></span>
+        </a>
+        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
+            <span class="home-kpi-chip__label">Completati oggi</span>
+            <span class="home-kpi-chip__value"><c:out value="${completedToday}" /></span>
+        </a>
     </div>
 
-    <!-- Navigazione rapida -->
-    <div class="mb-3">
-        <h3 class="page-title fs-4 mb-1">Navigazione rapida</h3>
+    <div class="row g-3 align-items-start mb-4">
+        <div class="col-12 col-xl-8">
+            <div class="glass-card section-card home-agenda-card">
+                <div class="home-section-head">
+                    <h3 class="home-section-title mb-0">Agenda di oggi</h3>
+                    <a class="home-link" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">Apri vista giornaliera</a>
+                </div>
+                <c:set var="agendaRows" value="${todayAgenda}" />
+                <c:choose>
+                    <c:when test="${empty agendaRows}">
+                        <div class="home-empty-state">
+                            Nessun appuntamento pianificato per oggi.
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="home-agenda-list">
+                            <c:forEach var="appointment" items="${agendaRows}">
+                                <div class="home-agenda-item">
+                                    <div class="home-agenda-time"><c:out value="${appointment.startTime}" /></div>
+                                    <div class="home-agenda-main">
+                                        <div class="home-agenda-title"><c:out value="${appointment.title}" /></div>
+                                        <div class="home-agenda-meta">
+                                            <span>Paziente <c:out value="${appointment.patientLabel}" /></span>
+                                            <span>•</span>
+                                            <span>Fine <c:out value="${appointment.endTime}" /></span>
+                                        </div>
+                                    </div>
+                                    <div class="home-agenda-side">
+                                        <span class="home-status-badge home-status-badge--${appointment.state}">
+                                            <c:out value="${appointment.state}" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-4">
+            <div class="glass-card section-card home-actions-card mb-3">
+                <div class="home-section-head">
+                    <h3 class="home-section-title mb-0">Azioni rapide</h3>
+                </div>
+                <div class="home-actions-grid">
+                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
+                    <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
+                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar">Apri calendario</a>
+                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">Invia reminder</a>
+                    <a class="home-action-pill" href="<%= request.getContextPath() %>/dashboard/insights">Apri statistiche</a>
+                </div>
+            </div>
+
+            <div class="glass-card section-card home-summary-card">
+                <div class="home-section-head">
+                    <h3 class="home-section-title mb-0">Riepilogo rapido</h3>
+                </div>
+                <div class="home-summary-list">
+                    <div class="home-summary-row">
+                        <span>Pazienti nel mese</span>
+                        <strong><c:out value="${patientsThisMonth}" /></strong>
+                    </div>
+                    <div class="home-summary-row">
+                        <span>Ore settimana</span>
+                        <strong><c:out value="${bookedHoursThisWeek}" /></strong>
+                    </div>
+                    <div class="home-summary-row">
+                        <span>Periodo pazienti</span>
+                        <strong><c:out value="${patientsMonthYearLabel}" /></strong>
+                    </div>
+                    <div class="home-summary-row">
+                        <span>Settimana</span>
+                        <strong><c:out value="${weekRangeLabel}" /></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row g-4">
-
-        <div class="col-md-3">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/calendar">
-                <h5>Calendario</h5>
-                <p class="page-subtitle">
-                    Visualizza e gestisci gli appuntamenti
-                </p>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/address-book">
-                <h5>Rubrica Pazienti</h5>
-                <p class="page-subtitle">
-                    Consulta l’elenco dei pazienti
-                </p>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/treatment-history">
-                <h5>Storico Trattamenti</h5>
-                <p class="page-subtitle">
-                    Visualizza le sedute effettuate
-                </p>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a class="glass-card section-card p-4 action-card h-100 d-block text-decoration-none"
-               href="<%= request.getContextPath() %>/dashboard/insights">
-                <h5>Statistiche e Dati</h5>
-                <p class="page-subtitle">
-                    Visualizza analisi mensili, grafici e indicatori storici.
-                </p>
-            </a>
-        </div>
-
-    </div>
-
 </div>
 
 </body>

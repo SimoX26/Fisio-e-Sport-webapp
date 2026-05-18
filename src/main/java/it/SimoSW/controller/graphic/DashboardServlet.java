@@ -20,13 +20,37 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
     private CalendarController calendarController;
+
+    public static class AgendaItemView {
+        private final String startTime;
+        private final String endTime;
+        private final String title;
+        private final String patientLabel;
+        private final String state;
+
+        public AgendaItemView(String startTime, String endTime, String title, String patientLabel, String state) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.title = title;
+            this.patientLabel = patientLabel;
+            this.state = state;
+        }
+
+        public String getStartTime() { return startTime; }
+        public String getEndTime() { return endTime; }
+        public String getTitle() { return title; }
+        public String getPatientLabel() { return patientLabel; }
+        public String getState() { return state; }
+    }
 
     @Override
     public void init() {
@@ -38,6 +62,10 @@ public class DashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int appointmentsToday = 0;
+        int patientsToday = 0;
+        int completedToday = 0;
+        int remindersToSendToday = 0;
+        long bookedHoursToday = 0;
         int patientsThisMonth = 0;
         long bookedHoursThisWeek = 0;
         LocalDate today = LocalDate.now();
@@ -57,9 +85,52 @@ public class DashboardServlet extends HttpServlet {
 
                 LocalDateTime todayStart = today.atStartOfDay();
                 LocalDateTime tomorrowStart = today.plusDays(1).atStartOfDay();
-                appointmentsToday = calendarController
+                List<Appointment> todayAppointments = calendarController
                         .getAppointmentsForTherapistInPeriod(therapistId, todayStart, tomorrowStart)
-                        .size();
+                        ;
+                appointmentsToday = todayAppointments.size();
+                List<AgendaItemView> todayAgenda = todayAppointments.stream()
+                        .sorted((a, b) -> {
+                            LocalDateTime sa = a.getStart();
+                            LocalDateTime sb = b.getStart();
+                            if (sa == null && sb == null) return 0;
+                            if (sa == null) return 1;
+                            if (sb == null) return -1;
+                            return sa.compareTo(sb);
+                        })
+                        .map(a -> new AgendaItemView(
+                                formatTime(a.getStart()),
+                                formatTime(a.getEnd()),
+                                (a.getTitle() == null || a.getTitle().isBlank()) ? "Appuntamento" : a.getTitle(),
+                                a.getPatientId() == null ? "N/D" : ("#" + a.getPatientId()),
+                                a.getState() == null ? "SCHEDULED" : a.getState().name()
+                        ))
+                        .collect(Collectors.toList());
+                request.setAttribute("todayAgenda", todayAgenda);
+
+                Set<Long> patientIdsToday = new HashSet<>();
+                for (Appointment appointment : todayAppointments) {
+                    if (appointment.getPatientId() != null && appointment.getState() != AppointmentState.CANCELLED) {
+                        patientIdsToday.add(appointment.getPatientId());
+                    }
+                    if (appointment.getState() == AppointmentState.COMPLETED) {
+                        completedToday++;
+                    }
+                    if (appointment.getState() != AppointmentState.CANCELLED
+                            && appointment.getPatientId() != null
+                            && appointment.getStart() != null
+                            && appointment.getStart().isAfter(LocalDateTime.now())) {
+                        remindersToSendToday++;
+                    }
+                    if (appointment.getState() != AppointmentState.CANCELLED
+                            && appointment.getPatientId() != null
+                            && !appointment.isAllDay()
+                            && appointment.getStart() != null
+                            && appointment.getEnd() != null) {
+                        bookedHoursToday += ChronoUnit.HOURS.between(appointment.getStart(), appointment.getEnd());
+                    }
+                }
+                patientsToday = patientIdsToday.size();
 
                 LocalDate weekStartDate = today.with(DayOfWeek.MONDAY);
                 LocalDateTime weekStart = weekStartDate.atStartOfDay();
@@ -80,15 +151,22 @@ public class DashboardServlet extends HttpServlet {
                         .getAppointmentsForTherapistInPeriod(therapistId, monthStart, monthEnd);
                 Set<Long> patientIds = new HashSet<>();
                 for (Appointment appointment : monthAppointments) {
-                    patientIds.add(appointment.getPatientId());
+                    if (appointment.getPatientId() != null) {
+                        patientIds.add(appointment.getPatientId());
+                    }
                 }
                 patientsThisMonth = patientIds.size();
             }
         } catch (RuntimeException ex) {
             request.setAttribute("error", "Impossibile caricare i dati panoramici in questo momento.");
+            request.setAttribute("todayAgenda", new ArrayList<AgendaItemView>());
         }
 
         request.setAttribute("appointmentsToday", appointmentsToday);
+        request.setAttribute("patientsToday", patientsToday);
+        request.setAttribute("completedToday", completedToday);
+        request.setAttribute("remindersToSendToday", remindersToSendToday);
+        request.setAttribute("bookedHoursToday", bookedHoursToday);
         request.setAttribute("todayLabel", todayLabel);
         request.setAttribute("patientsThisMonth", patientsThisMonth);
         request.setAttribute("bookedHoursThisWeek", bookedHoursThisWeek);
@@ -98,6 +176,14 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("greetingPrefix", greetingPrefix);
         request.setAttribute("loggedUserDisplay", loggedUserDisplay);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/dashboard.jsp").forward(request, response);
+    }
+
+    private String formatTime(LocalDateTime value) {
+        if (value == null) {
+            return "--:--";
+        }
+        String raw = value.toLocalTime().toString();
+        return raw.length() >= 5 ? raw.substring(0, 5) : raw;
     }
 
     private String formatFullDateLabel(LocalDate date) {
