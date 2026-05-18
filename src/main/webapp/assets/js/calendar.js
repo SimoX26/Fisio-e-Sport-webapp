@@ -252,17 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyDesktopWeekFillMode(calendarInstance) {
-        const isDesktop = window.innerWidth >= 992;
-        const isWeekView = calendarInstance.view && calendarInstance.view.type === 'timeGridWeek';
-        const shouldFillHeight = isDesktop && isWeekView;
-        const desiredHeight = shouldFillHeight ? '100%' : 'auto';
+        const desiredHeight = 'auto';
 
         if (desiredHeight !== currentHeightMode) {
             currentHeightMode = desiredHeight;
             calendarInstance.setOption('height', desiredHeight);
         }
 
-        document.body.classList.toggle('calendar-week-fill', shouldFillHeight);
+        document.body.classList.remove('calendar-week-fill');
+        window.requestAnimationFrame(() => calendarInstance.updateSize());
     }
 
 
