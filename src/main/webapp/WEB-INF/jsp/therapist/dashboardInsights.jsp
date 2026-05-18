@@ -78,7 +78,7 @@
     </div>
 
     <div class="glass-card section-card p-4">
-        <h5 class="mb-3">Dettaglio mensile</h5>
+        <h5 class="mb-3">Dettaglio mensile appuntamenti</h5>
         <div class="table-responsive">
             <table class="table table-borderless align-middle mb-0">
                 <thead>
@@ -205,9 +205,9 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Completati', data: completed, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.12)', tension: .35, fill: false },
-                    { label: 'Cancellati', data: cancelled, borderColor: '#d93025', backgroundColor: 'rgba(217,48,37,.12)', tension: .35, fill: false },
-                    { label: 'Nuovi pazienti', data: newPatients, borderColor: '#188038', backgroundColor: 'rgba(24,128,56,.12)', tension: .35, fill: false }
+                    { label: 'Trattamenti completati', data: completed, borderColor: '#188038', backgroundColor: 'rgba(24,128,56,.12)', tension: .35, fill: false },
+                    { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#d93025', backgroundColor: 'rgba(217,48,37,.12)', tension: .35, fill: false },
+                    { label: 'Nuovi pazienti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.12)', tension: .35, fill: false }
                 ]
             },
             options: {
