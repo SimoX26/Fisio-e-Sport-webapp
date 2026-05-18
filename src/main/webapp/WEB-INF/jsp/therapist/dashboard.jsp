@@ -54,16 +54,8 @@
             <span class="home-kpi-chip__value"><c:out value="${patientsToday}" /></span>
         </a>
         <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-            <span class="home-kpi-chip__label">Ore prenotate oggi</span>
-            <span class="home-kpi-chip__value"><c:out value="${bookedHoursToday}" /></span>
-        </a>
-        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
             <span class="home-kpi-chip__label">Reminder da inviare</span>
             <span class="home-kpi-chip__value"><c:out value="${remindersToSendToday}" /></span>
-        </a>
-        <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-            <span class="home-kpi-chip__label">Completati oggi</span>
-            <span class="home-kpi-chip__value"><c:out value="${completedToday}" /></span>
         </a>
     </div>
 
@@ -95,8 +87,8 @@
                                         </div>
                                     </div>
                                     <div class="home-agenda-side">
-                                        <span class="home-status-badge home-status-badge--${appointment.state}">
-                                            <c:out value="${appointment.state}" />
+                                        <span class="home-status-badge home-status-badge--${appointment.stateClass}">
+                                            <c:out value="${appointment.stateLabel}" />
                                         </span>
                                     </div>
                                 </div>
@@ -121,7 +113,7 @@
                 </div>
             </div>
 
-            <div class="glass-card section-card home-summary-card">
+            <div class="glass-card section-card home-summary-card d-none d-md-block">
                 <div class="home-section-head">
                     <h3 class="home-section-title mb-0">Riepilogo rapido</h3>
                 </div>

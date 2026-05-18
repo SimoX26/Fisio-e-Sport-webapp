@@ -35,21 +35,24 @@ public class DashboardServlet extends HttpServlet {
         private final String endTime;
         private final String title;
         private final String patientLabel;
-        private final String state;
+        private final String stateClass;
+        private final String stateLabel;
 
-        public AgendaItemView(String startTime, String endTime, String title, String patientLabel, String state) {
+        public AgendaItemView(String startTime, String endTime, String title, String patientLabel, String stateClass, String stateLabel) {
             this.startTime = startTime;
             this.endTime = endTime;
             this.title = title;
             this.patientLabel = patientLabel;
-            this.state = state;
+            this.stateClass = stateClass;
+            this.stateLabel = stateLabel;
         }
 
         public String getStartTime() { return startTime; }
         public String getEndTime() { return endTime; }
         public String getTitle() { return title; }
         public String getPatientLabel() { return patientLabel; }
-        public String getState() { return state; }
+        public String getStateClass() { return stateClass; }
+        public String getStateLabel() { return stateLabel; }
     }
 
     @Override
@@ -103,7 +106,8 @@ public class DashboardServlet extends HttpServlet {
                                 formatTime(a.getEnd()),
                                 (a.getTitle() == null || a.getTitle().isBlank()) ? "Appuntamento" : a.getTitle(),
                                 a.getPatientId() == null ? "N/D" : ("#" + a.getPatientId()),
-                                a.getState() == null ? "SCHEDULED" : a.getState().name()
+                                a.getState() == null ? "SCHEDULED" : a.getState().name(),
+                                toItalianStateLabel(a.getState())
                         ))
                         .collect(Collectors.toList());
                 request.setAttribute("todayAgenda", todayAgenda);
@@ -216,5 +220,21 @@ public class DashboardServlet extends HttpServlet {
             return "";
         }
         return normalized.substring(0, 1).toUpperCase(Locale.ROOT) + normalized.substring(1);
+    }
+
+    private String toItalianStateLabel(AppointmentState state) {
+        if (state == null) {
+            return "IN ATTESA";
+        }
+        switch (state) {
+            case COMPLETED:
+                return "COMPLETATO";
+            case CANCELLED:
+                return "CANCELLATO";
+            case SCHEDULED:
+                return "PROGRAMMATO";
+            default:
+                return "IN ATTESA";
+        }
     }
 }
