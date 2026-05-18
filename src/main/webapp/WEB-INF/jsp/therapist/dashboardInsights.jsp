@@ -104,7 +104,8 @@
     </div>
 
     <div class="glass-card section-card p-4 mb-4">
-        <h5 class="mb-3">Trend ultimi mesi</h5>
+        <h5 class="mb-1">Andamento operativo mensile</h5>
+        <p class="kpi-section-note mb-3">Volumi mensili di trattamenti, cancellazioni e nuovi pazienti acquisiti.</p>
         <div class="kpi-chart-wrap">
             <canvas id="kpiTrendChart"></canvas>
         </div>
@@ -250,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateChart(series) {
+        const isMobile = window.matchMedia('(max-width: 576px)').matches;
         const ordered = series.slice().reverse();
         const labels = ordered.map(function (r) { return monthLabel(r.year, r.month); });
         const completed = ordered.map(function (r) { return r.appointmentsCompleted || 0; });
@@ -262,16 +264,64 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Trattamenti completati', data: completed, borderColor: '#188038', backgroundColor: 'rgba(24,128,56,.12)', tension: .35, fill: false },
-                    { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#d93025', backgroundColor: 'rgba(217,48,37,.12)', tension: .35, fill: false },
-                    { label: 'Nuovi pazienti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.12)', tension: .35, fill: false }
+                    { label: 'Trattamenti completati', data: completed, borderColor: '#1f8f47', backgroundColor: 'rgba(31,143,71,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 },
+                    { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#c53929', backgroundColor: 'rgba(197,57,41,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 },
+                    { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.12)', tension: .3, fill: true, borderWidth: 2.5, pointRadius: isMobile ? 1.5 : 2.5, pointHoverRadius: 5 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
-                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        position: isMobile ? 'bottom' : 'top',
+                        align: isMobile ? 'center' : 'start',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                            padding: isMobile ? 12 : 16,
+                            font: { size: isMobile ? 11 : 12, weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(24,28,34,.94)',
+                        titleFont: { size: 12, weight: '700' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        displayColors: true,
+                        callbacks: {
+                            title: function (items) {
+                                return items[0] ? items[0].label : '';
+                            },
+                            label: function (context) {
+                                return context.dataset.label + ': ' + formatNumber(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: isMobile ? 6 : 12,
+                            color: '#5f6368',
+                            font: { size: isMobile ? 10 : 11 }
+                        },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            color: '#5f6368',
+                            font: { size: isMobile ? 10 : 11 }
+                        },
+                        grid: { color: 'rgba(60,64,67,.12)' }
+                    }
+                }
             }
         });
     }

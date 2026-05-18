@@ -162,6 +162,12 @@ body.auth-page{
     min-height: 320px;
 }
 
+@media (max-width: 576px){
+    .kpi-chart-wrap{
+        min-height: 280px;
+    }
+}
+
 
 
 
