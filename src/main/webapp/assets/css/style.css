@@ -325,6 +325,15 @@ body.calendar-gcal-page{
         margin-bottom: 0 !important;
     }
 
+    body.calendar-view-week .calendar-gcal-wrap,
+    body.calendar-view-month .calendar-gcal-wrap{
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
     .calendar-host{
         width: 100%;
     }
