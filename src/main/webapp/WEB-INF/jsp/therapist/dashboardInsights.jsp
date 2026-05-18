@@ -51,31 +51,31 @@
         <div class="kpi-grid kpi-grid--operativi stats-kpi-grid">
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="appointments_month" aria-label="Info Appuntamenti del mese">i</button></div>
                     <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="completed_treatments" aria-label="Info Trattamenti completati">i</button></div>
                     <div class="kpi-value" id="kpiCompletedMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="cancelled_appointments" aria-label="Info Appuntamenti cancellati">i</button></div>
                     <div class="kpi-value" id="kpiCancelledMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="booked_hours" aria-label="Info Ore prenotate">i</button></div>
                     <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Tasso di cancellazione</div>
+                    <div class="kpi-label mb-1">Tasso di cancellazione <button type="button" class="kpi-info-btn" data-kpi="cancellation_rate" aria-label="Info Tasso di cancellazione">i</button></div>
                     <div class="kpi-value" id="kpiCancellationRate">0%</div>
                 </div>
             </div>
@@ -90,37 +90,37 @@
         <div class="kpi-grid kpi-grid--gestionali">
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Nuovi appuntamenti creati (<span id="kpiReferenceMonthLabel5">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Nuovi appuntamenti creati (<span id="kpiReferenceMonthLabel5">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="new_created_appointments" aria-label="Info Nuovi appuntamenti creati">i</button></div>
                     <div class="kpi-value" id="kpiCreatedMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Pazienti attivi nel mese (<span id="kpiReferenceMonthLabel6">mese corrente</span>)</div>
+                    <div class="kpi-label mb-1">Pazienti attivi nel mese (<span id="kpiReferenceMonthLabel6">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="active_patients_month" aria-label="Info Pazienti attivi nel mese">i</button></div>
                     <div class="kpi-value" id="kpiActivePatientsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Nuovi pazienti (primo appuntamento)</div>
+                    <div class="kpi-label mb-1">Nuovi pazienti (primo appuntamento) <button type="button" class="kpi-info-btn" data-kpi="new_patients_first_visit" aria-label="Info Nuovi pazienti">i</button></div>
                     <div class="kpi-value" id="kpiNewPatientsFirstMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Pazienti di ritorno</div>
+                    <div class="kpi-label mb-1">Pazienti di ritorno <button type="button" class="kpi-info-btn" data-kpi="returning_patients" aria-label="Info Pazienti di ritorno">i</button></div>
                     <div class="kpi-value" id="kpiReturningPatientsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Saturazione agenda</div>
+                    <div class="kpi-label mb-1">Saturazione agenda <button type="button" class="kpi-info-btn" data-kpi="agenda_saturation" aria-label="Info Saturazione agenda">i</button></div>
                     <div class="kpi-value" id="kpiAgendaSaturation">0%</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Media appuntamenti per paziente</div>
+                    <div class="kpi-label mb-1">Media appuntamenti per paziente <button type="button" class="kpi-info-btn" data-kpi="appointments_per_patient" aria-label="Info Media appuntamenti per paziente">i</button></div>
                     <div class="kpi-value" id="kpiAppointmentsPerPatient">0,0</div>
                 </div>
             </div>
@@ -169,6 +169,66 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const KPI_HELP = {
+        appointments_month: {
+            title: 'Appuntamenti del mese',
+            description: 'Numero totale di appuntamenti pianificati nel mese selezionato.',
+            formula: 'COUNT(appuntamenti con start_time nel mese)'
+        },
+        completed_treatments: {
+            title: 'Trattamenti completati',
+            description: 'Numero di appuntamenti/trattamenti conclusi nel mese selezionato.',
+            formula: "COUNT(appuntamenti con stato COMPLETED e end_time nel mese)"
+        },
+        cancelled_appointments: {
+            title: 'Appuntamenti cancellati',
+            description: 'Numero di appuntamenti annullati nel mese selezionato.',
+            formula: "COUNT(appuntamenti con stato CANCELLED e cancelled_at nel mese)"
+        },
+        booked_hours: {
+            title: 'Ore prenotate',
+            description: 'Somma della durata degli appuntamenti non cancellati del mese.',
+            formula: 'SUM(end_time - start_time) / 60'
+        },
+        cancellation_rate: {
+            title: 'Tasso di cancellazione',
+            description: 'Percentuale di appuntamenti cancellati rispetto agli appuntamenti del mese.',
+            formula: '(appuntamenti cancellati / appuntamenti del mese) x 100',
+            details: 'Se il denominatore è 0, il valore mostrato è 0%.'
+        },
+        new_created_appointments: {
+            title: 'Nuovi appuntamenti creati',
+            description: 'Numero di appuntamenti inseriti nel sistema durante il mese selezionato.',
+            formula: 'COUNT(appuntamenti con created_at nel mese)'
+        },
+        active_patients_month: {
+            title: 'Pazienti attivi nel mese',
+            description: 'Pazienti distinti con almeno un appuntamento non cancellato nel mese.',
+            formula: 'COUNT(DISTINCT patient_id) su appuntamenti non cancellati con start_time nel mese'
+        },
+        new_patients_first_visit: {
+            title: 'Nuovi pazienti',
+            description: 'Pazienti che hanno avuto il primo appuntamento nel mese selezionato.',
+            formula: 'COUNT(DISTINCT patient_id) dove MIN(start_time) cade nel mese'
+        },
+        returning_patients: {
+            title: 'Pazienti di ritorno',
+            description: 'Pazienti già presenti con appuntamenti precedenti e almeno un appuntamento nel mese.',
+            formula: 'pazienti attivi nel mese - nuovi pazienti del mese'
+        },
+        agenda_saturation: {
+            title: 'Saturazione agenda',
+            description: 'Percentuale di ore disponibili occupate da appuntamenti prenotati.',
+            formula: '(ore prenotate / ore disponibili) x 100',
+            details: 'Ore disponibili calcolate con capacità mensile configurata nel sistema.'
+        },
+        appointments_per_patient: {
+            title: 'Media appuntamenti per paziente',
+            description: 'Numero medio di appuntamenti per ogni paziente attivo nel mese.',
+            formula: 'appuntamenti non cancellati del mese / pazienti attivi del mese',
+            details: 'Se i pazienti attivi sono 0, il valore mostrato è 0,0.'
+        }
+    };
     const contextPath = document.body.dataset.contextPath || '';
     const scopeSelect = document.getElementById('kpiScopeSelect');
     const monthsSelect = document.getElementById('kpiMonthsSelect');
@@ -192,6 +252,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const kpiReferenceMonthLabel6 = document.getElementById('kpiReferenceMonthLabel6');
     const chartCanvas = document.getElementById('kpiTrendChart');
     let trendChart = null;
+
+    function applyKpiHelp() {
+        document.querySelectorAll('.kpi-info-btn').forEach(function (button) {
+            const key = button.dataset.kpi;
+            const item = KPI_HELP[key];
+            if (!item) return;
+            const parts = [item.title, item.description, 'Formula: ' + item.formula];
+            if (item.details) parts.push(item.details);
+            const text = parts.join('\n');
+            button.setAttribute('data-tooltip', text);
+            button.setAttribute('title', text);
+        });
+    }
 
     function showNotice(message, variant) {
         const container = document.getElementById('appNoticeContainer');
@@ -422,6 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     scopeSelect.addEventListener('change', loadKpis);
     monthsSelect.addEventListener('change', loadKpis);
+    applyKpiHelp();
     loadKpis();
 });
 </script>
