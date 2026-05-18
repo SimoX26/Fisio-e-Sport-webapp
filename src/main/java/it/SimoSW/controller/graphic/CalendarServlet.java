@@ -83,6 +83,9 @@ public class CalendarServlet extends HttpServlet {
          */
 
         // Caso 3: visualizzazione pagina calendario
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/calendar.jsp").forward(request, response);
     }
 

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
+    private static final ZoneId HOME_ZONE_ID = ZoneId.of("Europe/Rome");
     private CalendarController calendarController;
 
     public static class AgendaItemView {
@@ -74,8 +76,9 @@ public class DashboardServlet extends HttpServlet {
         long bookedHoursToday = 0;
         int patientsThisMonth = 0;
         long bookedHoursThisWeek = 0;
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
+        LocalDate today = LocalDate.now(HOME_ZONE_ID);
+        LocalTime now = LocalTime.now(HOME_ZONE_ID);
+        LocalDateTime nowDateTime = LocalDateTime.now(HOME_ZONE_ID);
         String todayLabel = formatFullDateLabel(today);
         String patientsTodayParam = today.toString();
         String patientsMonthYearLabel = formatMonthYearLabel(today);
@@ -128,7 +131,7 @@ public class DashboardServlet extends HttpServlet {
                     if (appointment.getState() != AppointmentState.CANCELLED
                             && appointment.getPatientId() != null
                             && appointment.getStart() != null
-                            && appointment.getStart().isAfter(LocalDateTime.now())) {
+                            && appointment.getStart().isAfter(nowDateTime)) {
                         remindersToSendToday++;
                     }
                     if (appointment.getState() != AppointmentState.CANCELLED

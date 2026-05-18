@@ -31,20 +31,20 @@
         </button>
 
         <!-- LINKS -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <form class="d-flex mt-3 mt-lg-0 ms-lg-3 me-lg-3"
+        <div class="collapse navbar-collapse app-navbar-collapse" id="navbarNav">
+            <form class="d-flex mt-3 mt-lg-0 ms-lg-3 me-lg-3 app-global-search"
                   method="get"
                   action="${pageContext.request.contextPath}${searchAction}">
-                <input class="form-control form-control-sm"
+                <input class="form-control form-control-sm app-global-search-input"
                        type="search"
                        name="q"
                        value="<c:out value='${param.q}'/>"
                        placeholder="Cerca nel sistema..."
                        aria-label="Ricerca globale">
-                <button class="btn btn-outline-secondary btn-sm ms-2" type="submit">Cerca</button>
+                <button class="btn btn-outline-secondary btn-sm ms-2 app-global-search-btn" type="submit">Cerca</button>
             </form>
 
-            <ul class="navbar-nav ms-auto align-items-lg-center">
+            <ul class="navbar-nav ms-auto align-items-lg-center app-navbar-links">
 
                 <c:choose>
                     <c:when test="${sessionScope.userRole == 'ADMIN'}">
