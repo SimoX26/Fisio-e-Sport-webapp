@@ -314,11 +314,6 @@ body.calendar-gcal-page{
         display: block;
     }
 
-    body.calendar-gcal-page .app-navbar{
-        position: static;
-        top: auto;
-    }
-
     .calendar-gcal-wrap{
         display: block;
         padding-bottom: 0 !important;
@@ -353,31 +348,38 @@ body.calendar-gcal-page{
         row-gap: .5rem;
     }
 
-    /* Desktop compact mode: more events visible without sacrificing readability */
-    body.calendar-gcal-page .fc .fc-timegrid-slot{
-        height: 20px;
-        min-height: 20px;
+    /* Desktop compact mode for timeGrid views (day/week only) */
+    body.calendar-view-day .fc .fc-timegrid-slot,
+    body.calendar-view-week .fc .fc-timegrid-slot{
+        height: 11px;
+        min-height: 11px;
     }
 
-    body.calendar-gcal-page .fc .fc-timegrid-slot-label{
-        font-size: .74rem;
+    body.calendar-view-day .fc .fc-timegrid-slot-label,
+    body.calendar-view-week .fc .fc-timegrid-slot-label{
+        font-size: .68rem;
     }
 
-    body.calendar-gcal-page .fc-event{
-        font-size: .8rem;
-        padding: 1px 4px;
-        line-height: 1.2;
-    }
-
-    body.calendar-gcal-page .fc .fc-timegrid-event{
+    body.calendar-view-day .fc .fc-timegrid-event,
+    body.calendar-view-week .fc .fc-timegrid-event{
         min-height: 0;
     }
 
-    body.calendar-gcal-page .fc .fc-timegrid-event .fc-event-main{
-        padding: 1px 4px;
+    body.calendar-view-day .fc .fc-timegrid-event .fc-event-main,
+    body.calendar-view-week .fc .fc-timegrid-event .fc-event-main{
+        padding: 0 3px;
     }
 
-    body.calendar-gcal-page .fc .fc-timegrid-event .fc-event-title-line{
+    body.calendar-view-day .fc .fc-timegrid-event .fc-event-time-line,
+    body.calendar-view-week .fc .fc-timegrid-event .fc-event-time-line{
+        font-size: .64rem;
+        line-height: 1.1;
+    }
+
+    body.calendar-view-day .fc .fc-timegrid-event .fc-event-title-line,
+    body.calendar-view-week .fc .fc-timegrid-event .fc-event-title-line{
+        font-size: .72rem;
+        line-height: 1.1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -439,6 +441,8 @@ body.calendar-gcal-page{
 .btn-outline-secondary{
     border-color: var(--border-color);
     color: var(--text-main);
+    background: #ffffff;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
 }
 
 .btn{
@@ -446,8 +450,14 @@ body.calendar-gcal-page{
     font-weight: 600;
 }
 
-.btn-outline-secondary:hover{
-    background: var(--bg-soft);
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus-visible,
+.btn-outline-secondary:active,
+.btn-outline-secondary.active,
+.show > .btn-outline-secondary.dropdown-toggle{
+    border-color: rgba(13,110,253,.38);
+    color: var(--brand-primary);
+    background: rgba(13,110,253,.04);
 }
 
 .btn-primary{
@@ -972,11 +982,15 @@ body.calendar-gcal-page{
     background: #ffffff;
     border: 1px solid var(--border-color);
     color: #3c4043;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
 }
 
-.btn-soft:hover{
-    background: #f8f9fa;
-    border-color: #c8ccd1;
+.btn-soft:hover,
+.btn-soft:focus-visible,
+.btn-soft:active{
+    border-color: rgba(13,110,253,.38);
+    color: var(--brand-primary);
+    background: rgba(13,110,253,.04);
 }
 
 

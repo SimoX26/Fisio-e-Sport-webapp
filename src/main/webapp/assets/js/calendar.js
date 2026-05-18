@@ -672,10 +672,35 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         },
         eventDidMount(info) {
-            info.el.style.background = '#eaf1fb';
+            const state = String(info.event.extendedProps?.state || '').toUpperCase();
+            const isNonTreatmentEvent = Boolean(info.event.extendedProps?.nonTreatmentEvent);
+            const eventEnd = info.event.end || info.event.start;
+            const now = new Date();
+            const isPast = eventEnd instanceof Date && !Number.isNaN(eventEnd.getTime()) && eventEnd.getTime() < now.getTime();
+            const isPastCompletedTreatment = !isNonTreatmentEvent && isPast && state === 'COMPLETED';
+
+            let background = '#eaf1fb';
+            let border = 'var(--calendar-event-border)';
+            let text = '#1f2d3d';
+
+            // Priority:
+            // 1) generic/non-treatment events -> neutral gray
+            // 2) past + completed treatment events -> green
+            // 3) all other events -> existing default blue palette
+            if (isNonTreatmentEvent) {
+                background = '#f1f3f5';
+                border = '#c9ced6';
+                text = '#4b5563';
+            } else if (isPastCompletedTreatment) {
+                background = '#e6f4ea';
+                border = '#8bc49a';
+                text = '#1f8f47';
+            }
+
+            info.el.style.background = background;
             info.el.style.backgroundImage = 'none';
-            info.el.style.setProperty('border', '1px solid var(--calendar-event-border)', 'important');
-            info.el.style.color = '#1f2d3d';
+            info.el.style.setProperty('border', `1px solid ${border}`, 'important');
+            info.el.style.color = text;
             info.el.style.setProperty('box-shadow', 'none', 'important');
 
             const eventId = Number.parseInt(String(info.event.id || ''), 10);
@@ -787,12 +812,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 editAppointmentBtn.classList.toggle('d-none', isCompleted);
             }
             if (deleteAppointmentBtn) {
-                deleteAppointmentBtn.classList.toggle('d-none', isCompleted);
+                deleteAppointmentBtn.classList.toggle('d-none', isCompleted && !isNonTreatmentEvent);
             }
             if (eventModalStateHintEl) {
                 const stateHints = [];
-                if (isCompleted) {
+                if (isCompleted && !isNonTreatmentEvent) {
                     stateHints.push('Appuntamento completato: azioni non disponibili.');
+                } else if (isCompleted && isNonTreatmentEvent) {
+                    stateHints.push('Evento completato: cancellazione consentita.');
                 }
                 if (isAllDay) {
                     stateHints.push('Evento tutto il giorno: non collegato ai trattamenti.');

@@ -101,12 +101,13 @@ public class CalendarController {
     public void cancelAppointment(long appointmentId) {
         Appointment appointment = appointmentDAO.findById(appointmentId)
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+        boolean isNonTreatmentEvent = appointment.getPatientId() == null;
 
         if (appointment.getState() == AppointmentState.CANCELLED) {
             throw new InvalidAppointmentStateException("Appointment already cancelled");
         }
 
-        if (appointment.getState() == AppointmentState.COMPLETED) {
+        if (appointment.getState() == AppointmentState.COMPLETED && !isNonTreatmentEvent) {
             throw new InvalidAppointmentStateException("Completed appointment cannot be cancelled");
         }
 

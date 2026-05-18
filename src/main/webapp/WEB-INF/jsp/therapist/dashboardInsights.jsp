@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Statistiche • Fisio e Sports</title>
+    <title>Dati e Statistiche • Fisio e Sports</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/assets/img/logo.png">
@@ -28,7 +28,7 @@
 <div class="container app-shell mt-4">
     <div class="page-header-row mb-4">
         <div>
-            <h2 class="page-title mb-0">Statistiche</h2>
+            <h2 class="page-title mb-0">Dati e Statistiche</h2>
         </div>
         <div class="d-flex gap-2">
             <select id="kpiScopeSelect" class="form-select form-select-sm">
@@ -173,59 +173,59 @@ document.addEventListener('DOMContentLoaded', function () {
         appointments_month: {
             title: 'Appuntamenti del mese',
             description: 'Numero totale di appuntamenti pianificati nel mese selezionato.',
-            formula: 'COUNT(appuntamenti con start_time nel mese)'
+            formula: 'Totale appuntamenti nel mese'
         },
         completed_treatments: {
             title: 'Trattamenti completati',
             description: 'Numero di appuntamenti/trattamenti conclusi nel mese selezionato.',
-            formula: "COUNT(appuntamenti con stato COMPLETED e end_time nel mese)"
+            formula: 'Totale appuntamenti completati nel mese'
         },
         cancelled_appointments: {
             title: 'Appuntamenti cancellati',
             description: 'Numero di appuntamenti annullati nel mese selezionato.',
-            formula: "COUNT(appuntamenti con stato CANCELLED e cancelled_at nel mese)"
+            formula: 'Totale appuntamenti cancellati nel mese'
         },
         booked_hours: {
             title: 'Ore prenotate',
-            description: 'Somma della durata degli appuntamenti non cancellati del mese.',
-            formula: 'SUM(end_time - start_time) / 60'
+            description: 'Totale delle ore prenotate negli appuntamenti confermati del mese.',
+            formula: 'Somma delle durate degli appuntamenti del mese'
         },
         cancellation_rate: {
             title: 'Tasso di cancellazione',
             description: 'Percentuale di appuntamenti cancellati rispetto agli appuntamenti del mese.',
-            formula: '(appuntamenti cancellati / appuntamenti del mese) x 100',
+            formula: 'Appuntamenti cancellati ÷ appuntamenti totali × 100',
             details: 'Se il denominatore è 0, il valore mostrato è 0%.'
         },
         new_created_appointments: {
             title: 'Nuovi appuntamenti creati',
             description: 'Numero di appuntamenti inseriti nel sistema durante il mese selezionato.',
-            formula: 'COUNT(appuntamenti con created_at nel mese)'
+            formula: 'Totale appuntamenti creati nel mese'
         },
         active_patients_month: {
             title: 'Pazienti attivi nel mese',
-            description: 'Pazienti distinti con almeno un appuntamento non cancellato nel mese.',
-            formula: 'COUNT(DISTINCT patient_id) su appuntamenti non cancellati con start_time nel mese'
+            description: 'Pazienti che hanno avuto almeno un appuntamento valido nel mese selezionato.',
+            formula: 'Totale pazienti con almeno un appuntamento nel mese'
         },
         new_patients_first_visit: {
             title: 'Nuovi pazienti',
-            description: 'Pazienti che hanno avuto il primo appuntamento nel mese selezionato.',
-            formula: 'COUNT(DISTINCT patient_id) dove MIN(start_time) cade nel mese'
+            description: 'Pazienti che hanno effettuato il primo appuntamento nel periodo selezionato.',
+            formula: 'Totale pazienti al primo appuntamento nel mese'
         },
         returning_patients: {
             title: 'Pazienti di ritorno',
             description: 'Pazienti già presenti con appuntamenti precedenti e almeno un appuntamento nel mese.',
-            formula: 'pazienti attivi nel mese - nuovi pazienti del mese'
+            formula: 'Pazienti attivi nel mese - nuovi pazienti del mese'
         },
         agenda_saturation: {
             title: 'Saturazione agenda',
             description: 'Percentuale di ore disponibili occupate da appuntamenti prenotati.',
-            formula: '(ore prenotate / ore disponibili) x 100',
+            formula: 'Ore prenotate ÷ ore disponibili × 100',
             details: 'Ore disponibili calcolate con capacità mensile configurata nel sistema.'
         },
         appointments_per_patient: {
             title: 'Media appuntamenti per paziente',
             description: 'Numero medio di appuntamenti per ogni paziente attivo nel mese.',
-            formula: 'appuntamenti non cancellati del mese / pazienti attivi del mese',
+            formula: 'Appuntamenti del mese ÷ pazienti attivi del mese',
             details: 'Se i pazienti attivi sono 0, il valore mostrato è 0,0.'
         }
     };

@@ -95,7 +95,7 @@
                         <li class="nav-item">
                             <a class="nav-link"
                                href="<%= request.getContextPath() %>/dashboard/insights">
-                                Statistiche
+                                Dati e Statistiche
                             </a>
                         </li>
                     </c:otherwise>
