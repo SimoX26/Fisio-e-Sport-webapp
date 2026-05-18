@@ -45,31 +45,31 @@
 
     <div class="kpi-section mb-4">
         <div class="kpi-section-head mb-3">
-            <h5 class="mb-1">Dati operativi</h5>
+            <h5 class="mb-1">Dati operativi - <span id="kpiSectionPeriodOperative">mese corrente</span></h5>
             <p class="kpi-section-note mb-0">Cosa e successo nel mese sugli appuntamenti pianificati (basati su data evento).</p>
         </div>
         <div class="kpi-grid kpi-grid--operativi stats-kpi-grid">
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Appuntamenti del mese (<span id="kpiReferenceMonthLabel">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="appointments_month" aria-label="Info Appuntamenti del mese">i</button></div>
+                    <div class="kpi-label mb-1">Appuntamenti del mese <button type="button" class="kpi-info-btn" data-kpi="appointments_month" aria-label="Info Appuntamenti del mese">i</button></div>
                     <div class="kpi-value" id="kpiAppointmentsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Trattamenti completati (<span id="kpiReferenceMonthLabel2">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="completed_treatments" aria-label="Info Trattamenti completati">i</button></div>
+                    <div class="kpi-label mb-1">Trattamenti completati <button type="button" class="kpi-info-btn" data-kpi="completed_treatments" aria-label="Info Trattamenti completati">i</button></div>
                     <div class="kpi-value" id="kpiCompletedMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Appuntamenti cancellati (<span id="kpiReferenceMonthLabel3">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="cancelled_appointments" aria-label="Info Appuntamenti cancellati">i</button></div>
+                    <div class="kpi-label mb-1">Appuntamenti cancellati <button type="button" class="kpi-info-btn" data-kpi="cancelled_appointments" aria-label="Info Appuntamenti cancellati">i</button></div>
                     <div class="kpi-value" id="kpiCancelledMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
                 <div class="glass-card section-card p-4 h-100 stats-kpi-card">
-                    <div class="kpi-label mb-1">Ore prenotate (<span id="kpiReferenceMonthLabel4">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="booked_hours" aria-label="Info Ore prenotate">i</button></div>
+                    <div class="kpi-label mb-1">Ore prenotate <button type="button" class="kpi-info-btn" data-kpi="booked_hours" aria-label="Info Ore prenotate">i</button></div>
                     <div class="kpi-value" id="kpiBookedHoursMonth">0</div>
                 </div>
             </div>
@@ -84,42 +84,42 @@
 
     <div class="kpi-section mb-4">
         <div class="kpi-section-head mb-3">
-            <h5 class="mb-1">Dati gestionali</h5>
+            <h5 class="mb-1">Dati gestionali - <span id="kpiSectionPeriodManagement">mese corrente</span></h5>
             <p class="kpi-section-note mb-0">Metriche di crescita gestionale basate su creazione dei record nel mese.</p>
         </div>
-        <div class="kpi-grid kpi-grid--gestionali">
+        <div class="kpi-grid kpi-grid--gestionali stats-kpi-grid stats-kpi-grid--gestionali">
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Nuovi appuntamenti creati (<span id="kpiReferenceMonthLabel5">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="new_created_appointments" aria-label="Info Nuovi appuntamenti creati">i</button></div>
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
+                    <div class="kpi-label mb-1">Nuovi appuntamenti creati <button type="button" class="kpi-info-btn" data-kpi="new_created_appointments" aria-label="Info Nuovi appuntamenti creati">i</button></div>
                     <div class="kpi-value" id="kpiCreatedMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
-                    <div class="kpi-label mb-1">Pazienti attivi nel mese (<span id="kpiReferenceMonthLabel6">mese corrente</span>) <button type="button" class="kpi-info-btn" data-kpi="active_patients_month" aria-label="Info Pazienti attivi nel mese">i</button></div>
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
+                    <div class="kpi-label mb-1">Pazienti attivi nel mese <button type="button" class="kpi-info-btn" data-kpi="active_patients_month" aria-label="Info Pazienti attivi nel mese">i</button></div>
                     <div class="kpi-value" id="kpiActivePatientsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Nuovi pazienti (primo appuntamento) <button type="button" class="kpi-info-btn" data-kpi="new_patients_first_visit" aria-label="Info Nuovi pazienti">i</button></div>
                     <div class="kpi-value" id="kpiNewPatientsFirstMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Pazienti di ritorno <button type="button" class="kpi-info-btn" data-kpi="returning_patients" aria-label="Info Pazienti di ritorno">i</button></div>
                     <div class="kpi-value" id="kpiReturningPatientsMonth">0</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Saturazione agenda <button type="button" class="kpi-info-btn" data-kpi="agenda_saturation" aria-label="Info Saturazione agenda">i</button></div>
                     <div class="kpi-value" id="kpiAgendaSaturation">0%</div>
                 </div>
             </div>
             <div class="kpi-grid__item">
-                <div class="glass-card section-card p-4 h-100">
+                <div class="glass-card section-card p-4 h-100 stats-kpi-card">
                     <div class="kpi-label mb-1">Media appuntamenti per paziente <button type="button" class="kpi-info-btn" data-kpi="appointments_per_patient" aria-label="Info Media appuntamenti per paziente">i</button></div>
                     <div class="kpi-value" id="kpiAppointmentsPerPatient">0,0</div>
                 </div>
@@ -244,12 +244,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const kpiReturningPatientsMonth = document.getElementById('kpiReturningPatientsMonth');
     const kpiAgendaSaturation = document.getElementById('kpiAgendaSaturation');
     const kpiAppointmentsPerPatient = document.getElementById('kpiAppointmentsPerPatient');
-    const kpiReferenceMonthLabel = document.getElementById('kpiReferenceMonthLabel');
-    const kpiReferenceMonthLabel2 = document.getElementById('kpiReferenceMonthLabel2');
-    const kpiReferenceMonthLabel3 = document.getElementById('kpiReferenceMonthLabel3');
-    const kpiReferenceMonthLabel4 = document.getElementById('kpiReferenceMonthLabel4');
-    const kpiReferenceMonthLabel5 = document.getElementById('kpiReferenceMonthLabel5');
-    const kpiReferenceMonthLabel6 = document.getElementById('kpiReferenceMonthLabel6');
+    const kpiSectionPeriodOperative = document.getElementById('kpiSectionPeriodOperative');
+    const kpiSectionPeriodManagement = document.getElementById('kpiSectionPeriodManagement');
     const chartCanvas = document.getElementById('kpiTrendChart');
     let trendChart = null;
 
@@ -324,21 +320,13 @@ document.addEventListener('DOMContentLoaded', function () {
             kpiBookedHoursMonth.textContent = '0';
             kpiCancellationRate.textContent = '0%';
             kpiCreatedMonth.textContent = '0';
-            if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = 'mese corrente';
-            if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = 'mese corrente';
-            if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = 'mese corrente';
-            if (kpiReferenceMonthLabel4) kpiReferenceMonthLabel4.textContent = 'mese corrente';
-            if (kpiReferenceMonthLabel5) kpiReferenceMonthLabel5.textContent = 'mese corrente';
-            if (kpiReferenceMonthLabel6) kpiReferenceMonthLabel6.textContent = 'mese corrente';
+            if (kpiSectionPeriodOperative) kpiSectionPeriodOperative.textContent = 'mese corrente';
+            if (kpiSectionPeriodManagement) kpiSectionPeriodManagement.textContent = 'mese corrente';
             return;
         }
         const referenceMonth = monthLabelLong(latest.year, latest.month);
-        if (kpiReferenceMonthLabel) kpiReferenceMonthLabel.textContent = referenceMonth;
-        if (kpiReferenceMonthLabel2) kpiReferenceMonthLabel2.textContent = referenceMonth;
-        if (kpiReferenceMonthLabel3) kpiReferenceMonthLabel3.textContent = referenceMonth;
-        if (kpiReferenceMonthLabel4) kpiReferenceMonthLabel4.textContent = referenceMonth;
-        if (kpiReferenceMonthLabel5) kpiReferenceMonthLabel5.textContent = referenceMonth;
-        if (kpiReferenceMonthLabel6) kpiReferenceMonthLabel6.textContent = referenceMonth;
+        if (kpiSectionPeriodOperative) kpiSectionPeriodOperative.textContent = referenceMonth;
+        if (kpiSectionPeriodManagement) kpiSectionPeriodManagement.textContent = referenceMonth;
         kpiAppointmentsMonth.textContent = formatNumber(latest.appointmentsInMonth);
         kpiCompletedMonth.textContent = formatNumber(latest.appointmentsCompleted);
         kpiCancelledMonth.textContent = formatNumber(latest.appointmentsCancelled);
@@ -382,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const appointmentsMonth = ordered.map(function (r) { return r.appointmentsInMonth || 0; });
         const completed = ordered.map(function (r) { return r.appointmentsCompleted || 0; });
         const cancelled = ordered.map(function (r) { return r.appointmentsCancelled || 0; });
-        const bookedHours = ordered.map(function (r) { return Math.round((Number(r.totalBookedMinutes || 0) / 60) * 10) / 10; });
         const created = ordered.map(function (r) { return r.appointmentsCreated || 0; });
         const newPatients = ordered.map(function (r) { return r.newPatientsMonth || 0; });
 
@@ -395,7 +382,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     { label: 'Appuntamenti del mese', data: appointmentsMonth, borderColor: '#7950f2', backgroundColor: 'rgba(121,80,242,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
                     { label: 'Trattamenti completati', data: completed, borderColor: '#1f8f47', backgroundColor: 'rgba(31,143,71,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
                     { label: 'Appuntamenti cancellati', data: cancelled, borderColor: '#c53929', backgroundColor: 'rgba(197,57,41,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
-                    { label: 'Ore prenotate', data: bookedHours, borderColor: '#0b7285', backgroundColor: 'rgba(11,114,133,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'yHours' },
                     { label: 'Nuovi appuntamenti creati', data: created, borderColor: '#e67700', backgroundColor: 'rgba(230,119,0,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' },
                     { label: 'Nuovi pazienti acquisiti', data: newPatients, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.10)', tension: .28, fill: false, borderWidth: 2.2, pointRadius: isMobile ? 1.3 : 2.2, pointHoverRadius: 4, yAxisID: 'y' }
                 ]
@@ -427,9 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 return items[0] ? items[0].label : '';
                             },
                             label: function (context) {
-                                const value = context.dataset.yAxisID === 'yHours'
-                                    ? Number(context.parsed.y || 0).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' h'
-                                    : formatNumber(context.parsed.y);
+                                const value = formatNumber(context.parsed.y);
                                 return context.dataset.label + ': ' + value;
                             }
                         }
@@ -454,16 +438,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             font: { size: isMobile ? 10 : 11 }
                         },
                         grid: { color: 'rgba(60,64,67,.12)' }
-                    },
-                    yHours: {
-                        beginAtZero: true,
-                        position: 'right',
-                        ticks: {
-                            color: '#5f6368',
-                            font: { size: isMobile ? 10 : 11 },
-                            callback: function (value) { return value + ' h'; }
-                        },
-                        grid: { drawOnChartArea: false }
                     }
                 }
             }
