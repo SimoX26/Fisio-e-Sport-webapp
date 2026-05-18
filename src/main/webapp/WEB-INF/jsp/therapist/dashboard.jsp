@@ -77,14 +77,12 @@
                         <div class="home-agenda-list">
                             <c:forEach var="appointment" items="${agendaRows}">
                                 <div class="home-agenda-item">
-                                    <div class="home-agenda-time"><c:out value="${appointment.startTime}" /></div>
+                                    <div class="home-agenda-time">
+                                        <c:out value="${appointment.startTime}" /> - <c:out value="${appointment.endTime}" />
+                                    </div>
                                     <div class="home-agenda-main">
-                                        <div class="home-agenda-title"><c:out value="${appointment.title}" /></div>
-                                        <div class="home-agenda-meta">
-                                            <span>Paziente <c:out value="${appointment.patientLabel}" /></span>
-                                            <span>•</span>
-                                            <span>Fine <c:out value="${appointment.endTime}" /></span>
-                                        </div>
+                                        <div class="home-agenda-title"><c:out value="${appointment.patientName}" /> - Paziente</div>
+                                        <div class="home-agenda-meta"><c:out value="${appointment.eventTitle}" /> - Evento</div>
                                     </div>
                                     <div class="home-agenda-side">
                                         <span class="home-status-badge home-status-badge--${appointment.stateClass}">

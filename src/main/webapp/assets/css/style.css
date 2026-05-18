@@ -767,7 +767,7 @@ body.calendar-gcal-page{
 
 .home-agenda-item{
     display: grid;
-    grid-template-columns: 62px 1fr auto;
+    grid-template-columns: 124px 1fr auto;
     gap: .7rem;
     align-items: center;
     border: 1px solid var(--border-color);
@@ -778,9 +778,10 @@ body.calendar-gcal-page{
 }
 
 .home-agenda-time{
-    font-size: .92rem;
+    font-size: .84rem;
     font-weight: 700;
     color: #2f3d4f;
+    white-space: nowrap;
 }
 
 .home-agenda-title{
@@ -792,13 +793,13 @@ body.calendar-gcal-page{
 }
 
 .home-agenda-meta{
-    display: flex;
-    flex-wrap: wrap;
-    gap: .35rem;
-    align-items: center;
+    display: block;
     color: var(--text-muted);
-    font-size: .76rem;
+    font-size: .8rem;
+    line-height: 1.25;
     margin-top: 2px;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .home-status-badge{
@@ -916,7 +917,7 @@ body.calendar-gcal-page{
     }
 
     .home-agenda-item{
-        grid-template-columns: 52px 1fr;
+        grid-template-columns: 1fr;
         padding: .55rem .55rem;
     }
 
