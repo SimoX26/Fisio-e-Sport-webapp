@@ -81,13 +81,24 @@
                                         <c:out value="${appointment.startTime}" /> - <c:out value="${appointment.endTime}" />
                                     </div>
                                     <div class="home-agenda-main">
-                                        <div class="home-agenda-title"><c:out value="${appointment.primaryText}" /></div>
+                                        <c:choose>
+                                            <c:when test="${not empty appointment.patientName}">
+                                                <div class="home-agenda-title"><c:out value="${appointment.patientName}" /></div>
+                                                <div class="home-agenda-subtitle">Paziente</div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="home-agenda-title"><c:out value="${appointment.eventTitle}" /></div>
+                                                <div class="home-agenda-subtitle">Evento</div>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
-                                    <div class="home-agenda-side">
-                                        <span class="home-status-badge home-status-badge--${appointment.stateClass}">
-                                            <c:out value="${appointment.stateLabel}" />
-                                        </span>
-                                    </div>
+                                    <c:if test="${appointment.stateClass ne 'SCHEDULED' and appointment.stateLabel ne 'PROGRAMMATO'}">
+                                        <div class="home-agenda-side">
+                                            <span class="home-status-badge home-status-badge--${appointment.stateClass}">
+                                                <c:out value="${appointment.stateLabel}" />
+                                            </span>
+                                        </div>
+                                    </c:if>
                                 </div>
                             </c:forEach>
                         </div>
