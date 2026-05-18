@@ -436,6 +436,17 @@ body.calendar-gcal-page{
     border-bottom: 0 !important;
 }
 
+.kpi-table-groups + tr th{
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px){
+    .kpi-table-groups + tr th{
+        font-size: .76rem !important;
+        letter-spacing: .15px !important;
+    }
+}
+
 .kpi-grid{
     display: grid;
     grid-template-columns: 1fr;

@@ -129,7 +129,6 @@
 
     <div class="glass-card section-card p-4 mb-4">
         <h5 class="mb-1">Grafico mensile</h5>
-        <p class="kpi-section-note mb-3">Trend mensile dei principali dati operativi e gestionali (tasso di cancellazione escluso).</p>
         <div class="kpi-chart-wrap">
             <canvas id="kpiTrendChart"></canvas>
         </div>
@@ -142,20 +141,25 @@
                 <thead>
                 <tr class="kpi-table-groups">
                     <th rowspan="2">Mese</th>
-                    <th colspan="4">KPI Operativi</th>
-                    <th colspan="2">KPI Business</th>
+                    <th colspan="5">Dati operativi</th>
+                    <th colspan="6">Dati gestionali</th>
                 </tr>
                 <tr>
-                    <th>Appuntamenti del mese</th>
-                    <th>Trattamenti completati</th>
-                    <th>Appuntamenti cancellati</th>
-                    <th>Ore prenotate</th>
-                    <th>Nuovi appuntamenti creati</th>
-                    <th>Nuovi pazienti acquisiti</th>
+                    <th class="text-nowrap">Appuntamenti mese</th>
+                    <th class="text-nowrap">Trattamenti completati</th>
+                    <th class="text-nowrap">Appuntamenti cancellati</th>
+                    <th class="text-nowrap">Ore prenotate</th>
+                    <th class="text-nowrap">Tasso cancellazione</th>
+                    <th class="text-nowrap">Nuovi appuntamenti</th>
+                    <th class="text-nowrap">Nuovi pazienti</th>
+                    <th class="text-nowrap">Pazienti attivi</th>
+                    <th class="text-nowrap">Pazienti di ritorno</th>
+                    <th class="text-nowrap">Saturazione agenda</th>
+                    <th class="text-nowrap">Media app./paziente</th>
                 </tr>
                 </thead>
                 <tbody id="kpiTableBody">
-                <tr><td colspan="7" class="text-muted">Nessun dato disponibile</td></tr>
+                <tr><td colspan="12" class="text-muted">Nessun dato disponibile</td></tr>
                 </tbody>
             </table>
         </div>
@@ -277,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateTable(series) {
         if (!series.length) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="text-muted">Nessun dato disponibile</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="12" class="text-muted">Nessun dato disponibile</td></tr>';
             return;
         }
         tableBody.innerHTML = series.map(function (row) {
@@ -287,8 +291,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 + '<td>' + formatNumber(row.appointmentsCompleted) + '</td>'
                 + '<td>' + formatNumber(row.appointmentsCancelled) + '</td>'
                 + '<td>' + formatHoursFromMinutes(row.totalBookedMinutes) + '</td>'
+                + '<td>' + formatPercent(row.appointmentsCancelled, row.appointmentsInMonth) + '</td>'
                 + '<td>' + formatNumber(row.appointmentsCreated) + '</td>'
-                + '<td>' + formatNumber(row.newPatientsMonth) + '</td>'
+                + '<td>' + formatNumber(row.newPatientsFirstAppointmentMonth) + '</td>'
+                + '<td>' + formatNumber(row.activePatientsMonth) + '</td>'
+                + '<td>' + formatNumber(row.returningPatientsMonth) + '</td>'
+                + '<td>' + formatFixed(row.agendaSaturationPct, 1) + '%</td>'
+                + '<td>' + formatFixed(row.appointmentsPerActivePatient, 1) + '</td>'
                 + '</tr>';
         }).join('');
     }
