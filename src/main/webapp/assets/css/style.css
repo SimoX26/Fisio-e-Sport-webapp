@@ -307,24 +307,58 @@ body.calendar-gcal-page{
 
 @media (min-width: 992px){
     body.calendar-gcal-page{
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        min-height: auto;
+        display: block;
     }
 
-    .calendar-gcal-header-shell{
-        flex: 0 0 auto;
+    body.calendar-gcal-page .app-navbar{
+        position: static;
+        top: auto;
     }
 
     .calendar-gcal-wrap{
-        flex: 1 1 auto;
-        display: flex;
+        display: block;
         padding-bottom: 0 !important;
         margin-bottom: 0 !important;
     }
 
     .calendar-host{
         width: 100%;
+    }
+
+    .calendar-scroll-shell{
+        overflow: visible;
+        max-height: none;
+    }
+
+    /* Desktop compact mode: more events visible without sacrificing readability */
+    body.calendar-gcal-page .fc .fc-timegrid-slot{
+        height: 20px;
+        min-height: 20px;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-slot-label{
+        font-size: .74rem;
+    }
+
+    body.calendar-gcal-page .fc-event{
+        font-size: .8rem;
+        padding: 1px 4px;
+        line-height: 1.2;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-event{
+        min-height: 0;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-event .fc-event-main{
+        padding: 1px 4px;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-event .fc-event-title-line{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     body.calendar-week-fill .calendar-scroll-shell{
