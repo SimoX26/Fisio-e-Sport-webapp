@@ -81,8 +81,7 @@
                                         <c:out value="${appointment.startTime}" /> - <c:out value="${appointment.endTime}" />
                                     </div>
                                     <div class="home-agenda-main">
-                                        <div class="home-agenda-title"><c:out value="${appointment.patientName}" /> - Paziente</div>
-                                        <div class="home-agenda-meta"><c:out value="${appointment.eventTitle}" /> - Evento</div>
+                                        <div class="home-agenda-title"><c:out value="${appointment.primaryText}" /></div>
                                     </div>
                                     <div class="home-agenda-side">
                                         <span class="home-status-badge home-status-badge--${appointment.stateClass}">

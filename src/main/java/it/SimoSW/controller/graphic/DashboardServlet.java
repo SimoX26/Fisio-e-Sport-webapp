@@ -33,14 +33,16 @@ public class DashboardServlet extends HttpServlet {
     public static class AgendaItemView {
         private final String startTime;
         private final String endTime;
+        private final String primaryText;
         private final String eventTitle;
         private final String patientName;
         private final String stateClass;
         private final String stateLabel;
 
-        public AgendaItemView(String startTime, String endTime, String eventTitle, String patientName, String stateClass, String stateLabel) {
+        public AgendaItemView(String startTime, String endTime, String primaryText, String eventTitle, String patientName, String stateClass, String stateLabel) {
             this.startTime = startTime;
             this.endTime = endTime;
+            this.primaryText = primaryText;
             this.eventTitle = eventTitle;
             this.patientName = patientName;
             this.stateClass = stateClass;
@@ -49,6 +51,7 @@ public class DashboardServlet extends HttpServlet {
 
         public String getStartTime() { return startTime; }
         public String getEndTime() { return endTime; }
+        public String getPrimaryText() { return primaryText; }
         public String getEventTitle() { return eventTitle; }
         public String getPatientName() { return patientName; }
         public String getStateClass() { return stateClass; }
@@ -104,7 +107,8 @@ public class DashboardServlet extends HttpServlet {
                         .map(a -> new AgendaItemView(
                                 formatTime(a.getStart()),
                                 formatTime(a.getEnd()),
-                                (a.getTitle() == null || a.getTitle().isBlank()) ? "Appuntamento" : a.getTitle(),
+                                resolveAgendaPrimaryText(a.getPatientId(), a.getTitle()),
+                                resolveEventTitle(a.getTitle()),
                                 resolvePatientDisplayName(a.getPatientId()),
                                 a.getState() == null ? "SCHEDULED" : a.getState().name(),
                                 toItalianStateLabel(a.getState())
@@ -240,12 +244,27 @@ public class DashboardServlet extends HttpServlet {
 
     private String resolvePatientDisplayName(Long patientId) {
         if (patientId == null) {
-            return "Paziente N/D";
+            return "";
         }
         String fullName = calendarController.resolvePatientFullName(patientId);
         if (fullName == null || fullName.isBlank()) {
-            return "Paziente N/D";
+            return "";
         }
         return fullName;
+    }
+
+    private String resolveEventTitle(String rawTitle) {
+        if (rawTitle == null || rawTitle.isBlank()) {
+            return "Evento";
+        }
+        return rawTitle.trim();
+    }
+
+    private String resolveAgendaPrimaryText(Long patientId, String rawTitle) {
+        String patientName = resolvePatientDisplayName(patientId);
+        if (!patientName.isBlank()) {
+            return patientName + " - Paziente";
+        }
+        return resolveEventTitle(rawTitle) + " - Evento";
     }
 }
