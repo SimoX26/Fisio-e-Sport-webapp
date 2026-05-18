@@ -680,6 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isPastCompletedTreatment = !isNonTreatmentEvent && isPast && state === 'COMPLETED';
 
             let background = '#eaf1fb';
+            let backgroundHover = '#d5e2f6';
             let border = 'var(--calendar-event-border)';
             let text = '#1f2d3d';
 
@@ -689,18 +690,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3) all other events -> existing default blue palette
             if (isNonTreatmentEvent) {
                 background = '#f1f3f5';
+                backgroundHover = '#e9ecef';
                 border = '#c9ced6';
                 text = '#4b5563';
             } else if (isPastCompletedTreatment) {
                 background = '#e6f4ea';
+                backgroundHover = '#d9eee1';
                 border = '#8bc49a';
                 text = '#1f8f47';
             }
 
-            info.el.style.background = background;
-            info.el.style.backgroundImage = 'none';
+            info.el.classList.add('calendar-event--custom-color');
+            info.el.style.setProperty('--event-bg', background);
+            info.el.style.setProperty('--event-bg-hover', backgroundHover);
+            info.el.style.setProperty('--event-border', border);
+            info.el.style.setProperty('--event-text', text);
+            info.el.style.setProperty('background', background, 'important');
+            info.el.style.setProperty('background-image', 'none', 'important');
             info.el.style.setProperty('border', `1px solid ${border}`, 'important');
-            info.el.style.color = text;
+            info.el.style.setProperty('color', text, 'important');
             info.el.style.setProperty('box-shadow', 'none', 'important');
 
             const eventId = Number.parseInt(String(info.event.id || ''), 10);

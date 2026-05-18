@@ -1334,6 +1334,34 @@ body.calendar-gcal-page{
     text-overflow: ellipsis;
 }
 
+.fc .fc-event.calendar-event--custom-color,
+.fc .fc-h-event.calendar-event--custom-color,
+.fc .fc-timegrid-event.calendar-event--custom-color,
+.fc .fc-daygrid-event.calendar-event--custom-color{
+    background: var(--event-bg, #dfe9f8) !important;
+    background-image: none !important;
+    border-color: var(--event-border, var(--calendar-event-border)) !important;
+    color: var(--event-text, #24364d) !important;
+}
+
+.fc .fc-event.calendar-event--custom-color:hover,
+.fc .fc-h-event.calendar-event--custom-color:hover,
+.fc .fc-timegrid-event.calendar-event--custom-color:hover,
+.fc .fc-daygrid-event.calendar-event--custom-color:hover{
+    background: var(--event-bg-hover, var(--event-bg, #d5e2f6)) !important;
+    border-color: var(--event-border, var(--calendar-event-border)) !important;
+}
+
+.fc .calendar-event--custom-color .fc-event-main,
+.fc .calendar-event--custom-color .fc-event-title,
+.fc .calendar-event--custom-color .fc-event-title-container,
+.fc .calendar-event--custom-color .fc-event-time-line,
+.fc .calendar-event--custom-color .fc-event-title-line,
+.fc .calendar-event--custom-color .fc-event-time-inline,
+.fc .calendar-event--custom-color .fc-event-title-inline{
+    color: inherit !important;
+}
+
 .fc .fc-daygrid-event .fc-event-time-inline{
     margin-right: 6px;
     font-weight: 600;
