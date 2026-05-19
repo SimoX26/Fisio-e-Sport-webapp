@@ -5,10 +5,7 @@ import it.SimoSW.exception.UsernameAlreadyExistsException;
 import it.SimoSW.model.User;
 import it.SimoSW.model.UserRole;
 import it.SimoSW.model.dao.UserDAO;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import it.SimoSW.util.PasswordHasher;
 
 /**
  * Application controller responsible for user management.
@@ -34,7 +31,7 @@ public class UserController {
         }
 
         UserRole userRole = UserRole.valueOf(role);
-        String passwordHash = hashPassword(plainPassword);
+        String passwordHash = PasswordHasher.hashPassword(plainPassword);
 
         User user = new User(username, passwordHash, userRole, active);
 
@@ -55,24 +52,6 @@ public class UserController {
             UserRole.valueOf(role);
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new InvalidUserDataException("Invalid user role: " + role);
-        }
-    }
-
-    private String hashPassword(String password) {
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-
-            StringBuilder hex = new StringBuilder();
-            for (byte b : hash) {
-                hex.append(String.format("%02x", b));
-            }
-
-            return hex.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }
 }

@@ -46,7 +46,7 @@ public class AccessRequestController {
         request.setLastName(lastName.trim());
         request.setEmail(email.trim().toLowerCase());
         request.setUsername(username.trim());
-        request.setPasswordHash(PasswordHasher.hash(plainPassword));
+        request.setPasswordHash(PasswordHasher.hashPassword(plainPassword));
         request.setRequestedRole(UserRole.THERAPIST);
         request.setStatus(AccessRequestStatus.PENDING);
 

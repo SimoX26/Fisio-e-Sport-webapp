@@ -13,4 +13,6 @@ public interface UserDAO {
     Optional<Long> findIdByUsernameAndRole(String username, UserRole role);
 
     boolean existsByIdAndRole(long id, UserRole role);
+
+    void updatePasswordHashByUsername(String username, String passwordHash);
 }

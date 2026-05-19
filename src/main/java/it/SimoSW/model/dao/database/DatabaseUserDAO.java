@@ -26,6 +26,9 @@ public class DatabaseUserDAO implements UserDAO {
     private static final String EXISTS_BY_ID_AND_ROLE =
             "SELECT 1 FROM users WHERE id = ? AND role = ? AND active = TRUE";
 
+    private static final String UPDATE_PASSWORD_HASH_BY_USERNAME =
+            "UPDATE users SET password_hash = ? WHERE username = ?";
+
     @Override
     public User save(User user) {
 
@@ -111,6 +114,18 @@ public class DatabaseUserDAO implements UserDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error checking user existence by id and role", e);
+        }
+    }
+
+    @Override
+    public void updatePasswordHashByUsername(String username, String passwordHash) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_PASSWORD_HASH_BY_USERNAME)) {
+            stmt.setString(1, passwordHash);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating user password hash", e);
         }
     }
 }

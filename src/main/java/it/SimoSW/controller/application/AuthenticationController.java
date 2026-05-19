@@ -42,6 +42,11 @@ public class AuthenticationController {
             throw new AuthenticationFailedException("Invalid credentials");
         }
 
+        if (PasswordHasher.isLegacySha256Hash(user.getPasswordHash())) {
+            String upgradedHash = PasswordHasher.hashPassword(password);
+            userDAO.updatePasswordHashByUsername(user.getUsername(), upgradedHash);
+        }
+
         return user;
     }
 

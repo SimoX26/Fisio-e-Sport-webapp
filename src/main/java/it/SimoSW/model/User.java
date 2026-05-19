@@ -2,8 +2,6 @@ package it.SimoSW.model;
 
 import it.SimoSW.util.PasswordHasher;
 
-import java.util.Objects;
-
 public class User {
 
     private final String username;
@@ -35,11 +33,6 @@ public class User {
     }
 
     public boolean checkPassword(String plainPassword) {
-        if (plainPassword == null) {
-            return false;
-        }
-
-        String hashedInput = PasswordHasher.hash(plainPassword);
-        return Objects.equals(passwordHash, hashedInput);
+        return PasswordHasher.verifyPassword(plainPassword, passwordHash);
     }
 }
