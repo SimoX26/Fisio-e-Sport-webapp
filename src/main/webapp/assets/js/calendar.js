@@ -332,10 +332,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             try {
                 const parsed = JSON.parse(text);
-                if (parsed?.error) {
+                if (parsed?.message) {
+                    errorMessage = parsed.message;
+                } else if (parsed?.error) {
                     errorMessage = parsed.error;
                 }
-                if (parsed?.code) {
+                if (parsed?.errorCode) {
+                    errorCode = String(parsed.errorCode);
+                } else if (parsed?.code) {
                     errorCode = String(parsed.code);
                 }
             } catch (e) {
@@ -347,7 +351,17 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMessage = 'Questo orario e gia occupato. Scegli uno slot diverso.';
         }
 
-        return new Error(errorMessage);
+        const error = new Error(errorMessage);
+        error.code = errorCode;
+        return error;
+    }
+
+    async function parseApiPayload(response) {
+        const payload = await response.json();
+        if (Object.prototype.hasOwnProperty.call(payload || {}, 'success')) {
+            return payload?.data ?? null;
+        }
+        return payload;
     }
 
     function escapeHtml(value) {
@@ -416,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Impossibile caricare i destinatari del reminder');
             }
-            const payload = await response.json();
+            const payload = await parseApiPayload(response);
             reminderPreviewData = Array.isArray(payload?.recipients) ? payload.recipients : [];
             if (reminderTemplateInput && !reminderTemplateInput.value.trim()) {
                 reminderTemplateInput.value = payload?.defaultTemplate || defaultReminderTemplate();
@@ -966,14 +980,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then((res) => {
                     if (!res.ok) {
                         return res.text().then((text) => {
-                            let message = '';
+                            let message = 'Errore durante eliminazione appuntamento';
                             try {
                                 const parsed = JSON.parse(text);
-                                message = parsed?.error || '';
+                                message = parsed?.message || parsed?.error || message;
                             } catch (e) {
-                                message = text || '';
+                                if (text) {
+                                    message = text;
+                                }
                             }
-                            throw new Error(message || 'Errore durante eliminazione appuntamento');
+                            throw new Error(message);
                         });
                     }
                     return res.text();
@@ -1338,8 +1354,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: data
                 });
                 if (!response.ok) {
-                    throw new Error('Impossibile salvare la configurazione WhatsApp');
+                    throw await parseApiError(response, 'Impossibile salvare la configurazione WhatsApp');
                 }
+                await parseApiPayload(response);
                 if (whatsAppAccessTokenInput) {
                     whatsAppAccessTokenInput.value = '';
                 }
@@ -1450,20 +1467,8 @@ document.addEventListener('DOMContentLoaded', () => {
             body: data
         });
         if (!response.ok) {
-            const text = await response.text();
-            let message = '';
-            let code = '';
-            try {
-                const parsed = JSON.parse(text);
-                message = parsed?.error || '';
-                code = parsed?.code || '';
-            } catch (e) {
-                message = text || '';
-            }
-            const error = new Error(message || 'Errore durante l\'invio dei reminder');
-            error.code = code;
-            throw error;
+            throw await parseApiError(response, 'Errore durante l\'invio dei reminder');
         }
-        return response.json();
+        return parseApiPayload(response);
     }
 });

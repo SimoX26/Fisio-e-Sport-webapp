@@ -10,6 +10,7 @@ import it.SimoSW.model.CalendarEventView;
 import it.SimoSW.model.WhatsAppBusinessConfig;
 import it.SimoSW.service.whatsapp.WhatsAppCloudApiService;
 import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
+import it.SimoSW.util.ApiResponseWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -113,18 +114,32 @@ public class CalendarServlet extends HttpServlet {
             }
 
             if (!"send-reminders".equals(action) && !"save-whatsapp-config".equals(action)) {
-                response.setStatus(HttpServletResponse.SC_OK);
+                ApiResponseWriter.writeSuccess(
+                        response,
+                        HttpServletResponse.SC_OK,
+                        "Operazione completata",
+                        null
+                );
             }
 
         } catch (TimeSlotNotAvailableException ex) {
-            sendClientError(
+            ApiResponseWriter.writeError(
+                    getServletContext(),
                     response,
                     HttpServletResponse.SC_CONFLICT,
                     "Lo slot selezionato non e disponibile. Scegli un altro orario.",
-                    "TIME_SLOT_NOT_AVAILABLE"
+                    "TIME_SLOT_NOT_AVAILABLE",
+                    ex
             );
         } catch (RuntimeException ex) {
-            sendClientError(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+            ApiResponseWriter.writeError(
+                    getServletContext(),
+                    response,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    ex.getMessage(),
+                    "BAD_REQUEST",
+                    ex
+            );
         }
     }
 
@@ -283,11 +298,13 @@ public class CalendarServlet extends HttpServlet {
         WhatsAppBusinessConfig config = whatsAppConfigurationService.getConfiguration(therapistId)
                 .orElse(null);
         if (config == null) {
-            sendClientError(
+            ApiResponseWriter.writeError(
+                    getServletContext(),
                     response,
                     428,
                     "Configurazione WhatsApp mancante. Completa il setup iniziale.",
-                    "WHATSAPP_CONFIG_MISSING"
+                    "WHATSAPP_CONFIG_MISSING",
+                    null
             );
             return;
         }
@@ -329,10 +346,12 @@ public class CalendarServlet extends HttpServlet {
         payload.put("failedCount", failedCount);
         payload.put("channel", "WHATSAPP_CLOUD_API");
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        mapper.writeValue(response.getWriter(), payload);
+        ApiResponseWriter.writeSuccess(
+                response,
+                HttpServletResponse.SC_OK,
+                "Reminder elaborati correttamente",
+                payload
+        );
     }
 
     private void saveWhatsAppConfiguration(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -357,10 +376,12 @@ public class CalendarServlet extends HttpServlet {
         Map<String, Object> payload = new HashMap<>();
         payload.put("saved", true);
         payload.put("maskedAccessToken", whatsAppConfigurationService.maskAccessToken(accessToken));
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        mapper.writeValue(response.getWriter(), payload);
+        ApiResponseWriter.writeSuccess(
+                response,
+                HttpServletResponse.SC_OK,
+                "Configurazione WhatsApp salvata",
+                payload
+        );
     }
 
     private void completeAppointmentAndCreateTreatment(HttpServletRequest request) {
@@ -532,19 +553,4 @@ public class CalendarServlet extends HttpServlet {
         return message.length() > 180 ? message.substring(0, 180) : message;
     }
 
-    private void sendClientError(HttpServletResponse response, int status, String message) throws IOException {
-        sendClientError(response, status, message, null);
-    }
-
-    private void sendClientError(HttpServletResponse response, int status, String message, String errorCode) throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        Map<String, String> payload = new HashMap<>();
-        payload.put("error", message == null || message.isBlank() ? "Richiesta non valida" : message);
-        if (errorCode != null && !errorCode.isBlank()) {
-            payload.put("code", errorCode);
-        }
-        mapper.writeValue(response.getWriter(), payload);
-    }
 }
