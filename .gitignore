@@ -67,7 +67,11 @@ backup-db.sh
 # Database dumps / backups
 # =========================
 *.sql.gz
+*.dump
+*.bak
 backups/
+backups/*.sql
+backups/*.sql.gz
 
 # =========================
 # Local tool artifacts

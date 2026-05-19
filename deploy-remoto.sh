@@ -13,7 +13,7 @@ Descrizione:
 Opzioni:
   --host <host>            Host remoto (default: 31.70.74.92)
   --user <user>            Utente SSH (default: root)
-  --password <password>    Password SSH (default: preconfigurata nello script)
+  --password <password>    Password SSH (default: da variabile DEPLOY_SSH_PASSWORD)
   --port <port>            Porta SSH (default: 22)
   --remote-path <path>     Cartella deploy remota (default: ~/)
   --tomcat-webapps <path>  Cartella webapps Tomcat (default: /opt/tomcat/webapps)
@@ -38,8 +38,7 @@ require_cmd() {
 
 HOST="31.70.74.92"
 USER="root"
-REMOTE_PASSWORD_DEFAULT="b6vTvLSce98iLra"
-PASSWORD="${DEPLOY_SSH_PASSWORD:-$REMOTE_PASSWORD_DEFAULT}"
+PASSWORD="${DEPLOY_SSH_PASSWORD:-}"
 PORT="22"
 REMOTE_PATH="~/"
 TOMCAT_WEBAPPS_PATH="/opt/tomcat/webapps"
