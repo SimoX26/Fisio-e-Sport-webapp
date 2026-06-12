@@ -3,7 +3,7 @@
    ========================= */
 
 :root{
-    --bg-main: #ffffff;
+    --bg-main: #f5f7fa;
     --bg-soft: #f8f9fa;
     --bg-card: #ffffff;
     --border-color: #dfe3e8;
@@ -16,6 +16,10 @@
     --radius-btn: 8px;
 }
 
+html{
+    background: var(--bg-main);
+}
+
 body{
     background: var(--bg-main);
     color: var(--text-main);
@@ -24,7 +28,7 @@ body{
 }
 
 body.app-page{
-    background: #ffffff;
+    background: var(--bg-main);
 }
 
 body.auth-page{
@@ -185,7 +189,7 @@ body.auth-page{
 }
 
 body.calendar-gcal-page{
-    background: #ffffff;
+    background: var(--bg-main);
 }
 
 .calendar-gcal-page .app-navbar{
@@ -1771,7 +1775,7 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 .modal .form-control,
 .modal .form-select {
-    background-color: var(--bg-main);
+    background-color: var(--input-bg);
     color: var(--text-main);
     border-color: var(--border-color);
 }
@@ -1782,7 +1786,7 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 /* option dropdown */
 .modal .form-select option {
-    background-color: var(--bg-main);
+    background-color: var(--input-bg);
     color: var(--text-main);
 }
 
@@ -1796,7 +1800,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     left: 0;
     right: 0;
     z-index: 1060;
-    background: var(--bg-main);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     box-shadow: 0 10px 24px rgba(31, 45, 61, 0.12);
@@ -1808,7 +1812,7 @@ body.calendar-gcal-page .modal-backdrop.show {
 .patient-suggestion-item {
     width: 100%;
     border: 0;
-    background: var(--bg-main);
+    background: var(--bg-card);
     color: var(--text-main);
     text-align: left;
     border-radius: 8px;
