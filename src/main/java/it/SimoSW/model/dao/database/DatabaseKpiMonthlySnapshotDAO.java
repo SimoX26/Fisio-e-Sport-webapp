@@ -172,7 +172,7 @@ public class DatabaseKpiMonthlySnapshotDAO implements KpiMonthlySnapshotDAO {
 
     private void validateSnapshot(KpiMonthlySnapshot snapshot) {
         if (snapshot == null) {
-            throw new IllegalArgumentException("snapshot non puo essere null");
+            throw new IllegalArgumentException("snapshot non può essere null");
         }
         String scopeType = snapshot.getScopeType();
         if (!"GLOBAL".equals(scopeType) && !"THERAPIST".equals(scopeType)) {
@@ -202,4 +202,3 @@ public class DatabaseKpiMonthlySnapshotDAO implements KpiMonthlySnapshotDAO {
         }
     }
 }
-

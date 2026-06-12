@@ -143,7 +143,11 @@ public class DatabaseTreatmentPlanDAO implements TreatmentPlanDAO {
     }
 
     private void bindWithoutId(PreparedStatement stmt, TreatmentPlan plan) throws SQLException {
-        stmt.setLong(1, plan.getPatientId());
+        if (plan.getPatientId() == null) {
+            stmt.setNull(1, java.sql.Types.BIGINT);
+        } else {
+            stmt.setLong(1, plan.getPatientId());
+        }
         stmt.setLong(2, plan.getTherapistId());
         stmt.setString(3, plan.getTitle());
         stmt.setString(4, plan.getGoals());
@@ -167,7 +171,8 @@ public class DatabaseTreatmentPlanDAO implements TreatmentPlanDAO {
     private TreatmentPlan mapRow(ResultSet rs) throws SQLException {
         TreatmentPlan plan = new TreatmentPlan();
         plan.setId(rs.getLong("id"));
-        plan.setPatientId(rs.getLong("patient_id"));
+        long patientId = rs.getLong("patient_id");
+        plan.setPatientId(rs.wasNull() ? null : patientId);
         plan.setTherapistId(rs.getLong("therapist_id"));
         plan.setTitle(rs.getString("title"));
         plan.setGoals(rs.getString("goals"));

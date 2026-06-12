@@ -38,7 +38,7 @@ public class AccessRequestController {
         }
 
         if (accessRequestDAO.existsPendingByUsernameOrEmail(username, email)) {
-            throw new InvalidUserDataException("Esiste gia una richiesta in attesa con username o email indicati");
+            throw new InvalidUserDataException("Esiste già una richiesta in attesa con username o email indicati");
         }
 
         AccessRequest request = new AccessRequest();
@@ -66,7 +66,7 @@ public class AccessRequestController {
                 .orElseThrow(() -> new IllegalArgumentException("Richiesta non trovata"));
 
         if (request.getStatus() != AccessRequestStatus.PENDING) {
-            throw new IllegalStateException("La richiesta non e piu in stato pending");
+            throw new IllegalStateException("La richiesta non è più in stato pending");
         }
 
         if (userDAO.findByUsername(request.getUsername()).isPresent()) {
@@ -89,7 +89,7 @@ public class AccessRequestController {
                 .orElseThrow(() -> new IllegalArgumentException("Richiesta non trovata"));
 
         if (request.getStatus() != AccessRequestStatus.PENDING) {
-            throw new IllegalStateException("La richiesta non e piu in stato pending");
+            throw new IllegalStateException("La richiesta non è più in stato pending");
         }
 
         Long reviewerId = resolveAdminUserId(reviewerAdminUsername);

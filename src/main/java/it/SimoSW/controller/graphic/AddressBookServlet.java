@@ -171,7 +171,7 @@ public class AddressBookServlet extends HttpServlet {
     private void createPatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome e obbligatorio"));
+        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome è obbligatorio"));
         p.setLastName(normalizeOptional(request.getParameter("lastName")));
         p.setEmail(normalizeOptional(request.getParameter("email")));
         p.setPhone(normalizeOptional(request.getParameter("phone")));
@@ -182,7 +182,7 @@ public class AddressBookServlet extends HttpServlet {
     private void updatePatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome e obbligatorio"));
+        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome è obbligatorio"));
         p.setLastName(normalizeOptional(request.getParameter("lastName")));
         p.setEmail(normalizeOptional(request.getParameter("email")));
         p.setPhone(normalizeOptional(request.getParameter("phone")));
@@ -263,7 +263,7 @@ public class AddressBookServlet extends HttpServlet {
             return;
         }
 
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         OBJECT_MAPPER.writeValue(response.getWriter(), root);
     }
@@ -284,7 +284,7 @@ public class AddressBookServlet extends HttpServlet {
             payload.add(row);
         }
 
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         OBJECT_MAPPER.writeValue(response.getWriter(), payload);
     }

@@ -7,7 +7,7 @@ public class TreatmentSession {
     private long id;
     private long treatmentPlanId;
     private Long appointmentId;
-    private long patientId;
+    private Long patientId;
     private long therapistId;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -22,7 +22,7 @@ public class TreatmentSession {
     }
 
     public TreatmentSession(long id, long treatmentPlanId, Long appointmentId,
-                            long patientId, long therapistId) {
+                            Long patientId, long therapistId) {
         this.id = id;
         this.treatmentPlanId = treatmentPlanId;
         this.appointmentId = appointmentId;
@@ -54,11 +54,11 @@ public class TreatmentSession {
         this.appointmentId = appointmentId;
     }
 
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(long patientId) {
+    public void setPatientId(Long patientId) {
         this.patientId = patientId;
     }
 

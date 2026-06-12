@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -26,7 +28,7 @@ public final class ConnectionFactory {
                 throw new RuntimeException("Impossibile trovare " + CONFIG_FILE);
             }
 
-            props.load(input);
+            props.load(new InputStreamReader(input, StandardCharsets.UTF_8));
 
             String driver = props.getProperty("db.driver");
             String url = props.getProperty("db.url");

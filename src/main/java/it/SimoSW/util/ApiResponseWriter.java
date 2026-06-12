@@ -16,7 +16,7 @@ public final class ApiResponseWriter {
 
     public static <T> void writeSuccess(HttpServletResponse response, int status, String message, T data) throws IOException {
         response.setStatus(status);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         OBJECT_MAPPER.writeValue(response.getWriter(), ApiResponse.ok(message, data));
     }
@@ -34,7 +34,7 @@ public final class ApiResponseWriter {
         }
 
         response.setStatus(status);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         OBJECT_MAPPER.writeValue(response.getWriter(), ApiResponse.error(
                 message == null || message.isBlank() ? "Operazione non riuscita" : message,

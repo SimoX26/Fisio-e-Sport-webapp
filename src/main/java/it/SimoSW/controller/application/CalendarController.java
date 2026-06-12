@@ -201,7 +201,7 @@ public class CalendarController {
     public long resolveOrCreatePatientId(String patientName) {
         String normalizedInput = normalize(patientName);
         if (normalizedInput.isBlank()) {
-            throw new IllegalArgumentException("Il nome del paziente e obbligatorio");
+            throw new IllegalArgumentException("Il nome del paziente è obbligatorio");
         }
 
         List<Patient> matches = patientDAO.search(patientName);

@@ -223,7 +223,7 @@ CREATE TABLE appointments (
    ========================= */
 CREATE TABLE treatment_plans (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  patient_id BIGINT NOT NULL,
+  patient_id BIGINT NULL,
   therapist_id BIGINT NOT NULL,
   title VARCHAR(150) NOT NULL,
   goals TEXT,
@@ -240,7 +240,7 @@ CREATE TABLE treatment_plans (
 
   CONSTRAINT fk_treatment_plans_patient
     FOREIGN KEY (patient_id) REFERENCES patients(id)
-    ON DELETE RESTRICT
+    ON DELETE SET NULL
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_treatment_plans_therapist
@@ -293,7 +293,7 @@ CREATE TABLE treatment_sessions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   treatment_plan_id BIGINT NOT NULL,
   appointment_id BIGINT NULL,
-  patient_id BIGINT NOT NULL,
+  patient_id BIGINT NULL,
   therapist_id BIGINT NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
@@ -317,7 +317,7 @@ CREATE TABLE treatment_sessions (
 
   CONSTRAINT fk_treatment_sessions_patient
     FOREIGN KEY (patient_id) REFERENCES patients(id)
-    ON DELETE RESTRICT
+    ON DELETE SET NULL
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_treatment_sessions_therapist

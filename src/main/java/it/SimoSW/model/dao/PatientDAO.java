@@ -18,4 +18,6 @@ public interface PatientDAO {
     void mergeInto(long sourcePatientId, long targetPatientId);
 
     void deleteById(long id);
+
+    void deleteByIdDetachingHistory(long id, String fallbackTitle);
 }

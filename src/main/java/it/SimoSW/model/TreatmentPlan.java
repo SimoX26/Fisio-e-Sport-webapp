@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class TreatmentPlan {
 
     private long id;
-    private long patientId;
+    private Long patientId;
     private long therapistId;
     private String title;
     private String goals;
@@ -26,11 +26,11 @@ public class TreatmentPlan {
         this.id = id;
     }
 
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(long patientId) {
+    public void setPatientId(Long patientId) {
         this.patientId = patientId;
     }
 

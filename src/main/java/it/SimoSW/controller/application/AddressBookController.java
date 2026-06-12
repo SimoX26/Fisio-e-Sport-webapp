@@ -257,10 +257,7 @@ public class AddressBookController {
                             " appuntamenti collegati. Conferma l'eliminazione forzata per procedere."
             );
         }
-        if (linkedAppointments > 0) {
-            appointmentDAO.detachPatientFromAppointments(patientId, patient.getFullName());
-        }
-        patientDAO.deleteById(patientId);
+        patientDAO.deleteByIdDetachingHistory(patientId, patient.getFullName());
     }
 
     public void mergePatients(long sourcePatientId, long targetPatientId) {

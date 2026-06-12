@@ -54,6 +54,9 @@ public class TreatmentController {
         if (plan.getStartDate() == null) {
             plan.setStartDate(LocalDate.now());
         }
+        if (plan.getPatientId() == null || plan.getPatientId() <= 0) {
+            throw new IllegalArgumentException("Paziente piano terapeutico non valido");
+        }
 
         patientDAO.findById(plan.getPatientId())
                 .orElseThrow(() -> new IllegalArgumentException("Paziente non trovato: " + plan.getPatientId()));
@@ -77,7 +80,7 @@ public class TreatmentController {
             throw new IllegalStateException("Impossibile pianificare sedute su piano non attivo");
         }
 
-        if (plan.getPatientId() != session.getPatientId()) {
+        if (session.getPatientId() == null || !plan.getPatientId().equals(session.getPatientId())) {
             throw new IllegalArgumentException("Paziente della sessione non coerente con il piano");
         }
         if (plan.getTherapistId() != session.getTherapistId()) {
@@ -137,7 +140,7 @@ public class TreatmentController {
                 .orElseThrow(() -> new IllegalArgumentException("Sessione non trovata: " + sessionId));
 
         if (session.getState() == TreatmentSessionState.COMPLETED) {
-            throw new IllegalStateException("Una sessione completata non puo essere annullata");
+            throw new IllegalStateException("Una sessione completata non può essere annullata");
         }
 
         session.setNotes(cancellationNote);
@@ -195,7 +198,7 @@ public class TreatmentController {
             throw new IllegalStateException("Gli eventi tutto il giorno non sono collegati ai trattamenti");
         }
         if (treatmentSessionDAO.findByAppointmentId(appointmentId).isPresent()) {
-            throw new IllegalStateException("Esiste gia un trattamento associato a questo appuntamento");
+            throw new IllegalStateException("Esiste già un trattamento associato a questo appuntamento");
         }
 
         String normalizedPlanTitle = normalizeRequired(planTitle, "Titolo piano terapeutico obbligatorio");
@@ -257,20 +260,18 @@ public class TreatmentController {
                 continue;
             }
 
-            Patient patient = patientCache.computeIfAbsent(
-                    session.getPatientId(),
+            Long patientId = session.getPatientId();
+            Patient patient = patientId == null ? null : patientCache.computeIfAbsent(
+                    patientId,
                     id -> patientDAO.findById(id).orElse(null)
             );
-            if (patient == null) {
-                continue;
-            }
 
             TreatmentHistoryEntry entry = new TreatmentHistoryEntry();
             entry.setSessionId(session.getId());
             entry.setPlanId(plan.getId());
             entry.setPlanTitle(plan.getTitle());
-            entry.setPatientId(patient.getId());
-            entry.setPatientName(patient.getFullName());
+            entry.setPatientId(patient == null ? 0 : patient.getId());
+            entry.setPatientName(patient == null ? "Paziente eliminato" : patient.getFullName());
             entry.setSessionStart(session.getStart());
             entry.setSessionEnd(session.getEnd());
             entry.setState(session.getState());

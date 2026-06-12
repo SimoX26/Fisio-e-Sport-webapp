@@ -60,12 +60,12 @@ public class DashboardKpiServlet extends HttpServlet {
             payload.put("generatedAt", java.time.LocalDateTime.now().toString());
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
+            response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             objectMapper.writeValue(response.getWriter(), payload);
         } catch (Exception ex) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
+            response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             Map<String, Object> err = new HashMap<>();
             err.put("error", ex.getMessage() == null ? "Errore durante lettura KPI" : ex.getMessage());

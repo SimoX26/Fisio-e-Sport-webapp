@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
@@ -546,10 +546,16 @@
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="id" id="deletePatientId">
                     <input type="hidden" name="forceDeleteWithLinkedAppointments" id="forceDeleteWithLinkedAppointments" value="0">
-                    <p class="mb-0">Vuoi eliminare il paziente <strong id="deletePatientName"></strong>?</p>
+                    <p class="mb-0">
+                        <span id="deletePatientPromptText">Vuoi eliminare il paziente</span>
+                        <strong id="deletePatientName"></strong>?
+                    </p>
                     <div id="deleteDangerZone" class="alert alert-warning mt-3 d-none mb-0" role="alert">
-                        Azione pericolosa: esistono <strong id="linkedAppointmentsCount"></strong> appuntamenti di calendario collegati.
-                        Se confermi, gli appuntamenti resteranno nel calendario ma non saranno piu associati a questo paziente.
+                        Questo paziente ha <strong id="linkedAppointmentsCount"></strong>
+                        <span id="linkedAppointmentsLabel">appuntamenti collegati</span>.
+                        Eliminandolo, il paziente verrà rimosso definitivamente dal sistema.
+                        Gli appuntamenti e lo storico trattamenti resteranno disponibili, ma non saranno più associati a questo paziente.
+                        Vuoi continuare?
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -640,9 +646,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const deleteId = document.getElementById('deletePatientId');
     const deleteName = document.getElementById('deletePatientName');
+    const deletePatientPromptText = document.getElementById('deletePatientPromptText');
     const forceDeleteWithLinkedAppointments = document.getElementById('forceDeleteWithLinkedAppointments');
     const deleteDangerZone = document.getElementById('deleteDangerZone');
     const linkedAppointmentsCount = document.getElementById('linkedAppointmentsCount');
+    const linkedAppointmentsLabel = document.getElementById('linkedAppointmentsLabel');
 
     function setFormFieldValue(name, value) {
         if (!editForm) return;
@@ -783,9 +791,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (forceDeleteWithLinkedAppointments) {
                 forceDeleteWithLinkedAppointments.value = hasLinkedAppointments ? '1' : '0';
             }
+            if (deletePatientPromptText) {
+                deletePatientPromptText.textContent = hasLinkedAppointments
+                    ? 'Confermi l\\'eliminazione definitiva del paziente'
+                    : 'Vuoi eliminare il paziente';
+            }
             if (deleteDangerZone && linkedAppointmentsCount) {
                 deleteDangerZone.classList.toggle('d-none', !hasLinkedAppointments);
                 linkedAppointmentsCount.textContent = String(hasLinkedAppointments ? linkedCount : 0);
+            }
+            if (linkedAppointmentsLabel) {
+                linkedAppointmentsLabel.textContent = linkedCount === 1 ? 'appuntamento collegato' : 'appuntamenti collegati';
             }
             deleteModal.show();
         });

@@ -29,7 +29,7 @@
 
                 <div class="text-center mb-4">
                     <h2 class="brand">Fisio e Sports</h2>
-                    <p class="text-muted">Richiedi accesso: l'account verra attivato da un amministratore</p>
+                    <p class="text-muted">Richiedi accesso: l'account verrà attivato da un amministratore</p>
                 </div>
 
                 <c:if test="${not empty success}">

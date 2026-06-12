@@ -34,7 +34,7 @@
 <header class="landing-hero">
     <div class="container py-5">
         <div class="landing-hero-content">
-            <h1 class="landing-hero-title mb-3">Fisio e Sports: recupero, performance e continuita atletica</h1>
+            <h1 class="landing-hero-title mb-3">Fisio e Sports: recupero, performance e continuità atletica</h1>
             <p class="landing-hero-subtitle mb-4">
                 Accompagniamo atleti e persone attive dal post-infortunio al ritorno in campo:
                 fisioterapia personalizzata, supporto al recupero e pianificazione degli allenamenti in sicurezza.
@@ -60,7 +60,7 @@
             <div class="col-md-4">
                 <div class="landing-feature-card p-4">
                     <h3 class="landing-feature-title mb-2">Supporto agli Allenamenti</h3>
-                    <p class="landing-feature-text">Integrazione tra trattamento fisioterapico e carichi di lavoro per allenarsi con continuita e controllo.</p>
+                    <p class="landing-feature-text">Integrazione tra trattamento fisioterapico e carichi di lavoro per allenarsi con continuità e controllo.</p>
                 </div>
             </div>
             <div class="col-md-4">

@@ -62,6 +62,28 @@ public class DatabasePatientDAO implements PatientDAO {
             WHERE id = ?
             """;
 
+    private static final String DETACH_APPOINTMENTS = """
+            UPDATE appointments
+            SET patient_id = NULL,
+                title = CASE
+                    WHEN title IS NULL OR TRIM(title) = '' THEN ?
+                    ELSE title
+                END
+            WHERE patient_id = ?
+            """;
+
+    private static final String DETACH_TREATMENT_PLANS = """
+            UPDATE treatment_plans
+            SET patient_id = NULL
+            WHERE patient_id = ?
+            """;
+
+    private static final String DETACH_TREATMENT_SESSIONS = """
+            UPDATE treatment_sessions
+            SET patient_id = NULL
+            WHERE patient_id = ?
+            """;
+
     private static final String MERGE_APPOINTMENTS = """
             UPDATE appointments
             SET patient_id = ?,
@@ -205,6 +227,42 @@ public class DatabasePatientDAO implements PatientDAO {
     }
 
     @Override
+    public void deleteByIdDetachingHistory(long id, String fallbackTitle) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            boolean originalAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                if (!existsById(conn, id)) {
+                    throw new RuntimeException("Nessun paziente eliminato, id non trovato: " + id);
+                }
+
+                executeUpdate(conn, DETACH_TREATMENT_SESSIONS, id);
+                executeUpdate(conn, DETACH_TREATMENT_PLANS, id);
+                detachAppointments(conn, id, fallbackTitle);
+
+                try (PreparedStatement deleteStmt = conn.prepareStatement(DELETE_BY_ID)) {
+                    deleteStmt.setLong(1, id);
+                    int deletedRows = deleteStmt.executeUpdate();
+                    if (deletedRows == 0) {
+                        throw new RuntimeException("Nessun paziente eliminato, id non trovato: " + id);
+                    }
+                }
+
+                conn.commit();
+            } catch (Exception ex) {
+                conn.rollback();
+                throw ex;
+            } finally {
+                conn.setAutoCommit(originalAutoCommit);
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("Impossibile eliminare il paziente: esistono ancora riferimenti collegati", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Errore durante l'eliminazione definitiva del paziente", e);
+        }
+    }
+
+    @Override
     public void mergeInto(long sourcePatientId, long targetPatientId) {
         if (sourcePatientId <= 0 || targetPatientId <= 0 || sourcePatientId == targetPatientId) {
             throw new IllegalArgumentException("Parametri merge non validi");
@@ -249,6 +307,21 @@ public class DatabasePatientDAO implements PatientDAO {
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, targetId);
             stmt.setLong(2, sourceId);
+            stmt.executeUpdate();
+        }
+    }
+
+    private void executeUpdate(Connection conn, String sql, long id) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    private void detachAppointments(Connection conn, long patientId, String fallbackTitle) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(DETACH_APPOINTMENTS)) {
+            stmt.setString(1, fallbackTitle);
+            stmt.setLong(2, patientId);
             stmt.executeUpdate();
         }
     }

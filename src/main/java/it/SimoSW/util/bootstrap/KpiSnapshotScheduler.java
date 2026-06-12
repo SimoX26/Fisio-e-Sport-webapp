@@ -21,7 +21,7 @@ public class KpiSnapshotScheduler {
 
     public KpiSnapshotScheduler(KpiSnapshotController kpiSnapshotController) {
         if (kpiSnapshotController == null) {
-            throw new IllegalArgumentException("kpiSnapshotController non puo essere null");
+            throw new IllegalArgumentException("kpiSnapshotController non può essere null");
         }
         this.kpiSnapshotController = kpiSnapshotController;
     }
@@ -76,4 +76,3 @@ public class KpiSnapshotScheduler {
         return Duration.between(now, nextRun).getSeconds();
     }
 }
-

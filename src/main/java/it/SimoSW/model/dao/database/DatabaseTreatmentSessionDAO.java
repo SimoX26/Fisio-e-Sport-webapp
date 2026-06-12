@@ -102,7 +102,11 @@ public class DatabaseTreatmentSessionDAO implements TreatmentSessionDAO {
             } else {
                 stmt.setLong(2, session.getAppointmentId());
             }
-            stmt.setLong(3, session.getPatientId());
+            if (session.getPatientId() == null) {
+                stmt.setNull(3, java.sql.Types.BIGINT);
+            } else {
+                stmt.setLong(3, session.getPatientId());
+            }
             stmt.setLong(4, session.getTherapistId());
             stmt.setTimestamp(5, Timestamp.valueOf(session.getStart()));
             stmt.setTimestamp(6, Timestamp.valueOf(session.getEnd()));
@@ -146,7 +150,11 @@ public class DatabaseTreatmentSessionDAO implements TreatmentSessionDAO {
             } else {
                 stmt.setLong(2, session.getAppointmentId());
             }
-            stmt.setLong(3, session.getPatientId());
+            if (session.getPatientId() == null) {
+                stmt.setNull(3, java.sql.Types.BIGINT);
+            } else {
+                stmt.setLong(3, session.getPatientId());
+            }
             stmt.setLong(4, session.getTherapistId());
             stmt.setTimestamp(5, Timestamp.valueOf(session.getStart()));
             stmt.setTimestamp(6, Timestamp.valueOf(session.getEnd()));
@@ -296,7 +304,8 @@ public class DatabaseTreatmentSessionDAO implements TreatmentSessionDAO {
         long appointmentId = rs.getLong("appointment_id");
         session.setAppointmentId(rs.wasNull() ? null : appointmentId);
 
-        session.setPatientId(rs.getLong("patient_id"));
+        long patientId = rs.getLong("patient_id");
+        session.setPatientId(rs.wasNull() ? null : patientId);
         session.setTherapistId(rs.getLong("therapist_id"));
         session.setStart(rs.getTimestamp("start_time").toLocalDateTime());
         session.setEnd(rs.getTimestamp("end_time").toLocalDateTime());

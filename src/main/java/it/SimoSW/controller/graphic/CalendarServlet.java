@@ -183,7 +183,7 @@ public class CalendarServlet extends HttpServlet {
             events.add(event);
         }
 
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), events);
     }
@@ -191,7 +191,7 @@ public class CalendarServlet extends HttpServlet {
     private void loadPatientSuggestions(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String query = request.getParameter("q");
         List<String> names = calendarController.searchPatientNames(query, 8);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), names);
     }
@@ -212,7 +212,7 @@ public class CalendarServlet extends HttpServlet {
         payload.put("defaultTemplate", DEFAULT_REMINDER_TEMPLATE);
         payload.put("recipients", recipients);
 
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), payload);
     }
@@ -224,7 +224,8 @@ public class CalendarServlet extends HttpServlet {
 
         Appointment appointment = calendarController.getAppointmentDetails(appointmentId);
 
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), appointment);
     }
 */

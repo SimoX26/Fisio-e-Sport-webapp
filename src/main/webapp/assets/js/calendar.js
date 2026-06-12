@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (errorCode === 'TIME_SLOT_NOT_AVAILABLE') {
-            errorMessage = 'Questo orario e gia occupato. Scegli uno slot diverso.';
+            errorMessage = 'Questo orario è già occupato. Scegli uno slot diverso.';
         }
 
         const error = new Error(errorMessage);
