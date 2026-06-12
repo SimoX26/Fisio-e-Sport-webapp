@@ -26,6 +26,9 @@
         if (!link) {
             return false;
         }
+        if (link.dataset.noLoadingOverlay === "true") {
+            return false;
+        }
 
         const href = link.getAttribute("href");
         if (!href || href.startsWith("#") || href.startsWith("javascript:")) {

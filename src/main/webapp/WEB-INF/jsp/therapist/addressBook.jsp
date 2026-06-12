@@ -150,17 +150,21 @@
                     <tbody>
 
                     <c:forEach var="patient" items="${patients}">
+                        <c:url var="patientDetailsUrl" value="/address-book">
+                            <c:param name="openPatientId" value="${patient.id}" />
+                        </c:url>
                         <tr>
                             <td class="patient-name-cell">
-                                <button type="button"
-                                        class="patient-name-link js-edit-patient"
-                                        data-id="<c:out value='${patient.id}'/>"
-                                        data-first-name="<c:out value='${patient.firstName}'/>"
-                                        data-last-name="<c:out value='${patient.lastName}'/>"
-                                        data-email="<c:out value='${patient.email}'/>"
-                                        data-phone="<c:out value='${patient.phone}'/>">
+                                <a href="${patientDetailsUrl}"
+                                   class="patient-name-link js-edit-patient"
+                                   data-no-loading-overlay="true"
+                                   data-id="<c:out value='${patient.id}'/>"
+                                   data-first-name="<c:out value='${patient.firstName}'/>"
+                                   data-last-name="<c:out value='${patient.lastName}'/>"
+                                   data-email="<c:out value='${patient.email}'/>"
+                                   data-phone="<c:out value='${patient.phone}'/>">
                                     <c:out value="${patient.fullName}" />
-                                </button>
+                                </a>
                             </td>
                             <td><c:out value="${patient.createdDateLabel}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
@@ -755,7 +759,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.querySelectorAll('.js-edit-patient').forEach(function (button) {
-        button.addEventListener('click', async function () {
+        button.addEventListener('click', async function (event) {
+            event.preventDefault();
             await openPatientDetails(this);
         });
 
