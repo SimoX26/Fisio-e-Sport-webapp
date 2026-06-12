@@ -19,11 +19,11 @@
     <meta name="apple-mobile-web-app-title" content="FisioSport">
 
    <!-- Custom CSS -->
-   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-1">
+   <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-4">
 
 </head>
 
-<body class="app-page">
+<body class="app-page address-book-page">
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- LISTA PAZIENTI -->
-    <div class="glass-card section-card p-4">
+    <div class="glass-card section-card address-book-card p-4">
 
         <c:if test="${not empty error}">
             <div class="alert alert-warning" role="alert">
@@ -101,8 +101,8 @@
             <c:otherwise>
 
             <!-- TABELLA -->
-            <div class="table-responsive">
-                <table class="table table-borderless align-middle mb-0">
+            <div class="table-responsive address-book-table-wrap">
+                <table class="table table-borderless align-middle mb-0 address-book-table">
                     <thead>
                     <tr>
                         <th>
@@ -151,7 +151,7 @@
 
                     <c:forEach var="patient" items="${patients}">
                         <tr>
-                            <td>
+                            <td class="patient-name-cell">
                                 <button type="button"
                                         class="patient-name-link js-edit-patient"
                                         data-id="<c:out value='${patient.id}'/>"
@@ -164,18 +164,20 @@
                             </td>
                             <td><c:out value="${patient.createdDateLabel}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
-                            <td class="text-end">
-                                <a href="${pageContext.request.contextPath}/treatment-history?patientId=${patient.id}"
-                                   class="btn btn-sm btn-outline-secondary">
-                                    Cronologia Trattamenti
-                                </a>
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger js-delete-patient"
-                                        data-id="<c:out value='${patient.id}'/>"
-                                        data-name="<c:out value='${patient.fullName}'/>"
-                                        data-linked-appointments="<c:out value='${patient.linkedAppointmentsCount}'/>">
-                                    Elimina
-                                </button>
+                            <td class="text-end address-book-actions">
+                                <div class="address-book-action-group">
+                                    <a href="${pageContext.request.contextPath}/treatment-history?patientId=${patient.id}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Cronologia Trattamenti
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger js-delete-patient"
+                                            data-id="<c:out value='${patient.id}'/>"
+                                            data-name="<c:out value='${patient.fullName}'/>"
+                                            data-linked-appointments="<c:out value='${patient.linkedAppointmentsCount}'/>">
+                                        Elimina
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
@@ -748,6 +750,16 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', async function () {
             await openPatientDetails(this);
         });
+
+        const row = button.closest('tr');
+        if (row) {
+            row.addEventListener('click', async function (event) {
+                if (event.target.closest('a, button, input, select, textarea')) {
+                    return;
+                }
+                await openPatientDetails(button);
+            });
+        }
     });
 
     const openPatientId = new URLSearchParams(window.location.search).get('openPatientId');

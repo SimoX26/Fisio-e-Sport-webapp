@@ -1,4 +1,4 @@
-# Performance Roadmap - Fisio e Sport
+# Performance Roadmap - Fisio e Sports
 
 ## Obiettivo
 Portare il gestionale a un livello di performance e stabilita elevato anche in condizioni reali (utenti concorrenti, dataset crescente, server con risorse limitate), con un piano progressivo e misurabile.

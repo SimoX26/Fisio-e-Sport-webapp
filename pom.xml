@@ -7,7 +7,7 @@
   <packaging>war</packaging>
   <version>1.0</version>
 
-  <name>Fisio-e-Sport-webapp Maven Webapp</name>
+  <name>Fisio e Sports Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
