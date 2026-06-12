@@ -152,7 +152,15 @@
                     <c:forEach var="patient" items="${patients}">
                         <tr>
                             <td>
-                                <c:out value="${patient.fullName}" />
+                                <button type="button"
+                                        class="patient-name-link js-edit-patient"
+                                        data-id="<c:out value='${patient.id}'/>"
+                                        data-first-name="<c:out value='${patient.firstName}'/>"
+                                        data-last-name="<c:out value='${patient.lastName}'/>"
+                                        data-email="<c:out value='${patient.email}'/>"
+                                        data-phone="<c:out value='${patient.phone}'/>">
+                                    <c:out value="${patient.fullName}" />
+                                </button>
                             </td>
                             <td><c:out value="${patient.createdDateLabel}" /></td>
                             <td><c:out value="${patient.phone}" /></td>
@@ -161,15 +169,6 @@
                                    class="btn btn-sm btn-outline-secondary">
                                     Cronologia Trattamenti
                                 </a>
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-primary js-edit-patient"
-                                        data-id="<c:out value='${patient.id}'/>"
-                                        data-first-name="<c:out value='${patient.firstName}'/>"
-                                        data-last-name="<c:out value='${patient.lastName}'/>"
-                                        data-email="<c:out value='${patient.email}'/>"
-                                        data-phone="<c:out value='${patient.phone}'/>">
-                                    Dettagli
-                                </button>
                                 <button type="button"
                                         class="btn btn-sm btn-outline-danger js-delete-patient"
                                         data-id="<c:out value='${patient.id}'/>"

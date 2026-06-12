@@ -1926,6 +1926,29 @@ body.calendar-gcal-page .modal-backdrop.show {
     border-bottom: 1px solid #edf0f2;
 }
 
+.patient-name-link{
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--brand-primary);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.patient-name-link:hover,
+.patient-name-link:focus{
+    color: #1558b0;
+    text-decoration: underline;
+}
+
+.patient-name-link:focus-visible{
+    outline: 2px solid rgba(26,115,232,.35);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
 /* =========================
    LANDING PAGE
    ========================= */
