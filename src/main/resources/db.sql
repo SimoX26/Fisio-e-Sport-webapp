@@ -105,6 +105,25 @@ CREATE TABLE patients (
 );
 
 /* =========================
+   WAITLIST ENTRIES
+   ========================= */
+CREATE TABLE waitlist_entries (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  therapist_id BIGINT NOT NULL,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  INDEX idx_waitlist_therapist_created (therapist_id, created_at),
+
+  CONSTRAINT fk_waitlist_therapist
+    FOREIGN KEY (therapist_id) REFERENCES users(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+/* =========================
    PATIENT ANAMNESES
    ========================= */
 CREATE TABLE patient_anamneses (

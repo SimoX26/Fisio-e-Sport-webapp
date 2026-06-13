@@ -817,9 +817,16 @@ body.calendar-gcal-page{
 }
 
 .home-agenda-card,
+.home-waitlist-card,
 .home-actions-card,
 .home-summary-card{
     padding: .95rem 1rem !important;
+}
+
+.home-section-meta{
+    color: var(--text-muted);
+    font-size: .82rem;
+    font-weight: 600;
 }
 
 .home-agenda-list{
@@ -914,6 +921,61 @@ body.calendar-gcal-page{
     min-width: 0;
 }
 
+.home-waitlist-form{
+    border: 1px solid #eef1f4;
+    border-radius: 10px;
+    padding: .8rem;
+    background: #fbfcfd;
+    margin-bottom: .8rem;
+}
+
+.home-form-label{
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: .25rem;
+}
+
+.home-waitlist-form__actions{
+    margin-top: .75rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.home-waitlist-list{
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+}
+
+.home-waitlist-item{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: .7rem;
+    background: #ffffff;
+}
+
+.home-waitlist-item__main{
+    min-width: 0;
+}
+
+.home-waitlist-item__meta{
+    display: flex;
+    flex-direction: column;
+    gap: .18rem;
+    margin-top: .2rem;
+    color: var(--text-muted);
+    font-size: .82rem;
+}
+
+.home-waitlist-remove-form{
+    flex: 0 0 auto;
+}
+
 .home-action-pill{
     display: inline-flex;
     align-items: center;
@@ -994,6 +1056,20 @@ body.calendar-gcal-page{
 
     .home-actions-grid{
         grid-template-columns: 1fr;
+    }
+
+    .home-waitlist-item{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .home-waitlist-form__actions{
+        justify-content: stretch;
+    }
+
+    .home-waitlist-form__actions .btn,
+    .home-waitlist-remove-form .btn{
+        width: 100%;
     }
 
     .home-kpi-chip{

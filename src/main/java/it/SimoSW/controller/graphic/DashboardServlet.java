@@ -1,8 +1,10 @@
 package it.SimoSW.controller.graphic;
 
 import it.SimoSW.controller.application.CalendarController;
+import it.SimoSW.controller.application.WaitlistController;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
+import it.SimoSW.model.WaitlistEntry;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 
 import javax.servlet.ServletException;
@@ -31,6 +33,7 @@ public class DashboardServlet extends HttpServlet {
 
     private static final ZoneId HOME_ZONE_ID = ZoneId.of("Europe/Rome");
     private CalendarController calendarController;
+    private WaitlistController waitlistController;
 
     public static class AgendaItemView {
         private final String startTime;
@@ -64,6 +67,7 @@ public class DashboardServlet extends HttpServlet {
     public void init() {
         ApplicationInitializer initializer = (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
         this.calendarController = initializer.getCalendarController();
+        this.waitlistController = initializer.getWaitlistController();
     }
 
     @Override
@@ -76,6 +80,7 @@ public class DashboardServlet extends HttpServlet {
         long bookedHoursToday = 0;
         int patientsThisMonth = 0;
         long bookedHoursThisWeek = 0;
+        List<WaitlistEntry> waitlistEntries = new ArrayList<>();
         LocalDate today = LocalDate.now(HOME_ZONE_ID);
         LocalTime now = LocalTime.now(HOME_ZONE_ID);
         LocalDateTime nowDateTime = LocalDateTime.now(HOME_ZONE_ID);
@@ -98,6 +103,7 @@ public class DashboardServlet extends HttpServlet {
                 List<Appointment> todayAppointments = calendarController
                         .getAppointmentsForTherapistInPeriod(therapistId, todayStart, tomorrowStart)
                         ;
+                waitlistEntries = waitlistController.getEntriesForTherapist(therapistId);
                 appointmentsToday = todayAppointments.size();
                 List<AgendaItemView> todayAgenda = todayAppointments.stream()
                         .sorted((a, b) -> {
@@ -188,7 +194,32 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("weekRangeLabel", weekRangeLabel);
         request.setAttribute("greetingPrefix", greetingPrefix);
         request.setAttribute("loggedUserDisplay", loggedUserDisplay);
+        request.setAttribute("waitlistEntries", waitlistEntries);
         request.getRequestDispatcher("/WEB-INF/jsp/therapist/dashboard.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        try {
+            if ("add-waitlist-entry".equals(action)) {
+                addWaitlistEntry(request);
+                response.sendRedirect(request.getContextPath() + "/dashboard?waitlistCreated=1");
+                return;
+            }
+            if ("remove-waitlist-entry".equals(action)) {
+                removeWaitlistEntry(request);
+                response.sendRedirect(request.getContextPath() + "/dashboard?waitlistRemoved=1");
+                return;
+            }
+
+            throw new IllegalArgumentException("Azione dashboard non valida");
+        } catch (RuntimeException ex) {
+            request.setAttribute("waitlistError", ex.getMessage());
+            doGet(request, response);
+        }
     }
 
     private String formatTime(LocalDateTime value) {
@@ -271,5 +302,25 @@ public class DashboardServlet extends HttpServlet {
             return patientName + " - Paziente";
         }
         return resolveEventTitle(rawTitle) + " - Evento";
+    }
+
+    private void addWaitlistEntry(HttpServletRequest request) {
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        long therapistId = waitlistController.resolveTherapistIdByUsername(loggedUser);
+
+        WaitlistEntry entry = new WaitlistEntry();
+        entry.setTherapistId(therapistId);
+        entry.setFirstName(request.getParameter("firstName"));
+        entry.setLastName(request.getParameter("lastName"));
+        entry.setPhone(request.getParameter("phone"));
+
+        waitlistController.addEntry(entry);
+    }
+
+    private void removeWaitlistEntry(HttpServletRequest request) {
+        String loggedUser = (String) request.getSession().getAttribute("loggedUser");
+        long therapistId = waitlistController.resolveTherapistIdByUsername(loggedUser);
+        long entryId = Long.parseLong(request.getParameter("id"));
+        waitlistController.removeEntry(entryId, therapistId);
     }
 }

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="it">
@@ -44,6 +45,24 @@
         </div>
     </c:if>
 
+    <c:if test="${not empty waitlistError}">
+        <div class="alert alert-warning mb-3" role="alert">
+            <c:out value="${waitlistError}" />
+        </div>
+    </c:if>
+
+    <c:if test="${param.waitlistCreated == '1'}">
+        <div class="alert alert-success mb-3" role="alert">
+            Contatto aggiunto alla lista di attesa.
+        </div>
+    </c:if>
+
+    <c:if test="${param.waitlistRemoved == '1'}">
+        <div class="alert alert-success mb-3" role="alert">
+            Contatto rimosso dalla lista di attesa.
+        </div>
+    </c:if>
+
     <div class="home-kpi-row mb-4">
         <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
             <span class="home-kpi-chip__label">Appuntamenti oggi</span>
@@ -60,7 +79,7 @@
     </div>
 
     <div class="row g-3 align-items-start mb-4">
-        <div class="col-12 col-xl-8">
+        <div class="col-12 col-xl-7">
             <div class="glass-card section-card home-agenda-card">
                 <div class="home-section-head">
                     <h3 class="home-section-title mb-0">Agenda di oggi</h3>
@@ -107,7 +126,63 @@
             </div>
         </div>
 
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-xl-5">
+            <div class="glass-card section-card home-waitlist-card mb-3">
+                <div class="home-section-head">
+                    <h3 class="home-section-title mb-0">Lista di attesa</h3>
+                    <span class="home-section-meta"><c:out value="${fn:length(waitlistEntries)}" /> contatti</span>
+                </div>
+
+                <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-form">
+                    <input type="hidden" name="action" value="add-waitlist-entry">
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label home-form-label" for="waitlistFirstName">Nome</label>
+                            <input id="waitlistFirstName" type="text" class="form-control" name="firstName" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label home-form-label" for="waitlistLastName">Cognome</label>
+                            <input id="waitlistLastName" type="text" class="form-control" name="lastName" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label home-form-label" for="waitlistPhone">Telefono</label>
+                            <input id="waitlistPhone" type="text" class="form-control" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="home-waitlist-form__actions">
+                        <button type="submit" class="btn btn-primary btn-sm">Aggiungi alla lista</button>
+                    </div>
+                </form>
+
+                <c:choose>
+                    <c:when test="${empty waitlistEntries}">
+                        <div class="home-empty-state">
+                            Nessuna persona in attesa al momento.
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="home-waitlist-list">
+                            <c:forEach var="entry" items="${waitlistEntries}">
+                                <div class="home-waitlist-item">
+                                    <div class="home-waitlist-item__main">
+                                        <div class="home-agenda-title"><c:out value="${entry.fullName}" /></div>
+                                        <div class="home-waitlist-item__meta">
+                                            <span><c:out value="${entry.phone}" /></span>
+                                            <span>Aggiunto il <c:out value="${entry.createdAtLabel}" /></span>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-remove-form">
+                                        <input type="hidden" name="action" value="remove-waitlist-entry">
+                                        <input type="hidden" name="id" value="<c:out value='${entry.id}' />">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Rimuovi</button>
+                                    </form>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
             <div class="glass-card section-card home-actions-card mb-3">
                 <div class="home-section-head">
                     <h3 class="home-section-title mb-0">Azioni rapide</h3>

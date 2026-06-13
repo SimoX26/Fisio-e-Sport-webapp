@@ -7,6 +7,7 @@ import it.SimoSW.controller.application.CalendarController;
 import it.SimoSW.controller.application.KpiSnapshotController;
 import it.SimoSW.controller.application.TreatmentController;
 import it.SimoSW.controller.application.UserController;
+import it.SimoSW.controller.application.WaitlistController;
 import it.SimoSW.model.dao.AppointmentDAO;
 import it.SimoSW.model.dao.AccessRequestDAO;
 import it.SimoSW.model.dao.PatientAnamnesisDAO;
@@ -17,6 +18,7 @@ import it.SimoSW.model.dao.RememberMeTokenDAO;
 import it.SimoSW.model.dao.TreatmentPlanDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
+import it.SimoSW.model.dao.WaitlistEntryDAO;
 import it.SimoSW.model.dao.WhatsAppBusinessConfigDAO;
 import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
 import it.SimoSW.model.dao.database.DatabaseAccessRequestDAO;
@@ -28,6 +30,7 @@ import it.SimoSW.model.dao.database.DatabaseRememberMeTokenDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentPlanDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
 import it.SimoSW.model.dao.database.DatabaseUserDAO;
+import it.SimoSW.model.dao.database.DatabaseWaitlistEntryDAO;
 import it.SimoSW.model.dao.database.DatabaseWhatsAppBusinessConfigDAO;
 import it.SimoSW.service.whatsapp.WhatsAppCloudApiService;
 import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
@@ -42,6 +45,7 @@ public class ApplicationInitializer {
     private UserController userController;
     private AccessRequestController accessRequestController;
     private KpiSnapshotController kpiSnapshotController;
+    private WaitlistController waitlistController;
     private WhatsAppConfigurationService whatsAppConfigurationService;
     private WhatsAppCloudApiService whatsAppCloudApiService;
 
@@ -60,6 +64,7 @@ public class ApplicationInitializer {
         KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO = new DatabaseKpiMonthlySnapshotDAO();
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
         AccessRequestDAO accessRequestDAO = new DatabaseAccessRequestDAO();
+        WaitlistEntryDAO waitlistEntryDAO = new DatabaseWaitlistEntryDAO();
         WhatsAppBusinessConfigDAO whatsAppBusinessConfigDAO = new DatabaseWhatsAppBusinessConfigDAO();
         whatsAppConfigurationService = new WhatsAppConfigurationService(whatsAppBusinessConfigDAO);
         whatsAppCloudApiService = new WhatsAppCloudApiService(new ObjectMapper());
@@ -74,7 +79,8 @@ public class ApplicationInitializer {
                 userDAO,
                 kpiMonthlySnapshotDAO,
                 rememberMeTokenDAO,
-                accessRequestDAO
+                accessRequestDAO,
+                waitlistEntryDAO
         );
     }
 
@@ -88,7 +94,8 @@ public class ApplicationInitializer {
             UserDAO userDAO,
             KpiMonthlySnapshotDAO kpiMonthlySnapshotDAO,
             RememberMeTokenDAO rememberMeTokenDAO,
-            AccessRequestDAO accessRequestDAO
+            AccessRequestDAO accessRequestDAO,
+            WaitlistEntryDAO waitlistEntryDAO
     ) {
         addressBookController = new AddressBookController(
                 patientDAO,
@@ -108,6 +115,7 @@ public class ApplicationInitializer {
         userController = new UserController(userDAO);
         accessRequestController = new AccessRequestController(accessRequestDAO, userDAO);
         kpiSnapshotController = new KpiSnapshotController(kpiMonthlySnapshotDAO);
+        waitlistController = new WaitlistController(waitlistEntryDAO, userDAO);
     }
 
     public AddressBookController getAddressBookController() {
@@ -136,6 +144,10 @@ public class ApplicationInitializer {
 
     public KpiSnapshotController getKpiSnapshotController() {
         return kpiSnapshotController;
+    }
+
+    public WaitlistController getWaitlistController() {
+        return waitlistController;
     }
 
     public WhatsAppConfigurationService getWhatsAppConfigurationService() {
