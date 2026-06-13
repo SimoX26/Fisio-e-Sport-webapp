@@ -171,8 +171,9 @@ public class AddressBookServlet extends HttpServlet {
     private void createPatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome è obbligatorio"));
-        p.setLastName(normalizeOptional(request.getParameter("lastName")));
+        PatientNameParts patientName = extractPatientName(request);
+        p.setFirstName(patientName.firstName());
+        p.setLastName(patientName.lastName());
         p.setEmail(normalizeOptional(request.getParameter("email")));
         p.setPhone(normalizeOptional(request.getParameter("phone")));
 
@@ -182,8 +183,9 @@ public class AddressBookServlet extends HttpServlet {
     private void updatePatient(HttpServletRequest request) {
         Patient p = new Patient();
         p.setId(Long.parseLong(request.getParameter("id")));
-        p.setFirstName(normalizeRequired(request.getParameter("firstName"), "Il nome è obbligatorio"));
-        p.setLastName(normalizeOptional(request.getParameter("lastName")));
+        PatientNameParts patientName = extractPatientName(request);
+        p.setFirstName(patientName.firstName());
+        p.setLastName(patientName.lastName());
         p.setEmail(normalizeOptional(request.getParameter("email")));
         p.setPhone(normalizeOptional(request.getParameter("phone")));
 
@@ -270,9 +272,8 @@ public class AddressBookServlet extends HttpServlet {
 
     private void sendMergeCandidates(HttpServletRequest request, HttpServletResponse response) throws IOException {
         long sourceId = parseRequiredLong(request.getParameter("id"), "Parametro id non valido");
-        String firstName = normalizeOptional(request.getParameter("firstName"));
-        String lastName = normalizeOptional(request.getParameter("lastName"));
-        List<Patient> candidates = addressBookController.findMergeCandidates(sourceId, firstName, lastName);
+        PatientNameParts patientName = extractPatientName(request);
+        List<Patient> candidates = addressBookController.findMergeCandidates(sourceId, patientName.firstName(), patientName.lastName());
 
         List<Map<String, Object>> payload = new ArrayList<>();
         for (Patient candidate : candidates) {
@@ -363,6 +364,25 @@ public class AddressBookServlet extends HttpServlet {
         return value ? "si" : "no";
     }
 
+    private PatientNameParts extractPatientName(HttpServletRequest request) {
+        String fullName = normalizeOptional(request.getParameter("fullName"));
+        if (!fullName.isEmpty()) {
+            return splitPatientName(fullName);
+        }
+
+        String firstName = normalizeRequired(request.getParameter("firstName"), "Il nome e cognome del paziente è obbligatorio");
+        String lastName = normalizeOptional(request.getParameter("lastName"));
+        return new PatientNameParts(firstName, lastName);
+    }
+
+    private PatientNameParts splitPatientName(String fullNameRaw) {
+        String fullName = normalizeRequired(fullNameRaw, "Il nome e cognome del paziente è obbligatorio");
+        String[] parts = fullName.split("\\s+", 2);
+        String firstName = parts[0];
+        String lastName = parts.length > 1 ? parts[1].trim() : "";
+        return new PatientNameParts(firstName, lastName);
+    }
+
     private void put(ObjectNode target, String field, String value) {
         target.put(field, value == null ? "" : value);
     }
@@ -407,6 +427,24 @@ public class AddressBookServlet extends HttpServlet {
             return "";
         }
         return value.trim();
+    }
+
+    private static final class PatientNameParts {
+        private final String firstName;
+        private final String lastName;
+
+        private PatientNameParts(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        private String firstName() {
+            return firstName;
+        }
+
+        private String lastName() {
+            return lastName;
+        }
     }
 
     private String normalizeRequired(String value, String errorMessage) {

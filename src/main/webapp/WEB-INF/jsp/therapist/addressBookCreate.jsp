@@ -49,22 +49,14 @@
             <!-- ID (temporaneamente, perché la servlet lo richiede) -->
             <input type="hidden" name="id" value="0"/>
 
-            <!-- NOME -->
+            <!-- NOME E COGNOME -->
             <div class="mb-3">
-                <label class="form-label">Nome</label>
+                <label class="form-label">Nome e Cognome</label>
                 <input type="text"
-                       name="firstName"
+                       name="fullName"
                        class="form-control"
+                       placeholder="Nome e cognome paziente"
                        required>
-            </div>
-
-            <!-- COGNOME -->
-            <div class="mb-3">
-                <label class="form-label">Cognome</label>
-                <input type="text"
-                       name="lastName"
-                       class="form-control"
-                       placeholder="Opzionale">
             </div>
 
             <!-- EMAIL -->

@@ -159,8 +159,7 @@
                                    class="patient-name-link js-edit-patient"
                                    data-no-loading-overlay="true"
                                    data-id="<c:out value='${patient.id}'/>"
-                                   data-first-name="<c:out value='${patient.firstName}'/>"
-                                   data-last-name="<c:out value='${patient.lastName}'/>"
+                                   data-full-name="<c:out value='${patient.fullName}'/>"
                                    data-email="<c:out value='${patient.email}'/>"
                                    data-phone="<c:out value='${patient.phone}'/>">
                                     <c:out value="${patient.fullName}" />
@@ -211,13 +210,9 @@
                     <input type="hidden" name="id" id="editPatientId">
 
                     <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Nome</label>
-                            <input type="text" class="form-control" name="firstName" id="editPatientFirstName" required>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Cognome</label>
-                            <input type="text" class="form-control" name="lastName" id="editPatientLastName">
+                        <div class="col-12">
+                            <label class="form-label">Nome e Cognome</label>
+                            <input type="text" class="form-control" name="fullName" id="editPatientFullName" placeholder="Nome e cognome paziente" required>
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label">Email</label>
@@ -636,8 +631,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editForm = editModalEl ? editModalEl.querySelector('form') : null;
 
     const editId = document.getElementById('editPatientId');
-    const editFirstName = document.getElementById('editPatientFirstName');
-    const editLastName = document.getElementById('editPatientLastName');
+    const editFullName = document.getElementById('editPatientFullName');
     const editEmail = document.getElementById('editPatientEmail');
     const editPhone = document.getElementById('editPatientPhone');
     const mergeCandidatesBox = document.getElementById('mergeCandidatesBox');
@@ -681,10 +675,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         const id = (editId.value || '').trim();
-        const firstName = (editFirstName?.value || '').trim();
-        const lastName = (editLastName?.value || '').trim();
+        const fullName = (editFullName?.value || '').trim();
 
-        if (!id || !firstName) {
+        if (!id || !fullName) {
             resetMergeCandidatesUi();
             return;
         }
@@ -692,8 +685,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = new URL(contextPath + '/address-book', window.location.origin);
         url.searchParams.set('action', 'merge-candidates');
         url.searchParams.set('id', id);
-        url.searchParams.set('firstName', firstName);
-        url.searchParams.set('lastName', lastName);
+        url.searchParams.set('fullName', fullName);
 
         try {
             const response = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
@@ -730,8 +722,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         resetMergeCandidatesUi();
         editId.value = button.dataset.id || '';
-        editFirstName.value = button.dataset.firstName || '';
-        editLastName.value = button.dataset.lastName || '';
+        editFullName.value = button.dataset.fullName || '';
         editEmail.value = button.dataset.email || '';
         editPhone.value = button.dataset.phone || '';
 
@@ -833,7 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.appLoadingOverlay.hide();
             }
             const selectedOption = mergeCandidateSelect.options[mergeCandidateSelect.selectedIndex];
-            const sourceName = ((editFirstName?.value || '') + ' ' + (editLastName?.value || '')).trim() || 'contatto corrente';
+            const sourceName = (editFullName?.value || '').trim() || 'contatto corrente';
             const targetLabel = (selectedOption?.textContent || 'contatto selezionato').trim();
             if (mergeConfirmSourceName) {
                 mergeConfirmSourceName.textContent = sourceName;
@@ -857,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    [editFirstName, editLastName].forEach(function (field) {
+    [editFullName].forEach(function (field) {
         if (!field) return;
         field.addEventListener('blur', function () {
             refreshMergeCandidates();
