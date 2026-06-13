@@ -798,7 +798,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (deletePatientPromptText) {
                 deletePatientPromptText.textContent = hasLinkedAppointments
-                    ? 'Confermi l\\'eliminazione definitiva del paziente'
+                    ? "Confermi l'eliminazione definitiva del paziente"
                     : 'Vuoi eliminare il paziente';
             }
             if (deleteDangerZone && linkedAppointmentsCount) {

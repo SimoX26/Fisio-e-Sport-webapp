@@ -1841,6 +1841,30 @@ body.calendar-gcal-page .modal-backdrop.show {
         -webkit-overflow-scrolling: touch;
     }
 
+    body.modal-open{
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+
+    body.modal-open .modal{
+        overscroll-behavior: contain;
+    }
+
+    body.modal-open .modal-dialog{
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+    }
+
+    body.modal-open .modal-content{
+        overflow: hidden;
+    }
+
+    body.modal-open .modal-body{
+        min-height: 0;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
+    }
+
     .calendar-gcal-page .page-header-row{
         flex-direction: row;
         align-items: center;
