@@ -310,8 +310,7 @@ public class DashboardServlet extends HttpServlet {
 
         WaitlistEntry entry = new WaitlistEntry();
         entry.setTherapistId(therapistId);
-        entry.setFirstName(request.getParameter("firstName"));
-        entry.setLastName(request.getParameter("lastName"));
+        entry.setFullName(request.getParameter("patientName"));
         entry.setPhone(request.getParameter("phone"));
 
         waitlistController.addEntry(entry);

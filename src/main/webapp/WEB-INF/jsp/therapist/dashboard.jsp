@@ -136,13 +136,14 @@
                 <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-form">
                     <input type="hidden" name="action" value="add-waitlist-entry">
                     <div class="row g-2">
-                        <div class="col-12 col-md-6">
-                            <label class="form-label home-form-label" for="waitlistFirstName">Nome</label>
-                            <input id="waitlistFirstName" type="text" class="form-control" name="firstName" required>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label class="form-label home-form-label" for="waitlistLastName">Cognome</label>
-                            <input id="waitlistLastName" type="text" class="form-control" name="lastName" required>
+                        <div class="col-12">
+                            <label class="form-label home-form-label" for="waitlistPatientName">Paziente</label>
+                            <input id="waitlistPatientName"
+                                   type="text"
+                                   class="form-control"
+                                   name="patientName"
+                                   placeholder="Nome e cognome paziente"
+                                   required>
                         </div>
                         <div class="col-12">
                             <label class="form-label home-form-label" for="waitlistPhone">Telefono</label>

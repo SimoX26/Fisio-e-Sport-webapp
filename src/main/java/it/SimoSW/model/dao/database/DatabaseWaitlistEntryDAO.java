@@ -15,12 +15,12 @@ import java.util.List;
 public class DatabaseWaitlistEntryDAO implements WaitlistEntryDAO {
 
     private static final String INSERT_ENTRY = """
-            INSERT INTO waitlist_entries (therapist_id, first_name, last_name, phone)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO waitlist_entries (therapist_id, full_name, phone)
+            VALUES (?, ?, ?)
             """;
 
     private static final String FIND_ALL_BY_THERAPIST = """
-            SELECT id, therapist_id, first_name, last_name, phone, created_at
+            SELECT id, therapist_id, full_name, phone, created_at
             FROM waitlist_entries
             WHERE therapist_id = ?
             ORDER BY created_at ASC, id ASC
@@ -37,9 +37,8 @@ public class DatabaseWaitlistEntryDAO implements WaitlistEntryDAO {
              PreparedStatement stmt = conn.prepareStatement(INSERT_ENTRY, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, entry.getTherapistId());
-            stmt.setString(2, entry.getFirstName());
-            stmt.setString(3, entry.getLastName());
-            stmt.setString(4, entry.getPhone());
+            stmt.setString(2, entry.getFullName());
+            stmt.setString(3, entry.getPhone());
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -96,8 +95,7 @@ public class DatabaseWaitlistEntryDAO implements WaitlistEntryDAO {
         WaitlistEntry entry = new WaitlistEntry();
         entry.setId(rs.getLong("id"));
         entry.setTherapistId(rs.getLong("therapist_id"));
-        entry.setFirstName(rs.getString("first_name"));
-        entry.setLastName(rs.getString("last_name"));
+        entry.setFullName(rs.getString("full_name"));
         entry.setPhone(rs.getString("phone"));
 
         Timestamp createdAt = rs.getTimestamp("created_at");

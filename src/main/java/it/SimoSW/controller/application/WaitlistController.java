@@ -6,8 +6,6 @@ import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.dao.WaitlistEntryDAO;
 
 import java.util.List;
-import java.util.Locale;
-
 public class WaitlistController {
 
     private final WaitlistEntryDAO waitlistEntryDAO;
@@ -31,8 +29,7 @@ public class WaitlistController {
             throw new IllegalArgumentException("Terapista non valido");
         }
 
-        entry.setFirstName(normalizeName(entry.getFirstName(), "Il nome è obbligatorio"));
-        entry.setLastName(normalizeName(entry.getLastName(), "Il cognome è obbligatorio"));
+        entry.setFullName(normalizeRequired(entry.getFullName(), "Il nome e cognome sono obbligatori"));
         entry.setPhone(normalizePhone(entry.getPhone()));
 
         return waitlistEntryDAO.insert(entry);
@@ -73,25 +70,6 @@ public class WaitlistController {
             throw new IllegalArgumentException(errorMessage);
         }
         return normalized;
-    }
-
-    private String normalizeName(String value, String errorMessage) {
-        String normalized = normalizeRequired(value, errorMessage).toLowerCase(Locale.ROOT);
-        String[] parts = normalized.split(" ");
-        StringBuilder result = new StringBuilder();
-        for (String part : parts) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            if (result.length() > 0) {
-                result.append(' ');
-            }
-            result.append(Character.toUpperCase(part.charAt(0)));
-            if (part.length() > 1) {
-                result.append(part.substring(1));
-            }
-        }
-        return result.toString();
     }
 
     private String normalizePhone(String value) {

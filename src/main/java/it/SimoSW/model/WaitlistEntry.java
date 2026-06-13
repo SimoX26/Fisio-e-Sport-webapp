@@ -8,8 +8,7 @@ public class WaitlistEntry {
 
     private long id;
     private long therapistId;
-    private String firstName;
-    private String lastName;
+    private String fullName;
     private String phone;
     private LocalDateTime createdAt;
 
@@ -29,20 +28,19 @@ public class WaitlistEntry {
         this.therapistId = therapistId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public String getCreatedAtLabel() {
+        if (createdAt == null) {
+            return "";
+        }
+        return CREATED_AT_FORMATTER.format(createdAt);
     }
 
     public String getPhone() {
@@ -59,19 +57,5 @@ public class WaitlistEntry {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public String getFullName() {
-        String first = firstName == null ? "" : firstName.trim();
-        String last = lastName == null ? "" : lastName.trim();
-        String fullName = (first + " " + last).trim();
-        return fullName.isEmpty() ? "Contatto" : fullName;
-    }
-
-    public String getCreatedAtLabel() {
-        if (createdAt == null) {
-            return "";
-        }
-        return CREATED_AT_FORMATTER.format(createdAt);
     }
 }
