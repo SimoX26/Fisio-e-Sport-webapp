@@ -771,6 +771,14 @@ body.calendar-gcal-page{
     padding: 2px 0;
 }
 
+.home-topbar-actions{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
 .home-title{
     font-size: 2rem;
     font-weight: 750;
@@ -781,11 +789,6 @@ body.calendar-gcal-page{
 .home-subtitle{
     color: var(--text-muted);
     font-size: var(--font-size-small);
-}
-
-.home-calendar-btn{
-    min-height: 34px;
-    padding: .35rem .7rem;
 }
 
 .home-kpi-row{
@@ -845,9 +848,7 @@ body.calendar-gcal-page{
 }
 
 .home-agenda-card,
-.home-waitlist-card,
-.home-actions-card,
-.home-summary-card{
+.home-waitlist-card{
     padding: .95rem 1rem !important;
 }
 
@@ -942,13 +943,6 @@ body.calendar-gcal-page{
     font-size: var(--font-size-small);
 }
 
-.home-actions-grid{
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .45rem;
-    min-width: 0;
-}
-
 .home-waitlist-form{
     border: 1px solid #eef1f4;
     border-radius: var(--radius-standard);
@@ -1016,7 +1010,7 @@ body.calendar-gcal-page{
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: 36px;
+    min-height: 38px;
     border-radius: var(--radius-pill);
     border: 1px solid var(--border-color);
     color: #3c4043;
@@ -1032,30 +1026,6 @@ body.calendar-gcal-page{
     border-color: rgba(13,110,253,.38);
     color: var(--brand-primary);
     background: rgba(13,110,253,.04);
-}
-
-.home-summary-list{
-    display: flex;
-    flex-direction: column;
-    gap: .45rem;
-}
-
-.home-summary-row{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #eef1f4;
-    padding-bottom: .35rem;
-    font-size: .88rem;
-}
-
-.home-summary-row span{
-    color: var(--text-muted);
-}
-
-.home-summary-row:last-child{
-    border-bottom: 0;
-    padding-bottom: 0;
 }
 
 @media (min-width: 768px){
@@ -1075,6 +1045,11 @@ body.calendar-gcal-page{
         flex-direction: column;
     }
 
+    .home-topbar-actions{
+        width: 100%;
+        justify-content: stretch;
+    }
+
     .home-title{
         font-size: 1.58rem;
     }
@@ -1089,8 +1064,8 @@ body.calendar-gcal-page{
         margin-top: 2px;
     }
 
-    .home-actions-grid{
-        grid-template-columns: 1fr;
+    .home-topbar-actions .home-action-pill{
+        width: 100%;
     }
 
     .home-waitlist-item{

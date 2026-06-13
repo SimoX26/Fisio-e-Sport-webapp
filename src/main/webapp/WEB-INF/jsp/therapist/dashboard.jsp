@@ -34,9 +34,11 @@
             <h1 class="home-title mb-1"><c:out value="${greetingPrefix}" />, <c:out value="${loggedUserDisplay}" /></h1>
             <div class="home-subtitle"><c:out value="${todayLabel}" /></div>
         </div>
-        <a class="btn btn-outline-secondary btn-sm home-calendar-btn" href="<%= request.getContextPath() %>/calendar">
-            Apri calendario
-        </a>
+        <div class="home-topbar-actions" aria-label="Azioni rapide">
+            <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
+            <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
+            <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">Invia reminder</a>
+        </div>
     </div>
 
     <c:if test="${not empty error}">
@@ -192,43 +194,6 @@
                         </div>
                     </c:otherwise>
                 </c:choose>
-            </div>
-
-            <div class="glass-card section-card home-actions-card mb-3">
-                <div class="home-section-head">
-                    <h3 class="home-section-title mb-0">Azioni rapide</h3>
-                </div>
-                <div class="home-actions-grid">
-                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
-                    <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
-                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar">Apri calendario</a>
-                    <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">Invia reminder</a>
-                    <a class="home-action-pill" href="<%= request.getContextPath() %>/dashboard/insights">Apri statistiche</a>
-                </div>
-            </div>
-
-            <div class="glass-card section-card home-summary-card d-none d-md-block">
-                <div class="home-section-head">
-                    <h3 class="home-section-title mb-0">Riepilogo rapido</h3>
-                </div>
-                <div class="home-summary-list">
-                    <div class="home-summary-row">
-                        <span>Pazienti nel mese</span>
-                        <strong><c:out value="${patientsThisMonth}" /></strong>
-                    </div>
-                    <div class="home-summary-row">
-                        <span>Ore settimana</span>
-                        <strong><c:out value="${bookedHoursThisWeek}" /></strong>
-                    </div>
-                    <div class="home-summary-row">
-                        <span>Periodo pazienti</span>
-                        <strong><c:out value="${patientsMonthYearLabel}" /></strong>
-                    </div>
-                    <div class="home-summary-row">
-                        <span>Settimana</span>
-                        <strong><c:out value="${weekRangeLabel}" /></strong>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
