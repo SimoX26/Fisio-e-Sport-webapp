@@ -976,6 +976,13 @@ body.calendar-gcal-page{
     flex: 0 0 auto;
 }
 
+.home-waitlist-actions{
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    flex: 0 0 auto;
+}
+
 .home-action-pill{
     display: inline-flex;
     align-items: center;
@@ -1068,7 +1075,8 @@ body.calendar-gcal-page{
     }
 
     .home-waitlist-form__actions .btn,
-    .home-waitlist-remove-form .btn{
+    .home-waitlist-remove-form .btn,
+    .home-waitlist-actions .btn{
         width: 100%;
     }
 

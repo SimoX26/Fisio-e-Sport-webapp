@@ -172,6 +172,7 @@ public class CalendarServlet extends HttpServlet {
             Map<String, Object> extendedProps = new HashMap<>();
             extendedProps.put("patientId", appointment.getPatientId());
             extendedProps.put("patient", patientFullName);
+            extendedProps.put("patientPhone", calendarController.resolvePatientPhone(appointment.getPatientId()));
             extendedProps.put("nonTreatmentEvent", appointment.getPatientId() == null);
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());
@@ -239,6 +240,7 @@ public class CalendarServlet extends HttpServlet {
         boolean allDay = parseBooleanParameter(request.getParameter("allDay"));
         boolean nonTreatmentEvent = parseBooleanParameter(request.getParameter("nonTreatmentEvent"));
         String patientName = request.getParameter("patientName");
+        String patientPhone = normalizePhone(request.getParameter("patientPhone"));
         Long patientId = null;
         String appointmentTitle = null;
         if (nonTreatmentEvent) {
@@ -247,7 +249,7 @@ public class CalendarServlet extends HttpServlet {
             boolean requireExistingPatient = allDay;
             patientId = requireExistingPatient
                     ? calendarController.resolveExistingPatientId(patientName)
-                    : calendarController.resolveOrCreatePatientId(patientName);
+                    : calendarController.resolveOrCreatePatientId(patientName, patientPhone);
         }
         long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
 
@@ -440,6 +442,10 @@ public class CalendarServlet extends HttpServlet {
             throw new IllegalArgumentException(errorMessage);
         }
         return normalized;
+    }
+
+    private String normalizePhone(String value) {
+        return normalizeNotes(value);
     }
 
     private Integer parseOptionalInteger(String value, String errorMessage) {

@@ -307,6 +307,14 @@
                         <div id="patientSuggestionsMenu" class="patient-suggestions-menu d-none" role="listbox" aria-label="Suggerimenti pazienti"></div>
                     </div>
 
+                    <div class="mb-3">
+                        <label class="form-label" for="patientPhone">Telefono</label>
+                        <input type="text"
+                               class="form-control"
+                               id="patientPhone"
+                               placeholder="Numero di telefono paziente">
+                    </div>
+
                     <!-- Giorno e orario -->
                     <div class="mb-3">
                         <label class="form-label">Giorno</label>

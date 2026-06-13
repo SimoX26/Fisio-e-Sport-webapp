@@ -164,6 +164,11 @@
                     <c:otherwise>
                         <div class="home-waitlist-list">
                             <c:forEach var="entry" items="${waitlistEntries}">
+                                <c:url var="convertToAppointmentUrl" value="/calendar">
+                                    <c:param name="new" value="1" />
+                                    <c:param name="patientName" value="${entry.fullName}" />
+                                    <c:param name="patientPhone" value="${entry.phone}" />
+                                </c:url>
                                 <div class="home-waitlist-item">
                                     <div class="home-waitlist-item__main">
                                         <div class="home-agenda-title"><c:out value="${entry.fullName}" /></div>
@@ -172,11 +177,16 @@
                                             <span>Aggiunto il <c:out value="${entry.createdAtLabel}" /></span>
                                         </div>
                                     </div>
-                                    <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-remove-form">
-                                        <input type="hidden" name="action" value="remove-waitlist-entry">
-                                        <input type="hidden" name="id" value="<c:out value='${entry.id}' />">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Rimuovi</button>
-                                    </form>
+                                    <div class="home-waitlist-actions">
+                                        <a class="btn btn-outline-primary btn-sm" href="${convertToAppointmentUrl}">
+                                            Trasforma in appuntamento
+                                        </a>
+                                        <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-remove-form">
+                                            <input type="hidden" name="action" value="remove-waitlist-entry">
+                                            <input type="hidden" name="id" value="<c:out value='${entry.id}' />">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Rimuovi</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </c:forEach>
                         </div>

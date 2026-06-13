@@ -199,6 +199,10 @@ public class CalendarController {
     }
 
     public long resolveOrCreatePatientId(String patientName) {
+        return resolveOrCreatePatientId(patientName, null);
+    }
+
+    public long resolveOrCreatePatientId(String patientName, String patientPhone) {
         String normalizedInput = normalize(patientName);
         if (normalizedInput.isBlank()) {
             throw new IllegalArgumentException("Il nome del paziente è obbligatorio");
@@ -216,7 +220,7 @@ public class CalendarController {
         newPatient.setFirstName(parts[0]);
         newPatient.setLastName(parts.length > 1 ? parts[1] : "");
         newPatient.setEmail(null);
-        newPatient.setPhone(null);
+        newPatient.setPhone(normalizeOptionalPhone(patientPhone));
         newPatient.setState(PatientState.ACTIVE);
 
         return patientDAO.save(newPatient).getId();
@@ -344,6 +348,14 @@ public class CalendarController {
         }
         patientDAO.findById(patientId)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
+    }
+
+    private String normalizeOptionalPhone(String patientPhone) {
+        if (patientPhone == null) {
+            return null;
+        }
+        String normalized = patientPhone.trim();
+        return normalized.isEmpty() ? null : normalized;
     }
 
     private void checkTherapistUserExists(long therapistUserId) {

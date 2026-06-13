@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const appointmentFormErrorEl = document.getElementById('appointmentFormError');
     const patientNameLabel = document.getElementById('patientNameLabel');
     const patientNameInput = document.getElementById('patientName');
+    const patientPhoneInput = document.getElementById('patientPhone');
     const patientSuggestionsMenuEl = document.getElementById('patientSuggestionsMenu');
     const allDayInput = document.getElementById('allDay');
     const nonTreatmentEventInput = document.getElementById('nonTreatmentEvent');
@@ -621,6 +622,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return { initialView, initialDate };
     }
 
+    function resetAppointmentForm(startDate, endDate) {
+        editingAppointmentId = null;
+        if (appointmentModalTitleEl) {
+            appointmentModalTitleEl.innerText = 'Nuovo appuntamento';
+        }
+        if (patientNameInput) {
+            patientNameInput.value = '';
+            patientNameInput.readOnly = false;
+        }
+        if (patientPhoneInput) {
+            patientPhoneInput.value = '';
+            patientPhoneInput.readOnly = false;
+        }
+        if (nonTreatmentEventInput) {
+            nonTreatmentEventInput.checked = false;
+        }
+        updatePatientFieldUi();
+        hidePatientSuggestions();
+        if (allDayInput) {
+            allDayInput.checked = false;
+        }
+        toggleTimeSelectionVisibility();
+        startInput.value = toLocalDateTimeInputValue(startDate);
+        endInput.value = toLocalDateTimeInputValue(endDate);
+        syncVisibleTimeControlsFromDateTimeInputs();
+        if (notesInput) {
+            notesInput.value = '';
+            notesInput.readOnly = false;
+        }
+    }
+
+    function openNewAppointmentModal(prefill = {}) {
+        const now = new Date();
+        const rounded = ceilToQuarterHour(now);
+        const end = addMinutes(rounded, DEFAULT_APPOINTMENT_DURATION_MINUTES);
+
+        resetAppointmentForm(rounded, end);
+
+        if (patientNameInput) {
+            patientNameInput.value = prefill.patientName || '';
+        }
+        if (patientPhoneInput) {
+            patientPhoneInput.value = prefill.patientPhone || '';
+        }
+
+        appointmentModal.show();
+    }
+
     const { initialView, initialDate } = resolveInitialCalendarConfig();
 
     const calendarConfig = {
@@ -757,31 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
         select(info) {
             const startDate = ceilToQuarterHour(new Date(info.start));
             const defaultEndDate = addMinutes(startDate, DEFAULT_APPOINTMENT_DURATION_MINUTES);
-
-            editingAppointmentId = null;
-            if (appointmentModalTitleEl) {
-                appointmentModalTitleEl.innerText = 'Nuovo appuntamento';
-            }
-            if (patientNameInput) {
-                patientNameInput.value = '';
-                patientNameInput.readOnly = false;
-            }
-            if (nonTreatmentEventInput) {
-                nonTreatmentEventInput.checked = false;
-            }
-            updatePatientFieldUi();
-            hidePatientSuggestions();
-            if (allDayInput) {
-                allDayInput.checked = false;
-            }
-            toggleTimeSelectionVisibility();
-            startInput.value = toLocalDateTimeInputValue(startDate);
-            endInput.value = toLocalDateTimeInputValue(defaultEndDate);
-            syncVisibleTimeControlsFromDateTimeInputs();
-            if (notesInput) {
-                notesInput.value = '';
-                notesInput.readOnly = false;
-            }
+            resetAppointmentForm(startDate, defaultEndDate);
             appointmentModal.show();
         },
         eventClick(info) {
@@ -873,35 +898,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {
-            const now = new Date();
-            const rounded = ceilToQuarterHour(now);
-            const end = addMinutes(rounded, DEFAULT_APPOINTMENT_DURATION_MINUTES);
-
-            editingAppointmentId = null;
-            if (appointmentModalTitleEl) {
-                appointmentModalTitleEl.innerText = 'Nuovo appuntamento';
-            }
-            if (patientNameInput) {
-                patientNameInput.value = '';
-                patientNameInput.readOnly = false;
-            }
-            if (nonTreatmentEventInput) {
-                nonTreatmentEventInput.checked = false;
-            }
-            updatePatientFieldUi();
-            hidePatientSuggestions();
-            if (allDayInput) {
-                allDayInput.checked = false;
-            }
-            toggleTimeSelectionVisibility();
-            startInput.value = toLocalDateTimeInputValue(rounded);
-            endInput.value = toLocalDateTimeInputValue(end);
-            syncVisibleTimeControlsFromDateTimeInputs();
-            if (notesInput) {
-                notesInput.value = '';
-                notesInput.readOnly = false;
-            }
-            appointmentModal.show();
+            openNewAppointmentModal();
         });
     }
 
@@ -928,6 +925,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (patientNameInput) {
                 patientNameInput.value = selectedEvent.extendedProps.patient || '';
                 patientNameInput.readOnly = false;
+            }
+            if (patientPhoneInput) {
+                patientPhoneInput.value = selectedEvent.extendedProps.patientPhone || '';
+                patientPhoneInput.readOnly = false;
             }
             if (nonTreatmentEventInput) {
                 nonTreatmentEventInput.checked = isNonTreatmentEvent;
@@ -1277,6 +1278,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (urlSearchParams.get('new') === '1') {
+        const prefilledPatientName = (urlSearchParams.get('patientName') || '').trim();
+        const prefilledPatientPhone = (urlSearchParams.get('patientPhone') || '').trim();
+        window.setTimeout(() => {
+            openNewAppointmentModal({
+                patientName: prefilledPatientName,
+                patientPhone: prefilledPatientPhone
+            });
+            const cleanedParams = new URLSearchParams(window.location.search);
+            cleanedParams.delete('new');
+            cleanedParams.delete('patientName');
+            cleanedParams.delete('patientPhone');
+            const cleanedQuery = cleanedParams.toString();
+            const cleanedUrl = cleanedQuery
+                ? `${window.location.pathname}?${cleanedQuery}`
+                : window.location.pathname;
+            window.history.replaceState({}, document.title, cleanedUrl);
+        }, 0);
+    }
+
     if (reminderTemplateInput) {
         reminderTemplateInput.addEventListener('input', () => {
             renderReminderPreview(reminderTemplateInput.value);
@@ -1413,6 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data.append('action', 'reschedule');
             data.append('id', String(editingAppointmentId));
             data.append('patientName', patientNameInput ? patientNameInput.value.trim() : '');
+            data.append('patientPhone', patientPhoneInput ? patientPhoneInput.value.trim() : '');
             data.append('notes', notesInput ? notesInput.value.trim() : '');
         } else {
             const patientName = patientNameInput?.value?.trim() || '';
@@ -1422,6 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             data.append('action', 'create');
             data.append('patientName', patientName);
+            data.append('patientPhone', patientPhoneInput ? patientPhoneInput.value.trim() : '');
             data.append('notes', notesInput ? notesInput.value.trim() : '');
         }
 
@@ -1447,6 +1470,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 editingAppointmentId = null;
                 if (patientNameInput) {
                     patientNameInput.readOnly = false;
+                }
+                if (patientPhoneInput) {
+                    patientPhoneInput.readOnly = false;
                 }
                 if (notesInput) {
                     notesInput.readOnly = false;
