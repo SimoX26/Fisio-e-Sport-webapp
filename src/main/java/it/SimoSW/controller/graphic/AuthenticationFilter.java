@@ -128,7 +128,7 @@ public class AuthenticationFilter implements Filter {
     }
 
     private boolean isAuthorizedForPath(String path, String role) {
-        if ("/logout".equals(path)) {
+        if ("/logout".equals(path) || path.startsWith("/settings")) {
             return true;
         }
 

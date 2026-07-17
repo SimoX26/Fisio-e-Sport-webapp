@@ -1,5 +1,5 @@
--- Migrazione non distruttiva: passaggio invio WhatsApp a gateway locale Baileys.
--- Non sono richieste modifiche schema per Baileys:
+-- Migrazione non distruttiva: passaggio invio WhatsApp al Servizio WhatsApp locale.
+-- Non sono richieste modifiche schema per il Servizio WhatsApp:
 -- - la configurazione del gateway vive in src/main/resources/config.properties;
 -- - la sessione WhatsApp vive in baileys-service/auth-session/;
 -- - i dati applicativi esistenti restano invariati.
@@ -12,6 +12,6 @@ USE fisio_e_sport;
 
 START TRANSACTION;
 
-SELECT 'WhatsApp Baileys: nessuna modifica schema necessaria, dati esistenti non toccati.' AS migration_note;
+SELECT 'Servizio WhatsApp: nessuna modifica schema necessaria, dati esistenti non toccati.' AS migration_note;
 
 COMMIT;

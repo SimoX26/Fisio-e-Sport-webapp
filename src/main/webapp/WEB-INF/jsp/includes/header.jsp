@@ -107,6 +107,13 @@
                 </li>
 
                 <li class="nav-item">
+                    <a class="nav-link"
+                       href="<%= request.getContextPath() %>/settings">
+                        Impostazioni
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link logout-link"
                        href="<%= request.getContextPath() %>/logout">
                         Logout

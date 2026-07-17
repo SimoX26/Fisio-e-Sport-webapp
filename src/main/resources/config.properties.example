@@ -34,9 +34,10 @@ app.environment=development
 # ======================
 # WhatsApp
 # ======================
-# Gateway locale Baileys.
+# Servizio WhatsApp locale.
 # Se therapistId resta vuoto, il servizio e abilitato per tutti i terapisti.
 whatsapp.baileys.enabled=false
 whatsapp.baileys.therapistId=
 whatsapp.baileys.gatewayBaseUrl=http://127.0.0.1:3001
 whatsapp.baileys.gatewayTimeoutMs=4000
+whatsapp.baileys.serviceDirectory=/percorso/assoluto/Fisio-e-Sport-webapp/baileys-service

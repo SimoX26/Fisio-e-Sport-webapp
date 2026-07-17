@@ -99,7 +99,7 @@ find "$TOMCAT_WEBAPPS_PATH" -maxdepth 1 -type f -name "${APP_CONTEXT}*.war" ! -n
 echo ">> Cartella esplosa ${TOMCAT_WEBAPPS_PATH%/}/${APP_CONTEXT} non rimossa manualmente (gestita da Tomcat)."
 echo ">> Deploy locale completato."
 echo ">> URL applicativo: http://${LOCAL_SERVER}:${LOCAL_PORT}/${APP_CONTEXT}/"
-echo ">> WhatsApp Baileys: avvia ./baileys-service/start-baileys.sh e apri http://localhost:3001/api/qr"
+echo ">> Servizio WhatsApp: avvia ./baileys-service/start-baileys.sh e apri http://localhost:3001/api/qr"
 if [[ "$APP_CONTEXT" == "ROOT" ]]; then
   echo ">> URL applicativo: http://${LOCAL_SERVER}:${LOCAL_PORT}/"
 fi

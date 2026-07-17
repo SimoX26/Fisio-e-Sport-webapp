@@ -1164,6 +1164,112 @@ body.calendar-gcal-page{
     color: var(--text-muted) !important;
 }
 
+/* =========================
+   SETTINGS
+   ========================= */
+
+.settings-hero{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.settings-eyebrow{
+    color: var(--brand-primary);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.settings-card__head{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.settings-card__title{
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.settings-status{
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 700;
+    padding: .45rem .8rem;
+    white-space: nowrap;
+}
+
+.settings-status--ok{
+    background: #e7f6ed;
+    color: #137333;
+}
+
+.settings-status--wait{
+    background: #fff4db;
+    color: #9a5b00;
+}
+
+.settings-status--off{
+    background: #fde8e8;
+    color: #b42318;
+}
+
+.settings-grid{
+    display: grid;
+    grid-template-columns: minmax(260px, .8fr) minmax(320px, 1.2fr);
+    gap: 1rem;
+}
+
+.settings-panel{
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-large);
+    background: #fff;
+    padding: 1.1rem;
+}
+
+.settings-details{
+    display: grid;
+    gap: .85rem;
+}
+
+.settings-details dt{
+    color: var(--text-muted);
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.settings-details dd{
+    margin-bottom: 0;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.settings-qr-frame{
+    width: 100%;
+    min-height: 560px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-standard);
+    background: #f7f4ee;
+}
+
+.settings-ready-box{
+    border-radius: var(--radius-standard);
+    background: #e7f6ed;
+    color: #173f2a;
+    padding: 1rem;
+}
+
+@media (max-width: 991.98px){
+    .settings-grid{
+        grid-template-columns: 1fr;
+    }
+}
+
 .navbar-toggler{
     border-color: var(--border-color);
     border-radius: var(--radius-standard);
