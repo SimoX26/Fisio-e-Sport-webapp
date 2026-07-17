@@ -8,6 +8,7 @@ Applicazione web Java per la gestione di un centro di fisioterapia e riabilitazi
 - Maven
 - Servlet/JSP (javax.servlet 4)
 - MySQL
+- Node.js 20+ (solo per il servizio WhatsApp Baileys)
 - Bootstrap 5 + FullCalendar
 - Jackson (JSON)
 
@@ -46,6 +47,31 @@ WAR generato:
 Deploya il WAR su Tomcat (o altro container Servlet 4) e apri:
 
 - `http://localhost:8080/Fisio-e-Sport-webapp/`
+
+## WhatsApp Locale con Baileys
+
+1. Abilita il gateway in `src/main/resources/config.properties`:
+
+```properties
+whatsapp.baileys.enabled=true
+whatsapp.baileys.gatewayBaseUrl=http://127.0.0.1:3001
+```
+
+2. Avvia il servizio locale:
+
+```bash
+./baileys-service/start-baileys.sh
+```
+
+3. Scansiona il QR da terminale oppure da:
+
+- `http://localhost:3001/api/qr`
+
+Per resettare la sessione:
+
+```bash
+BAILEYS_RESET_SESSION=1 ./baileys-service/start-baileys.sh
+```
 
 ## Utenti Test
 

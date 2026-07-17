@@ -1,0 +1,21 @@
+{
+  "name": "fisio-e-sports-baileys-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servizio locale Baileys per Fisio e Sports",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "latest",
+    "pino": "latest",
+    "qrcode": "latest",
+    "qrcode-terminal": "latest"
+  },
+  "allowScripts": {
+    "@whiskeysockets/baileys@7.0.0-rc13": true,
+    "protobufjs@7.6.5": true
+  }
+}

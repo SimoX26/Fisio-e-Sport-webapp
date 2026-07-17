@@ -17,6 +17,26 @@ public final class AppProperties {
         return PROPERTIES.getProperty(key);
     }
 
+    public static String get(String key, String fallback) {
+        String value = PROPERTIES.getProperty(key);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
+    }
+
+    public static int getInt(String key, int fallback) {
+        String value = PROPERTIES.getProperty(key);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException ex) {
+            return fallback;
+        }
+    }
+
     private static Properties loadProperties() {
         try {
             Properties props = new Properties();

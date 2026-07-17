@@ -34,12 +34,9 @@ app.environment=development
 # ======================
 # WhatsApp
 # ======================
-# Configurazione server-side per l'account terapista Marco.
-# Se therapistId non corrisponde all'utente loggato, il servizio resta disabilitato.
-whatsapp.marco.therapistId=
-whatsapp.marco.accessToken=
-whatsapp.marco.phoneNumberId=
-whatsapp.marco.businessAccountId=
-whatsapp.marco.dailyTemplateName=
-whatsapp.marco.weeklyTemplateName=
-whatsapp.marco.templateLanguage=it
+# Gateway locale Baileys.
+# Se therapistId resta vuoto, il servizio e abilitato per tutti i terapisti.
+whatsapp.baileys.enabled=false
+whatsapp.baileys.therapistId=
+whatsapp.baileys.gatewayBaseUrl=http://127.0.0.1:3001
+whatsapp.baileys.gatewayTimeoutMs=4000

@@ -19,7 +19,6 @@ import it.SimoSW.model.dao.TreatmentPlanDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
 import it.SimoSW.model.dao.WaitlistEntryDAO;
-import it.SimoSW.model.dao.WhatsAppBusinessConfigDAO;
 import it.SimoSW.model.dao.database.DatabaseAppointmentDAO;
 import it.SimoSW.model.dao.database.DatabaseAccessRequestDAO;
 import it.SimoSW.model.dao.database.DatabasePatientAnamnesisDAO;
@@ -31,8 +30,7 @@ import it.SimoSW.model.dao.database.DatabaseTreatmentPlanDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
 import it.SimoSW.model.dao.database.DatabaseUserDAO;
 import it.SimoSW.model.dao.database.DatabaseWaitlistEntryDAO;
-import it.SimoSW.model.dao.database.DatabaseWhatsAppBusinessConfigDAO;
-import it.SimoSW.service.whatsapp.WhatsAppCloudApiService;
+import it.SimoSW.service.whatsapp.WhatsAppBaileysService;
 import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,7 +45,7 @@ public class ApplicationInitializer {
     private KpiSnapshotController kpiSnapshotController;
     private WaitlistController waitlistController;
     private WhatsAppConfigurationService whatsAppConfigurationService;
-    private WhatsAppCloudApiService whatsAppCloudApiService;
+    private WhatsAppBaileysService whatsAppBaileysService;
 
     public void init() {
         initDatabasePersistence();
@@ -65,9 +63,8 @@ public class ApplicationInitializer {
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
         AccessRequestDAO accessRequestDAO = new DatabaseAccessRequestDAO();
         WaitlistEntryDAO waitlistEntryDAO = new DatabaseWaitlistEntryDAO();
-        WhatsAppBusinessConfigDAO whatsAppBusinessConfigDAO = new DatabaseWhatsAppBusinessConfigDAO();
-        whatsAppConfigurationService = new WhatsAppConfigurationService(whatsAppBusinessConfigDAO);
-        whatsAppCloudApiService = new WhatsAppCloudApiService(new ObjectMapper());
+        whatsAppConfigurationService = new WhatsAppConfigurationService();
+        whatsAppBaileysService = new WhatsAppBaileysService(new ObjectMapper());
 
         wireControllers(
                 patientDAO,
@@ -154,7 +151,7 @@ public class ApplicationInitializer {
         return whatsAppConfigurationService;
     }
 
-    public WhatsAppCloudApiService getWhatsAppCloudApiService() {
-        return whatsAppCloudApiService;
+    public WhatsAppBaileysService getWhatsAppBaileysService() {
+        return whatsAppBaileysService;
     }
 }

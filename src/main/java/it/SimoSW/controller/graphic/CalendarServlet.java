@@ -7,8 +7,7 @@ import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.CalendarEventView;
-import it.SimoSW.model.WhatsAppBusinessConfig;
-import it.SimoSW.service.whatsapp.WhatsAppCloudApiService;
+import it.SimoSW.service.whatsapp.WhatsAppBaileysService;
 import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
 import it.SimoSW.util.ApiResponseWriter;
 
@@ -40,7 +39,7 @@ public class CalendarServlet extends HttpServlet {
     private CalendarController calendarController;
     private TreatmentController treatmentController;
     private WhatsAppConfigurationService whatsAppConfigurationService;
-    private WhatsAppCloudApiService whatsAppCloudApiService;
+    private WhatsAppBaileysService whatsAppBaileysService;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -50,7 +49,7 @@ public class CalendarServlet extends HttpServlet {
         this.calendarController = initializer.getCalendarController();
         this.treatmentController = initializer.getTreatmentController();
         this.whatsAppConfigurationService = initializer.getWhatsAppConfigurationService();
-        this.whatsAppCloudApiService = initializer.getWhatsAppCloudApiService();
+        this.whatsAppBaileysService = initializer.getWhatsAppBaileysService();
     }
 
     /* =========================
@@ -300,21 +299,24 @@ public class CalendarServlet extends HttpServlet {
     private void sendReminders(HttpServletRequest request, HttpServletResponse response) throws IOException {
         long therapistId = resolveTherapistIdFromSession(request);
         LocalDate targetDate = parseRequiredDate(request.getParameter("date"));
-        WhatsAppBusinessConfig config = whatsAppConfigurationService.getConfiguration(therapistId)
-                .orElse(null);
-        if (config == null) {
+        if (!whatsAppConfigurationService.hasConfiguration(therapistId)) {
             ApiResponseWriter.writeError(
                     getServletContext(),
                     response,
                     428,
-                    "Configurazione WhatsApp mancante. Completa il setup iniziale.",
+                    "Servizio WhatsApp non configurato per questo account. Contattare l'amministratore di sistema.",
                     "WHATSAPP_CONFIG_MISSING",
                     null
             );
             return;
         }
 
-        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, DEFAULT_REMINDER_TEMPLATE);
+        String template = normalizeNotes(request.getParameter("template"));
+        if (template == null) {
+            template = DEFAULT_REMINDER_TEMPLATE;
+        }
+
+        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template);
         int sentCount = 0;
         int skippedCount = 0;
         int failedCount = 0;
@@ -322,19 +324,15 @@ public class CalendarServlet extends HttpServlet {
         for (Map<String, Object> recipient : recipients) {
             String patientName = String.valueOf(recipient.get("patientName"));
             String patientPhone = valueAsOptional(recipient.get("patientPhone"));
-            String dayLabel = valueAsOptional(recipient.get("dayLabel"));
-            String timeRange = valueAsOptional(recipient.get("timeRange"));
+            String message = valueAsOptional(recipient.get("message"));
             if (patientPhone == null) {
                 skippedCount++;
                 continue;
             }
             try {
-                whatsAppCloudApiService.sendDailyReminderTemplate(
-                        config,
+                whatsAppBaileysService.sendTextMessage(
                         patientPhone,
-                        patientName,
-                        dayLabel,
-                        timeRange
+                        message
                 );
                 sentCount++;
             } catch (RuntimeException ex) {
@@ -353,7 +351,7 @@ public class CalendarServlet extends HttpServlet {
         payload.put("sentCount", sentCount);
         payload.put("skippedCount", skippedCount);
         payload.put("failedCount", failedCount);
-        payload.put("channel", "WHATSAPP_CLOUD_API");
+        payload.put("channel", "BAILEYS");
         if (firstFailureMessage != null) {
             payload.put("firstFailureMessage", firstFailureMessage);
         }

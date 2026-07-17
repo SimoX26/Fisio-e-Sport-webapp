@@ -42,6 +42,19 @@ Thumbs.db
 # =========================
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Node / Baileys runtime
+# =========================
+node_modules/
+baileys-service/node_modules/
+baileys-service/auth-session/
+baileys-service/.wwebjs_auth/
+baileys-service/.wwebjs_cache/
 
 # =========================
 # Secrets / env / credentials
