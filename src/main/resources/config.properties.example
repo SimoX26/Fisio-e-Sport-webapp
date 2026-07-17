@@ -30,3 +30,16 @@ calendar.end.hour=20
 app.name=Fisio e Sports
 app.version=1.0
 app.environment=development
+
+# ======================
+# WhatsApp
+# ======================
+# Configurazione server-side per l'account terapista Marco.
+# Se therapistId non corrisponde all'utente loggato, il servizio resta disabilitato.
+whatsapp.marco.therapistId=
+whatsapp.marco.accessToken=
+whatsapp.marco.phoneNumberId=
+whatsapp.marco.businessAccountId=
+whatsapp.marco.dailyTemplateName=
+whatsapp.marco.weeklyTemplateName=
+whatsapp.marco.templateLanguage=it

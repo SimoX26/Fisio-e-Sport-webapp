@@ -3,32 +3,28 @@ package it.SimoSW.model.dao.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public final class ConnectionFactory {
+import it.SimoSW.util.AppProperties;
 
-    private static final String CONFIG_FILE = "config.properties";
+public final class ConnectionFactory {
 
     private static final HikariDataSource dataSource;
 
     static {
         try {
             Properties props = new Properties();
-
-            InputStream input = ConnectionFactory.class
-                    .getClassLoader()
-                    .getResourceAsStream(CONFIG_FILE);
-
-            if (input == null) {
-                throw new RuntimeException("Impossibile trovare " + CONFIG_FILE);
-            }
-
-            props.load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            copyProperty(props, "db.driver");
+            copyProperty(props, "db.url");
+            copyProperty(props, "db.username");
+            copyProperty(props, "db.password");
+            copyProperty(props, "db.pool.maxSize");
+            copyProperty(props, "db.pool.minIdle");
+            copyProperty(props, "db.pool.connectionTimeoutMs");
+            copyProperty(props, "db.pool.idleTimeoutMs");
+            copyProperty(props, "db.pool.maxLifetimeMs");
 
             String driver = props.getProperty("db.driver");
             String url = props.getProperty("db.url");
@@ -64,6 +60,13 @@ public final class ConnectionFactory {
 
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    private static void copyProperty(Properties props, String key) {
+        String value = AppProperties.get(key);
+        if (value != null) {
+            props.setProperty(key, value);
+        }
     }
 
     private static int readInt(Properties props, String key, int defaultValue) {

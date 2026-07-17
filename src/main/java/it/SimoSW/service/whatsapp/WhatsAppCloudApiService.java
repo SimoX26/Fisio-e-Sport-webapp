@@ -88,7 +88,14 @@ public class WhatsAppCloudApiService {
     }
 
     private String sanitizePhone(String rawPhone) {
-        return rawPhone.replaceAll("[^0-9]", "");
+        String digitsOnly = rawPhone == null ? "" : rawPhone.replaceAll("[^0-9]", "");
+        if (digitsOnly.startsWith("00")) {
+            digitsOnly = digitsOnly.substring(2);
+        }
+        if (digitsOnly.length() < 8 || digitsOnly.length() > 15) {
+            throw new IllegalArgumentException("Numero WhatsApp non valido. Usa il formato internazionale, ad esempio 393331234567.");
+        }
+        return digitsOnly;
     }
 
     private String valueOrFallback(String value, String fallback) {

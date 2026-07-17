@@ -2,6 +2,7 @@ package it.SimoSW.service.whatsapp;
 
 import it.SimoSW.model.WhatsAppBusinessConfig;
 import it.SimoSW.model.dao.WhatsAppBusinessConfigDAO;
+import it.SimoSW.util.AppProperties;
 
 import java.util.Optional;
 
@@ -18,8 +19,11 @@ public class WhatsAppConfigurationService {
     }
 
     public Optional<WhatsAppBusinessConfig> getConfiguration(long therapistId) {
-        return configDAO.findByTherapistId(therapistId)
-                .filter(this::isComplete);
+        Optional<WhatsAppBusinessConfig> configuredFromProperties = loadConfigurationFromProperties(therapistId);
+        if (configuredFromProperties.isPresent()) {
+            return configuredFromProperties;
+        }
+        return configDAO.findByTherapistId(therapistId).filter(this::isComplete);
     }
 
     public WhatsAppBusinessConfig saveConfiguration(long therapistId,
@@ -74,5 +78,34 @@ public class WhatsAppConfigurationService {
         }
         String normalized = raw.trim();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private Optional<WhatsAppBusinessConfig> loadConfigurationFromProperties(long therapistId) {
+        Long configuredTherapistId = parseOptionalLong(AppProperties.get("whatsapp.marco.therapistId"));
+        if (configuredTherapistId == null || configuredTherapistId != therapistId) {
+            return Optional.empty();
+        }
+        String propertyKeyPrefix = "whatsapp.marco.";
+        WhatsAppBusinessConfig config = new WhatsAppBusinessConfig();
+        config.setTherapistId(therapistId);
+        config.setAccessToken(normalize(AppProperties.get(propertyKeyPrefix + "accessToken")));
+        config.setPhoneNumberId(normalize(AppProperties.get(propertyKeyPrefix + "phoneNumberId")));
+        config.setBusinessAccountId(normalize(AppProperties.get(propertyKeyPrefix + "businessAccountId")));
+        config.setDailyTemplateName(normalize(AppProperties.get(propertyKeyPrefix + "dailyTemplateName")));
+        config.setWeeklyTemplateName(normalize(AppProperties.get(propertyKeyPrefix + "weeklyTemplateName")));
+        config.setTemplateLanguage(normalize(AppProperties.get(propertyKeyPrefix + "templateLanguage")));
+        return isComplete(config) ? Optional.of(config) : Optional.empty();
+    }
+
+    private Long parseOptionalLong(String raw) {
+        String normalized = normalize(raw);
+        if (normalized == null) {
+            return null;
+        }
+        try {
+            return Long.parseLong(normalized);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

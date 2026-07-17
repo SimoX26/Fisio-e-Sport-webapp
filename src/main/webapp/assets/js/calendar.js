@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_APPOINTMENT_DURATION_MINUTES = 60;
     const APPOINTMENT_STEP_MINUTES = 15;
+    const whatsAppConfigured = (document.body.dataset.whatsappConfigured || '').trim() === 'true';
 
     function toLocalDateTimeInputValue(date) {
         const pad = (n) => String(n).padStart(2, '0');
@@ -52,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeTreatmentModalEl = document.getElementById('completeTreatmentModal');
     const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
     const reminderModalEl = document.getElementById('reminderModal');
-    const whatsAppSetupModalEl = document.getElementById('whatsAppSetupModal');
     const startInput = document.getElementById('start');
     const endInput = document.getElementById('end');
     const appointmentDateInput = document.getElementById('appointmentDate');
@@ -95,13 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const reminderPreviewEmptyEl = document.getElementById('reminderPreviewEmpty');
     const sendReminderBtn = document.getElementById('sendReminderBtn');
     const refreshReminderPreviewBtn = document.getElementById('refreshReminderPreviewBtn');
-    const saveWhatsAppSetupBtn = document.getElementById('saveWhatsAppSetupBtn');
-    const whatsAppAccessTokenInput = document.getElementById('whatsAppAccessToken');
-    const whatsAppPhoneNumberIdInput = document.getElementById('whatsAppPhoneNumberId');
-    const whatsAppBusinessAccountIdInput = document.getElementById('whatsAppBusinessAccountId');
-    const whatsAppDailyTemplateNameInput = document.getElementById('whatsAppDailyTemplateName');
-    const whatsAppWeeklyTemplateNameInput = document.getElementById('whatsAppWeeklyTemplateName');
-    const whatsAppTemplateLanguageInput = document.getElementById('whatsAppTemplateLanguage');
     const searchHighlightNoticeEl = document.getElementById('searchHighlightNotice');
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
@@ -118,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeTreatmentModal = completeTreatmentModalEl ? new bootstrap.Modal(completeTreatmentModalEl) : null;
     const confirmDeleteModal = confirmDeleteModalEl ? new bootstrap.Modal(confirmDeleteModalEl) : null;
     const reminderModal = reminderModalEl ? new bootstrap.Modal(reminderModalEl) : null;
-    const whatsAppSetupModal = whatsAppSetupModalEl ? new bootstrap.Modal(whatsAppSetupModalEl) : null;
     let selectedEvent = null;
     let editingAppointmentId = null;
     let currentHeightMode = 'auto';
@@ -126,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let patientSuggestionItems = [];
     let highlightedSuggestionIndex = -1;
     let reminderPreviewData = [];
-    let pendingReminderPayload = null;
     let noticeCounter = 0;
 
     function pad2(value) {
@@ -1320,85 +1311,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const templateValue = reminderTemplateInput && reminderTemplateInput.value.trim()
                 ? reminderTemplateInput.value.trim()
                 : defaultReminderTemplate();
+            if (!whatsAppConfigured) {
+                showGlobalNotice('Servizio WhatsApp non configurato per questo account. Contattare l\'amministratore di sistema.', 'info');
+                return;
+            }
             try {
                 const payload = await executeReminderSend(dateValue, templateValue);
-                showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0}, inviati: ${payload.sentCount || 0}.`, 'success');
+                showGlobalNotice(reminderResultNotice(payload), 'success');
                 if (reminderModal) {
                     reminderModal.hide();
                 }
             } catch (error) {
-                if (error?.code === 'WHATSAPP_CONFIG_MISSING' && whatsAppSetupModal) {
-                    pendingReminderPayload = { dateValue, templateValue };
-                    if (whatsAppDailyTemplateNameInput && !whatsAppDailyTemplateNameInput.value.trim()) {
-                        whatsAppDailyTemplateNameInput.value = 'daily_reminder';
-                    }
-                    if (whatsAppWeeklyTemplateNameInput && !whatsAppWeeklyTemplateNameInput.value.trim()) {
-                        whatsAppWeeklyTemplateNameInput.value = 'weekly_reminder';
-                    }
-                    if (whatsAppTemplateLanguageInput && !whatsAppTemplateLanguageInput.value.trim()) {
-                        whatsAppTemplateLanguageInput.value = 'it';
-                    }
-                    whatsAppSetupModal.show();
-                    return;
-                }
                 showGlobalNotice(error.message || 'Errore durante l\'invio dei reminder', 'error');
-            }
-        });
-    }
-
-    if (saveWhatsAppSetupBtn) {
-        saveWhatsAppSetupBtn.addEventListener('click', async () => {
-            const accessToken = whatsAppAccessTokenInput ? whatsAppAccessTokenInput.value.trim() : '';
-            const phoneNumberId = whatsAppPhoneNumberIdInput ? whatsAppPhoneNumberIdInput.value.trim() : '';
-            const businessAccountId = whatsAppBusinessAccountIdInput ? whatsAppBusinessAccountIdInput.value.trim() : '';
-            const dailyTemplateName = whatsAppDailyTemplateNameInput ? whatsAppDailyTemplateNameInput.value.trim() : '';
-            const weeklyTemplateName = whatsAppWeeklyTemplateNameInput ? whatsAppWeeklyTemplateNameInput.value.trim() : '';
-            const templateLanguage = whatsAppTemplateLanguageInput ? whatsAppTemplateLanguageInput.value.trim() : '';
-
-            if (!accessToken || !phoneNumberId || !businessAccountId || !dailyTemplateName || !weeklyTemplateName || !templateLanguage) {
-                showGlobalNotice('Compila tutti i campi della configurazione WhatsApp.', 'info');
-                return;
-            }
-
-            try {
-                const data = new URLSearchParams();
-                data.append('action', 'save-whatsapp-config');
-                data.append('accessToken', accessToken);
-                data.append('phoneNumberId', phoneNumberId);
-                data.append('businessAccountId', businessAccountId);
-                data.append('dailyTemplateName', dailyTemplateName);
-                data.append('weeklyTemplateName', weeklyTemplateName);
-                data.append('templateLanguage', templateLanguage);
-
-                const response = await fetch(contextPath + '/calendar', {
-                    method: 'POST',
-                    body: data
-                });
-                if (!response.ok) {
-                    throw await parseApiError(response, 'Impossibile salvare la configurazione WhatsApp');
-                }
-                await parseApiPayload(response);
-                if (whatsAppAccessTokenInput) {
-                    whatsAppAccessTokenInput.value = '';
-                }
-                if (whatsAppSetupModal) {
-                    whatsAppSetupModal.hide();
-                }
-                showGlobalNotice('Configurazione WhatsApp salvata.', 'success');
-
-                if (pendingReminderPayload) {
-                    const payload = await executeReminderSend(
-                        pendingReminderPayload.dateValue,
-                        pendingReminderPayload.templateValue
-                    );
-                    showGlobalNotice(`Reminder elaborati: ${payload.processedCount || 0}, inviati: ${payload.sentCount || 0}.`, 'success');
-                    pendingReminderPayload = null;
-                    if (reminderModal) {
-                        reminderModal.hide();
-                    }
-                }
-            } catch (error) {
-                showGlobalNotice(error.message || 'Errore durante il salvataggio della configurazione', 'error');
             }
         });
     }
@@ -1496,5 +1420,13 @@ document.addEventListener('DOMContentLoaded', () => {
             throw await parseApiError(response, 'Errore durante l\'invio dei reminder');
         }
         return parseApiPayload(response);
+    }
+
+    function reminderResultNotice(payload) {
+        const processedCount = payload?.processedCount || 0;
+        const sentCount = payload?.sentCount || 0;
+        const skippedCount = payload?.skippedCount || 0;
+        const failedCount = payload?.failedCount || 0;
+        return `Reminder elaborati: ${processedCount}, inviati: ${sentCount}, saltati: ${skippedCount}, falliti: ${failedCount}.`;
     }
 });
