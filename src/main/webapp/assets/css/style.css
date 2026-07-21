@@ -2382,19 +2382,39 @@ body.calendar-gcal-page .modal-backdrop.show {
         left: 0;
         min-width: 58px;
         width: 58px;
+        overflow: visible;
         z-index: 18;
         background: #ffffff !important;
     }
 
+    body.calendar-view-day .fc .fc-timegrid-axis-frame,
+    body.calendar-view-day .fc .fc-timegrid-slot-label-frame,
+    body.calendar-view-week .fc .fc-timegrid-axis-frame,
+    body.calendar-view-week .fc .fc-timegrid-slot-label-frame{
+        width: 58px;
+        min-width: 58px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        overflow: visible;
+    }
+
+    body.calendar-view-day .fc .fc-timegrid-axis-cushion,
     body.calendar-view-day .fc .fc-timegrid-slot-label-cushion,
+    body.calendar-view-week .fc .fc-timegrid-axis-cushion,
     body.calendar-view-week .fc .fc-timegrid-slot-label-cushion{
-        display: inline-block;
+        display: block;
+        width: 100%;
         min-width: 100%;
         padding-left: .3rem;
-        padding-right: .3rem;
-        color: var(--text-muted);
+        padding-right: .35rem;
+        color: #5f6368 !important;
         font-weight: 600;
+        line-height: 1.1;
         text-align: right;
+        white-space: nowrap;
+        opacity: 1;
+        visibility: visible;
     }
 
     body.calendar-view-day .fc .fc-scrollgrid-section-header .fc-timegrid-axis,
@@ -2619,6 +2639,7 @@ body.calendar-gcal-page .modal-backdrop.show {
    ========================= */
 
 #editPatientModal .modal-dialog {
+    max-width: min(920px, calc(100vw - 2rem));
     max-height: calc(100vh - 2rem);
     max-height: calc(100dvh - 2rem);
 }
