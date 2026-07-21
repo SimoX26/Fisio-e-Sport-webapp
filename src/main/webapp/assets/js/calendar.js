@@ -944,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderReminderButtons(calendar);
     window.addEventListener('resize', () => {
         applyDesktopWeekFillMode(calendar);
-    }
+    });
 
     if (openModalButton) {
         openModalButton.addEventListener('click', () => {
