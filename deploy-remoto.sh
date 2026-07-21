@@ -8,7 +8,8 @@ Uso:
 
 Descrizione:
   Builda il progetto Maven, carica il WAR su server remoto via sshpass/scp
-  e lo deploya in Tomcat con staging remoto.
+  e lo deploya in Tomcat con staging remoto. Carica anche baileys-service
+  in /opt/baileys-service.
 
 Opzioni:
   --host <host>            Host remoto (default: 31.70.74.92)
@@ -17,6 +18,7 @@ Opzioni:
   --port <port>            Porta SSH (default: 22)
   --remote-path <path>     Cartella deploy remota (default: ~/)
   --tomcat-webapps <path>  Cartella webapps Tomcat (default: /opt/tomcat/webapps)
+  --baileys-path <path>    Cartella remota baileys-service (default: /opt/baileys-service)
   --with-sql               Carica la cartella migration su server remoto (destinazione: ~/)
   --war <path>             WAR locale da deployare (default: ultimo in target/)
   --skip-build             Salta mvn clean package
@@ -42,6 +44,7 @@ PASSWORD="${DEPLOY_SSH_PASSWORD:-}"
 PORT="22"
 REMOTE_PATH="~/"
 TOMCAT_WEBAPPS_PATH="/opt/tomcat/webapps"
+BAILEYS_REMOTE_PATH="/opt/baileys-service"
 WAR_PATH=""
 SKIP_BUILD="false"
 WITH_SQL="false"
@@ -70,6 +73,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --tomcat-webapps)
       TOMCAT_WEBAPPS_PATH="${2:-}"
+      shift 2
+      ;;
+    --baileys-path)
+      BAILEYS_REMOTE_PATH="${2:-}"
       shift 2
       ;;
     --with-sql)
@@ -120,6 +127,7 @@ echo ">> WAR selezionato: $WAR_PATH"
 require_cmd sshpass
 require_cmd ssh
 require_cmd scp
+require_cmd tar
 
 if [[ -z "$PASSWORD" ]]; then
   echo "Errore: password SSH mancante. Usa --password o DEPLOY_SSH_PASSWORD." >&2
@@ -136,12 +144,36 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p ${REMOTE_PATH}"
 echo ">> Upload WAR verso ${TARGET}:${REMOTE_PATH}/"
 sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$WAR_PATH" "$TARGET:${REMOTE_PATH%/}/$WAR_NAME"
 
+BAILEYS_DIR="baileys-service"
+if [[ ! -d "$BAILEYS_DIR" ]]; then
+  echo "Errore: cartella non trovata: $BAILEYS_DIR" >&2
+  exit 1
+fi
+
+BAILEYS_ARCHIVE="/tmp/baileys-service-deploy.tar.gz"
+echo ">> Preparo archivio baileys-service"
+tar \
+  --exclude='node_modules' \
+  --exclude='auth-session' \
+  --exclude='baileys-service.log' \
+  -czf "$BAILEYS_ARCHIVE" \
+  "$BAILEYS_DIR"
+
+echo ">> Upload baileys-service verso ${TARGET}:${REMOTE_PATH%/}/baileys-service-deploy.tar.gz"
+sshpass -p "$PASSWORD" scp "${SCP_OPTS[@]}" "$BAILEYS_ARCHIVE" "$TARGET:${REMOTE_PATH%/}/baileys-service-deploy.tar.gz"
+
 echo ">> Deploy WAR in Tomcat webapps: $TOMCAT_WEBAPPS_PATH"
 sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
   set -e
+  BAILEYS_PARENT_DIR=\$(dirname '${BAILEYS_REMOTE_PATH%/}')
   mkdir -p '$TOMCAT_WEBAPPS_PATH'
   cp -f ${REMOTE_PATH%/}/$WAR_NAME '${TOMCAT_WEBAPPS_PATH%/}/$WAR_NAME'
   find '$TOMCAT_WEBAPPS_PATH' -maxdepth 1 -type f -name '${APP_CONTEXT}*.war' ! -name '$WAR_NAME' -delete
+  rm -rf '${BAILEYS_REMOTE_PATH%/}'
+  mkdir -p \"\$BAILEYS_PARENT_DIR\"
+  tar -xzf ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz -C \"\$BAILEYS_PARENT_DIR\"
+  chmod +x '${BAILEYS_REMOTE_PATH%/}/start-baileys.sh'
+  rm -f ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz
 "
 
 if [[ "$WITH_SQL" == "true" ]]; then
