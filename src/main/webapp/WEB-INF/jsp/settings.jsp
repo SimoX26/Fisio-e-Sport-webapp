@@ -9,7 +9,7 @@
     <title>Impostazioni • Fisio e Sports</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/assets/img/logo.png">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260717-1">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260721-1">
     <script src="<%= request.getContextPath() %>/assets/js/settings.js?v=20260721-1" defer></script>
 </head>
 <body class="app-page settings-page"

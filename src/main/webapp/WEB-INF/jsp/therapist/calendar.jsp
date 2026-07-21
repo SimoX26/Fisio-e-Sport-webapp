@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js" defer></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-4">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260721-1">
     <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260519-34" defer></script>
 </head>
 

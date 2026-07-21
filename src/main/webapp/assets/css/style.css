@@ -21,6 +21,9 @@
     --radius-standard: 12px;
     --radius-pill: 999px;
     --radius-btn: var(--radius-standard);
+    --space-page-x: clamp(1rem, 2.2vw, 1.5rem);
+    --space-section: clamp(1rem, 2vw, 1.35rem);
+    --space-field: .85rem;
     --font-size-body: 1rem;
     --font-size-ui: .95rem;
     --font-size-small: .88rem;
@@ -72,6 +75,13 @@ body.app-page{
 body.app-page .app-shell,
 body.app-page .section-card{
     min-width: 0;
+}
+
+body.app-page .app-shell{
+    width: 100%;
+    max-width: 1280px;
+    padding-left: var(--space-page-x);
+    padding-right: var(--space-page-x);
 }
 
 body.auth-page{
@@ -223,13 +233,17 @@ body.auth-page{
    ========================= */
 
 .page-title{
+    font-size: clamp(1.8rem, 3vw, 2.45rem);
     font-weight: 700;
     line-height: 1.18;
     letter-spacing: .2px;
+    color: var(--text-main);
 }
 
 .page-subtitle{
     color: var(--text-muted);
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-body);
 }
 
 body.calendar-gcal-page{
@@ -462,8 +476,11 @@ body.calendar-gcal-page{
    ========================= */
 
 .form-label{
-    font-weight: 500;
+    color: var(--text-main);
+    font-size: var(--font-size-ui);
+    font-weight: 600;
     line-height: var(--line-height-ui);
+    margin-bottom: .4rem;
 }
 
 .form-control,
@@ -474,10 +491,30 @@ body.calendar-gcal-page{
     color: var(--text-main);
     font-size: 1rem;
     line-height: 1.35;
+    padding: .58rem .78rem;
+    min-height: 42px;
 }
 
 .form-control::placeholder{
     color: var(--text-muted);
+}
+
+.form-text{
+    color: var(--text-muted);
+    font-size: var(--font-size-small);
+    line-height: 1.35;
+    margin-top: .45rem;
+}
+
+.form-text code{
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: .86em;
+    font-weight: 600;
+    padding: .08rem .3rem;
 }
 
 .form-control:focus{
@@ -490,6 +527,8 @@ body.calendar-gcal-page{
 .form-control:focus,
 .form-select:focus{
     border-radius: var(--radius-standard);
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
 }
 
 
@@ -873,7 +912,7 @@ body.calendar-gcal-page{
 }
 
 .home-title{
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 3vw, 2.45rem);
     font-weight: 750;
     line-height: 1.15;
     letter-spacing: .1px;
@@ -942,7 +981,7 @@ body.calendar-gcal-page{
 
 .home-agenda-card,
 .home-waitlist-card{
-    padding: .95rem 1rem !important;
+    padding: var(--space-section) !important;
 }
 
 .home-section-meta{
@@ -1269,7 +1308,7 @@ body.calendar-gcal-page{
 }
 
 .settings-card{
-    padding: 1.2rem;
+    padding: var(--space-section);
     overflow: hidden;
 }
 
@@ -1321,7 +1360,7 @@ body.calendar-gcal-page{
     border: 1px solid var(--border-color);
     border-radius: var(--radius-standard);
     background: #fff;
-    padding: 1.1rem;
+    padding: var(--space-section);
 }
 
 .settings-details{
@@ -1820,7 +1859,7 @@ body.calendar-gcal-page .modal-backdrop.show {
 .page-header-row{
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
 }
 
@@ -2028,6 +2067,15 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     .page-header-row .btn{
+        width: 100%;
+    }
+
+    .promemoria-date-form{
+        grid-template-columns: 1fr;
+    }
+
+    .promemoria-date-form .btn,
+    .app-form-actions .btn{
         width: 100%;
     }
 
@@ -2329,11 +2377,71 @@ body.calendar-gcal-page .modal-backdrop.show {
    ========================= */
 
 .app-shell{
-    max-width: 1200px;
+    max-width: 1280px;
 }
 
 .section-card{
     border-radius: var(--radius-standard);
+}
+
+.section-card.p-4{
+    padding: var(--space-section) !important;
+}
+
+.content-card{
+    padding: var(--space-section);
+}
+
+.content-panel{
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-standard);
+    background: #ffffff;
+    padding: var(--space-section);
+}
+
+.app-form-grid{
+    display: grid;
+    gap: var(--space-field);
+}
+
+.app-form-actions{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .55rem;
+}
+
+.promemoria-card{
+    padding: var(--space-section);
+}
+
+.promemoria-date-form{
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) auto;
+    align-items: end;
+    gap: .8rem;
+    margin-bottom: 1.05rem;
+}
+
+.promemoria-meta{
+    color: var(--text-muted);
+    font-size: var(--font-size-small);
+    margin-bottom: 1rem;
+}
+
+.promemoria-message{
+    min-height: 150px;
+}
+
+@media (max-width: 767.98px){
+    .promemoria-date-form{
+        grid-template-columns: 1fr;
+    }
+
+    .promemoria-date-form .btn,
+    .app-form-actions .btn{
+        width: 100%;
+    }
 }
 
 .section-action-btn{

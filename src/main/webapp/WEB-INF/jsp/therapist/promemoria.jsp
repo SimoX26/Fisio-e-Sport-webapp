@@ -10,7 +10,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/assets/img/logo.png">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260617-4">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260721-1">
 </head>
 <body class="app-page">
 
@@ -20,7 +20,7 @@
     <div class="page-header-row mb-3">
         <div>
             <h1 class="page-title mb-1">Invia promemoria</h1>
-            <div class="home-subtitle">Seleziona un appuntamento e invia un messaggio WhatsApp al singolo paziente.</div>
+            <div class="page-subtitle">Seleziona un appuntamento e invia un messaggio WhatsApp al singolo paziente.</div>
         </div>
         <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/dashboard">Torna alla pagina iniziale</a>
     </div>
@@ -41,25 +41,25 @@
         </div>
     </c:if>
 
-    <div class="glass-card section-card">
-        <form method="get" action="<%= request.getContextPath() %>/promemoria" class="row g-3 align-items-end mb-4">
-            <div class="col-12 col-md-4">
+    <div class="glass-card section-card promemoria-card">
+        <form method="get" action="<%= request.getContextPath() %>/promemoria" class="promemoria-date-form">
+            <div>
                 <label class="form-label" for="date">Giorno appuntamento</label>
                 <input class="form-control" type="date" id="date" name="date" value="<c:out value='${selectedDate}' />">
             </div>
-            <div class="col-12 col-md-auto">
+            <div>
                 <button type="submit" class="btn btn-outline-primary">Mostra appuntamenti</button>
             </div>
         </form>
 
-        <div class="small text-muted mb-3">
+        <div class="promemoria-meta">
             Appuntamenti programmati per <strong><c:out value="${selectedDateLabel}" /></strong>
         </div>
 
-        <form method="post" action="<%= request.getContextPath() %>/promemoria">
+        <form method="post" action="<%= request.getContextPath() %>/promemoria" class="app-form-grid">
             <input type="hidden" name="date" value="<c:out value='${selectedDate}' />">
 
-            <div class="mb-3">
+            <div>
                 <label class="form-label" for="appointmentId">Appuntamento</label>
                 <select class="form-select" id="appointmentId" name="appointmentId" required>
                     <option value="">Seleziona appuntamento</option>
@@ -76,15 +76,15 @@
                 </c:if>
             </div>
 
-            <div class="mb-4">
+            <div>
                 <label class="form-label" for="template">Messaggio</label>
-                <textarea class="form-control" id="template" name="template" rows="5"><c:out value="${template}" /></textarea>
+                <textarea class="form-control promemoria-message" id="template" name="template" rows="5"><c:out value="${template}" /></textarea>
                 <div class="form-text">
                     Puoi usare: <code>{giorno}</code>, <code>{ora inizio}</code>, <code>{ora fine}</code>, <code>{ora inizio - ora fine}</code>.
                 </div>
             </div>
 
-            <div class="d-flex gap-2 flex-wrap">
+            <div class="app-form-actions">
                 <button type="submit" class="btn btn-primary" <c:if test="${empty appointments or not whatsAppConfigured}">disabled</c:if>>
                     Invia promemoria
                 </button>
