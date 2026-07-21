@@ -47,6 +47,16 @@ public class CalendarController {
         return appointmentDAO.findByTherapistInPeriod(therapistId, start, end);
     }
 
+    public Appointment getAppointmentForTherapist(long appointmentId, long therapistId) {
+        checkTherapistUserExists(therapistId);
+        Appointment appointment = appointmentDAO.findById(appointmentId)
+                .orElseThrow(() -> new AppointmentNotFoundException(appointmentId));
+        if (appointment.getTherapistId() != therapistId) {
+            throw new IllegalArgumentException("Appuntamento non autorizzato per questo terapista");
+        }
+        return appointment;
+    }
+
     public List<CalendarEventView> getCalendarEventViewsForTherapistInPeriod(long therapistId, LocalDateTime start, LocalDateTime end) {
         validatePeriodRange(start, end);
         checkTherapistUserExists(therapistId);

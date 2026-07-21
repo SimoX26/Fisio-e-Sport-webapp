@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 { headers: { Accept: 'application/json' } }
             );
             if (!response.ok) {
-                throw new Error('Impossibile caricare i destinatari del reminder');
+                throw new Error('Impossibile caricare i destinatari del promemoria');
             }
             const payload = await parseApiPayload(response);
             reminderPreviewData = Array.isArray(payload?.recipients) ? payload.recipients : [];
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             reminderPreviewData = [];
             renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
-            showGlobalNotice(error.message || 'Errore durante il caricamento dei reminder', 'error');
+            showGlobalNotice(error.message || 'Errore durante il caricamento dei promemoria', 'error');
         }
     }
 
@@ -479,8 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'calendar-reminder-btn';
-            button.title = 'Invia reminder del giorno';
-            button.setAttribute('aria-label', `Invia reminder per ${dateIso}`);
+            button.title = 'Invia promemoria del giorno';
+            button.setAttribute('aria-label', `Invia promemoria per ${dateIso}`);
             button.innerHTML = `
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M12 3a5 5 0 0 0-5 5v2.8l-1.7 2.8a1 1 0 0 0 .85 1.5h11.7a1 1 0 0 0 .85-1.5L17 10.8V8a5 5 0 0 0-5-5Zm0 18a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 21Z"></path>
@@ -1330,7 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     reminderModal.hide();
                 }
             } catch (error) {
-                showGlobalNotice(error.message || 'Errore durante l\'invio dei reminder', 'error');
+                showGlobalNotice(error.message || 'Errore durante l\'invio dei promemoria', 'error');
             }
         });
     }
@@ -1425,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: data
         });
         if (!response.ok) {
-            throw await parseApiError(response, 'Errore durante l\'invio dei reminder');
+            throw await parseApiError(response, 'Errore durante l\'invio dei promemoria');
         }
         return parseApiPayload(response);
     }
@@ -1455,7 +1455,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: data
         });
         if (!response.ok) {
-            throw await parseApiError(response, 'Errore durante il salvataggio del template reminder');
+            throw await parseApiError(response, 'Errore durante il salvataggio del messaggio promemoria');
         }
         return parseApiPayload(response);
     }
@@ -1465,6 +1465,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const sentCount = payload?.sentCount || 0;
         const skippedCount = payload?.skippedCount || 0;
         const failedCount = payload?.failedCount || 0;
-        return `Reminder elaborati: ${processedCount}, inviati: ${sentCount}, saltati: ${skippedCount}, falliti: ${failedCount}.`;
+        return `Promemoria elaborati: ${processedCount}, inviati: ${sentCount}, saltati: ${skippedCount}, falliti: ${failedCount}.`;
     }
 });

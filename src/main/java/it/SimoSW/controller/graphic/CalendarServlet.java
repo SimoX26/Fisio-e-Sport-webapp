@@ -235,7 +235,7 @@ public class CalendarServlet extends HttpServlet {
         ApiResponseWriter.writeSuccess(
                 response,
                 HttpServletResponse.SC_OK,
-                "Template reminder salvato",
+                "Messaggio promemoria salvato",
                 payload
         );
     }
@@ -382,7 +382,7 @@ public class CalendarServlet extends HttpServlet {
             ApiResponseWriter.writeSuccess(
                     response,
                     HttpServletResponse.SC_OK,
-                    "Nessun reminder da inviare per la data selezionata",
+                    "Nessun promemoria da inviare per la data selezionata",
                     payload
             );
             return;
@@ -393,7 +393,7 @@ public class CalendarServlet extends HttpServlet {
                     getServletContext(),
                     response,
                     422,
-                    "Nessun reminder inviato: i pazienti del giorno non hanno un numero WhatsApp valido.",
+                    "Nessun promemoria inviato: i pazienti del giorno non hanno un numero WhatsApp valido.",
                     "WHATSAPP_RECIPIENTS_INVALID",
                     null
             );
@@ -405,7 +405,7 @@ public class CalendarServlet extends HttpServlet {
                     getServletContext(),
                     response,
                     HttpServletResponse.SC_BAD_GATEWAY,
-                    firstFailureMessage == null ? "Invio reminder WhatsApp non riuscito." : firstFailureMessage,
+                    firstFailureMessage == null ? "Invio promemoria WhatsApp non riuscito." : firstFailureMessage,
                     "WHATSAPP_SEND_FAILED",
                     null
             );
@@ -415,7 +415,7 @@ public class CalendarServlet extends HttpServlet {
         ApiResponseWriter.writeSuccess(
                 response,
                 HttpServletResponse.SC_OK,
-                "Reminder elaborati correttamente",
+                "Promemoria elaborati correttamente",
                 payload
         );
     }
@@ -517,12 +517,12 @@ public class CalendarServlet extends HttpServlet {
 
     private LocalDate parseRequiredDate(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Data reminder mancante");
+            throw new IllegalArgumentException("Data promemoria mancante");
         }
         try {
             return LocalDate.parse(value.trim());
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Data reminder non valida: " + value);
+            throw new IllegalArgumentException("Data promemoria non valida: " + value);
         }
     }
 

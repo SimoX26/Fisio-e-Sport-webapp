@@ -37,7 +37,7 @@
         <div class="home-topbar-actions" aria-label="Azioni rapide">
             <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
             <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
-            <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">Invia reminder</a>
+            <a class="home-action-pill" href="<%= request.getContextPath() %>/promemoria">Invia promemoria</a>
         </div>
     </div>
 
@@ -75,7 +75,7 @@
             <span class="home-kpi-chip__value"><c:out value="${patientsToday}" /></span>
         </a>
         <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-            <span class="home-kpi-chip__label">Reminder da inviare</span>
+            <span class="home-kpi-chip__label">Promemoria da inviare</span>
             <span class="home-kpi-chip__value"><c:out value="${remindersToSendToday}" /></span>
         </a>
     </div>

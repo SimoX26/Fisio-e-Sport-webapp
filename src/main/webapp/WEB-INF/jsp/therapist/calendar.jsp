@@ -67,13 +67,13 @@
 </div>
 
 <!-- =========================
-     MODALE REMINDER GIORNALIERI
+     MODALE PROMEMORIA GIORNALIERI
      ========================= -->
 <div class="modal fade" id="reminderModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content glass-card">
             <div class="modal-header">
-                <h5 class="modal-title">Reminder pazienti</h5>
+                <h5 class="modal-title">Promemoria pazienti</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -86,7 +86,7 @@
                 </c:if>
 
                 <div class="mb-3">
-                    <label class="form-label" for="reminderTemplate">Messaggio reminder</label>
+                    <label class="form-label" for="reminderTemplate">Messaggio promemoria</label>
                     <textarea class="form-control" id="reminderTemplate" rows="4"></textarea>
                     <div class="form-text">
                         Placeholder disponibili: <code>{nome paziente}</code>, <code>{giorno}</code>, <code>{ora inizio}</code>, <code>{ora fine}</code>, <code>{ora inizio - ora fine}</code>
@@ -104,7 +104,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                <button type="button" class="btn btn-primary" id="sendReminderBtn">Invia reminder</button>
+                <button type="button" class="btn btn-primary" id="sendReminderBtn">Invia promemoria</button>
             </div>
         </div>
     </div>
