@@ -725,6 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
         firstDay: 1,
         height: 'auto',
         expandRows: true,
+        stickyHeaderDates: true,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
