@@ -465,6 +465,14 @@ body.calendar-gcal-page{
     line-height: 1.25;
 }
 
+.reminder-modal-placeholders{
+    color: var(--text-muted);
+    font-size: .82rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-align: right;
+}
+
 .reminder-appointment-list{
     display: grid;
     gap: .5rem;
@@ -2204,6 +2212,10 @@ body.calendar-gcal-page .modal-backdrop.show {
         --mobile-modal-edge-gap: 1.25rem;
     }
 
+    body.calendar-gcal-page{
+        --calendar-weekdays-sticky-top: 56px;
+    }
+
     html{
         overflow-x: hidden;
     }
@@ -2346,12 +2358,14 @@ body.calendar-gcal-page .modal-backdrop.show {
 
     .calendar-scroll-shell{
         max-height: none;
+        overflow-x: auto;
+        overflow-y: visible;
     }
 
     body.calendar-view-day .fc .fc-scrollgrid-section-header th,
     body.calendar-view-week .fc .fc-scrollgrid-section-header th{
         position: sticky;
-        top: 0;
+        top: var(--calendar-weekdays-sticky-top);
         z-index: 20;
         background: #ffffff !important;
     }

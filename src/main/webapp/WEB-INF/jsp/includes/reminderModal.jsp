@@ -31,6 +31,9 @@
                     <div class="reminder-modal-panel reminder-modal-panel--message">
                         <div class="reminder-modal-head">
                             <label class="form-label mb-0" for="reminderTemplate">Messaggio</label>
+                            <span class="reminder-modal-placeholders">
+                                {nome paziente}, {giorno}, {ora inizio}, {ora fine}, {ora inizio - ora fine}
+                            </span>
                         </div>
                         <textarea class="form-control" id="reminderTemplate" rows="2"></textarea>
                     </div>
