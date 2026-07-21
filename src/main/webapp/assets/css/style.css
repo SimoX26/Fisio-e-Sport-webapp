@@ -11,6 +11,11 @@
     --text-muted: #5f6f82;
     --brand-primary: #0d6efd;
     --brand-secondary: #20c997;
+    --brand-danger: #dc3545;
+    --brand-success: #198754;
+    --brand-primary-soft: #edf5ff;
+    --brand-success-soft: #eef9f2;
+    --brand-danger-soft: #fff1f2;
     --input-bg: #ffffff;
     --calendar-event-border: #7f9fcd;
     --radius-standard: 12px;
@@ -499,7 +504,7 @@ body.calendar-gcal-page{
     border-color: var(--border-color);
     color: var(--text-main);
     background: #ffffff;
-    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
 .btn{
@@ -507,6 +512,104 @@ body.calendar-gcal-page{
     font-size: var(--font-size-ui);
     font-weight: 600;
     line-height: 1.25;
+    box-shadow: none !important;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.btn:hover{
+    transform: translateY(-1px);
+}
+
+.btn:active{
+    transform: translateY(0);
+}
+
+.btn-primary,
+.btn-outline-primary{
+    color: var(--brand-primary) !important;
+    border-color: rgba(13,110,253,.32) !important;
+    background: var(--brand-primary-soft) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible,
+.btn-primary:active,
+.btn-outline-primary:hover,
+.btn-outline-primary:focus-visible,
+.btn-outline-primary:active,
+.btn-primary.active,
+.btn-outline-primary.active,
+.show > .btn-primary.dropdown-toggle,
+.show > .btn-outline-primary.dropdown-toggle{
+    color: #0b5ed7 !important;
+    border-color: rgba(13,110,253,.48) !important;
+    background: #e1efff !important;
+}
+
+.btn-success,
+.btn-outline-success{
+    color: var(--brand-success) !important;
+    border-color: rgba(25,135,84,.32) !important;
+    background: var(--brand-success-soft) !important;
+}
+
+.btn-success:hover,
+.btn-success:focus-visible,
+.btn-success:active,
+.btn-outline-success:hover,
+.btn-outline-success:focus-visible,
+.btn-outline-success:active,
+.btn-success.active,
+.btn-outline-success.active,
+.show > .btn-success.dropdown-toggle,
+.show > .btn-outline-success.dropdown-toggle{
+    color: #146c43 !important;
+    border-color: rgba(25,135,84,.48) !important;
+    background: #e2f4e9 !important;
+}
+
+.btn-danger,
+.btn-outline-danger{
+    color: var(--brand-danger) !important;
+    border-color: rgba(220,53,69,.34) !important;
+    background: var(--brand-danger-soft) !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus-visible,
+.btn-danger:active,
+.btn-outline-danger:hover,
+.btn-outline-danger:focus-visible,
+.btn-outline-danger:active,
+.btn-danger.active,
+.btn-outline-danger.active,
+.show > .btn-danger.dropdown-toggle,
+.show > .btn-outline-danger.dropdown-toggle{
+    color: #b02a37 !important;
+    border-color: rgba(220,53,69,.52) !important;
+    background: #ffe5e8 !important;
+}
+
+.btn-secondary{
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+    background: #ffffff !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus-visible,
+.btn-secondary:active,
+.btn-secondary.active,
+.show > .btn-secondary.dropdown-toggle{
+    border-color: #c8ccd1 !important;
+    color: var(--text-main) !important;
+    background: var(--bg-soft) !important;
+}
+
+.btn:disabled,
+.btn.disabled{
+    opacity: .62;
+    transform: none;
 }
 
 .btn-outline-secondary:hover,
@@ -517,16 +620,6 @@ body.calendar-gcal-page{
     border-color: rgba(13,110,253,.38);
     color: var(--brand-primary);
     background: rgba(13,110,253,.04);
-}
-
-.btn-primary{
-    border-color: var(--brand-primary);
-    background: var(--brand-primary);
-}
-
-.btn-primary:hover{
-    background: #0b5ed7;
-    border-color: #0b5ed7;
 }
 
 
