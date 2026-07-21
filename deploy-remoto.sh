@@ -20,6 +20,7 @@ Opzioni:
   --tomcat-webapps <path>  Cartella webapps Tomcat (default: /opt/tomcat/webapps)
   --baileys-path <path>    Cartella remota baileys-service (default: /opt/baileys-service)
   --baileys-owner <owner>  Owner remoto baileys-service (default: auto)
+  --install-baileys-deps   Esegue npm install per baileys-service sul server remoto
   --with-sql               Carica la cartella migration su server remoto (destinazione: ~/)
   --war <path>             WAR locale da deployare (default: ultimo in target/)
   --skip-build             Salta mvn clean package
@@ -28,6 +29,7 @@ Opzioni:
 Esempi:
   ./deploy-remoto.sh
   ./deploy-remoto.sh --with-sql
+  ./deploy-remoto.sh --install-baileys-deps
   ./deploy-remoto.sh --password '***'
 HELP
 }
@@ -50,6 +52,7 @@ BAILEYS_OWNER="auto"
 WAR_PATH=""
 SKIP_BUILD="false"
 WITH_SQL="false"
+INSTALL_BAILEYS_DEPS="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -87,6 +90,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --with-sql)
       WITH_SQL="true"
+      shift
+      ;;
+    --install-baileys-deps)
+      INSTALL_BAILEYS_DEPS="true"
       shift
       ;;
     --war)
@@ -205,7 +212,7 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
     chown -R \"\$BAILEYS_OWNER\" '${BAILEYS_REMOTE_PATH%/}'
   fi
   chmod -R u+rwX,go+rX,go-w '${BAILEYS_REMOTE_PATH%/}'
-  if command -v npm >/dev/null 2>&1; then
+  if [ '${INSTALL_BAILEYS_DEPS}' = 'true' ] && command -v npm >/dev/null 2>&1; then
     echo '   - installo dipendenze npm baileys-service'
     if [ -n \"\$BAILEYS_RUN_USER\" ] && id \"\$BAILEYS_RUN_USER\" >/dev/null 2>&1 && command -v runuser >/dev/null 2>&1; then
       if command -v timeout >/dev/null 2>&1; then
@@ -220,8 +227,10 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
         npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
       fi
     fi
-  else
+  elif [ '${INSTALL_BAILEYS_DEPS}' = 'true' ]; then
     echo 'ATTENZIONE: npm non trovato sul server. Installa nodejs/npm prima di avviare WhatsApp.'
+  else
+    echo '   - salto installazione dipendenze npm baileys-service (usa --install-baileys-deps se necessario)'
   fi
   echo '   - pulizia staging baileys-service'
   rm -f ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz
