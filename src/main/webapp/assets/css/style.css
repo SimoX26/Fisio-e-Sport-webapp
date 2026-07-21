@@ -1170,24 +1170,23 @@ body.calendar-gcal-page{
 
 .settings-hero{
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
+    padding-inline: .15rem;
 }
 
-.settings-eyebrow{
-    color: var(--brand-primary);
-    font-size: .78rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
+.settings-card{
+    padding: 1.2rem;
+    overflow: hidden;
 }
 
 .settings-card__head{
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    padding: .1rem .15rem 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .settings-card__title{
@@ -1222,11 +1221,12 @@ body.calendar-gcal-page{
     display: grid;
     grid-template-columns: minmax(260px, .8fr) minmax(320px, 1.2fr);
     gap: 1rem;
+    padding-top: .1rem;
 }
 
 .settings-panel{
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-large);
+    border-radius: var(--radius-standard);
     background: #fff;
     padding: 1.1rem;
 }
@@ -1262,6 +1262,7 @@ body.calendar-gcal-page{
     background: #e7f6ed;
     color: #173f2a;
     padding: 1rem;
+    font-weight: 600;
 }
 
 @media (max-width: 991.98px){

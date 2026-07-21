@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class WhatsAppBaileysService {
@@ -28,7 +30,7 @@ public class WhatsAppBaileysService {
         this.objectMapper = objectMapper;
         this.gatewayBaseUrl = trimTrailingSlash(AppProperties.get("whatsapp.baileys.gatewayBaseUrl", DEFAULT_GATEWAY_BASE_URL));
         this.timeoutMs = AppProperties.getInt("whatsapp.baileys.gatewayTimeoutMs", DEFAULT_TIMEOUT_MS);
-        this.serviceDirectory = AppProperties.get("whatsapp.baileys.serviceDirectory", "baileys-service");
+        this.serviceDirectory = AppProperties.get("whatsapp.baileys.serviceDirectory", "/opt/baileys-service");
     }
 
     public BaileysStatus getStatus() {
@@ -91,11 +93,8 @@ public class WhatsAppBaileysService {
             return;
         }
 
-        File directory = Path.of(serviceDirectory).toFile();
+        File directory = resolveServiceDirectory();
         File startScript = new File(directory, "start-baileys.sh");
-        if (!directory.isDirectory() || !startScript.isFile()) {
-            throw new IllegalStateException("Cartella Baileys non trovata: " + directory.getAbsolutePath());
-        }
 
         File logFile = new File(directory, "baileys-service.log");
         ProcessBuilder processBuilder = new ProcessBuilder("bash", startScript.getAbsolutePath());
@@ -209,6 +208,25 @@ public class WhatsAppBaileysService {
         } catch (NumberFormatException ex) {
             return 0;
         }
+    }
+
+    private File resolveServiceDirectory() {
+        List<File> candidates = new ArrayList<>();
+        candidates.add(Path.of(serviceDirectory).toFile());
+        candidates.add(Path.of("/opt/baileys-service").toFile());
+        candidates.add(Path.of(System.getProperty("user.dir"), "baileys-service").toFile());
+
+        for (File candidate : candidates) {
+            if (candidate == null) {
+                continue;
+            }
+            File startScript = new File(candidate, "start-baileys.sh");
+            if (candidate.isDirectory() && startScript.isFile()) {
+                return candidate;
+            }
+        }
+
+        throw new IllegalStateException("Cartella Baileys non trovata: " + candidates.get(0).getAbsolutePath());
     }
 
     public static class BaileysStatus {

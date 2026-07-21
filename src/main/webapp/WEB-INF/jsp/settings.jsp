@@ -17,11 +17,7 @@
 
 <main class="container app-shell mt-4">
     <div class="settings-hero mb-4">
-        <div>
-            <p class="settings-eyebrow mb-1">Sistema</p>
-            <h1 class="page-title mb-2">Impostazioni</h1>
-            <p class="text-muted mb-0">Gestisci il Servizio WhatsApp usato per i reminder.</p>
-        </div>
+        <h1 class="page-title mb-0">Impostazioni</h1>
     </div>
 
     <c:if test="${not empty success}">
@@ -38,10 +34,7 @@
 
     <section class="glass-card section-card settings-card">
         <div class="settings-card__head">
-            <div>
-                <h2 class="settings-card__title mb-1">Servizio WhatsApp</h2>
-                <p class="text-muted mb-0">Il calendario invia i reminder solo quando questo servizio risulta connesso.</p>
-            </div>
+            <h2 class="settings-card__title mb-0">Servizio WhatsApp</h2>
             <c:choose>
                 <c:when test="${baileysStatus.ready}">
                     <span class="settings-status settings-status--ok">Connesso</span>
@@ -61,10 +54,6 @@
                     <div>
                         <dt>Stato</dt>
                         <dd><c:out value="${baileysStatus.state}" /></dd>
-                    </div>
-                    <div>
-                        <dt>QR generato</dt>
-                        <dd>#<c:out value="${baileysStatus.qrCounter}" /></dd>
                     </div>
                     <c:if test="${not empty baileysStatus.lastError}">
                         <div>
@@ -89,18 +78,13 @@
                 <c:choose>
                     <c:when test="${baileysStatus.ready}">
                         <div class="settings-ready-box">
-                            <h3 class="h5 mb-2">WhatsApp collegato</h3>
-                            <p class="text-muted mb-0">Puoi tornare al calendario e inviare i reminder.</p>
+                            WhatsApp collegato.
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <h3 class="h5 mb-3">Codice QR</h3>
                         <iframe class="settings-qr-frame"
                                 src="<%= request.getContextPath() %>/settings/whatsapp-qr"
                                 title="QR Servizio WhatsApp"></iframe>
-                        <p class="text-muted small mt-3 mb-0">
-                            Se il QR cambia durante la scansione, resta su questa pagina: il riquadro si aggiorna automaticamente.
-                        </p>
                     </c:otherwise>
                 </c:choose>
             </div>
