@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 PID_FILE="$SCRIPT_DIR/baileys-service.pid"
+export PATH="/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 
 if [ -f "$PID_FILE" ]; then
   EXISTING_PID="$(cat "$PID_FILE" 2>/dev/null || true)"
@@ -17,10 +18,20 @@ if [ "${BAILEYS_RESET_SESSION:-0}" = "1" ]; then
   rm -rf auth-session
 fi
 
+if ! command -v npm >/dev/null 2>&1; then
+  echo "[baileys-service] npm non trovato nel PATH: $PATH" >&2
+  exit 127
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[baileys-service] node non trovato nel PATH: $PATH" >&2
+  exit 127
+fi
+
 if [ ! -d node_modules ]; then
   npm install
 fi
 
 echo $$ > "$PID_FILE"
 trap 'rm -f "$PID_FILE"' EXIT
-exec npm start
+exec node server.js

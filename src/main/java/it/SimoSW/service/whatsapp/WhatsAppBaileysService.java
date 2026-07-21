@@ -95,16 +95,20 @@ public class WhatsAppBaileysService {
 
         File directory = resolveServiceDirectory();
         File startScript = new File(directory, "start-baileys.sh");
+        if (!directory.canWrite()) {
+            throw new IllegalStateException("Cartella Baileys non scrivibile dall'utente Tomcat: " + directory.getAbsolutePath());
+        }
 
         File logFile = new File(directory, "baileys-service.log");
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", startScript.getAbsolutePath());
+        ProcessBuilder processBuilder = new ProcessBuilder(resolveBashCommand(), startScript.getAbsolutePath());
         processBuilder.directory(directory);
+        processBuilder.environment().put("PATH", "/usr/local/bin:/usr/bin:/bin");
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
         processBuilder.redirectError(ProcessBuilder.Redirect.appendTo(logFile));
         try {
             processBuilder.start();
         } catch (IOException ex) {
-            throw new RuntimeException("Impossibile avviare il servizio WhatsApp locale.", ex);
+            throw new RuntimeException("Impossibile avviare il servizio WhatsApp locale: " + ex.getMessage(), ex);
         }
     }
 
@@ -122,8 +126,9 @@ public class WhatsAppBaileysService {
             throw new IllegalStateException("Script stop Baileys non trovato: " + stopScript.getAbsolutePath());
         }
         File logFile = new File(directory, "baileys-service.log");
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", stopScript.getAbsolutePath());
+        ProcessBuilder processBuilder = new ProcessBuilder(resolveBashCommand(), stopScript.getAbsolutePath());
         processBuilder.directory(directory);
+        processBuilder.environment().put("PATH", "/usr/local/bin:/usr/bin:/bin");
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
         processBuilder.redirectError(ProcessBuilder.Redirect.appendTo(logFile));
         try {
@@ -133,7 +138,7 @@ public class WhatsAppBaileysService {
                 throw new RuntimeException("Arresto del servizio WhatsApp non riuscito.");
             }
         } catch (IOException ex) {
-            throw new RuntimeException("Impossibile arrestare il servizio WhatsApp locale.", ex);
+            throw new RuntimeException("Impossibile arrestare il servizio WhatsApp locale: " + ex.getMessage(), ex);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Arresto del servizio WhatsApp interrotto.", ex);
@@ -280,6 +285,11 @@ public class WhatsAppBaileysService {
         }
 
         throw new IllegalStateException("Cartella Baileys non trovata: " + candidates.get(0).getAbsolutePath());
+    }
+
+    private String resolveBashCommand() {
+        File bash = Path.of("/bin/bash").toFile();
+        return bash.isFile() ? bash.getAbsolutePath() : "bash";
     }
 
     public static class BaileysStatus {
