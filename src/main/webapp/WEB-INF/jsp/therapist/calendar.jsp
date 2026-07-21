@@ -77,8 +77,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-2 small text-muted">Giorno selezionato: <strong id="reminderDayLabel">-</strong></div>
+                <div class="mb-2 small text-muted">Selezione: <strong id="reminderDayLabel">-</strong></div>
                 <input type="hidden" id="reminderDate">
+                <input type="hidden" id="reminderAppointmentId">
                 <c:if test="${not requestScope.whatsAppConfigured}">
                     <div class="alert alert-warning py-2 small" role="alert">
                         Servizio WhatsApp non configurato per questo account. Contattare l'amministratore di sistema.
@@ -133,7 +134,7 @@
 
             <div class="modal-footer">
                 <span id="eventModalStateHint" class="me-auto text-muted small d-none"></span>
-                <a href="#" class="btn btn-outline-primary" id="sendSingleReminderBtn">Invia promemoria</a>
+                <button type="button" class="btn btn-outline-primary" id="sendSingleReminderBtn">Invia promemoria</button>
                 <a href="#" class="btn btn-outline-secondary" id="openPatientDetailsBtn">Dettagli paziente</a>
                 <button type="button" class="btn btn-success" id="completeAppointmentBtn">
                     Completa trattamento

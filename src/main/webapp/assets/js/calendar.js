@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteAppointmentBtn = document.getElementById('confirmDeleteAppointmentBtn');
     const reminderDayLabelEl = document.getElementById('reminderDayLabel');
     const reminderDateInput = document.getElementById('reminderDate');
+    const reminderAppointmentIdInput = document.getElementById('reminderAppointmentId');
     const reminderTemplateInput = document.getElementById('reminderTemplate');
     const reminderPreviewListEl = document.getElementById('reminderPreviewList');
     const reminderPreviewEmptyEl = document.getElementById('reminderPreviewEmpty');
@@ -421,6 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (reminderTemplateInput && reminderTemplateInput.value.trim()) {
             query.set('template', reminderTemplateInput.value.trim());
         }
+        if (reminderAppointmentIdInput && reminderAppointmentIdInput.value.trim()) {
+            query.set('appointmentId', reminderAppointmentIdInput.value.trim());
+        }
 
         try {
             const response = await fetch(
@@ -448,6 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         reminderDateInput.value = dateIso;
+        if (reminderAppointmentIdInput) {
+            reminderAppointmentIdInput.value = '';
+        }
         const selectedDate = new Date(`${dateIso}T00:00:00`);
         if (reminderDayLabelEl) {
             reminderDayLabelEl.textContent = Number.isNaN(selectedDate.getTime()) ? dateIso : toReminderDayLabel(selectedDate);
@@ -458,6 +465,30 @@ document.addEventListener('DOMContentLoaded', () => {
         reminderPreviewData = [];
         renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
         loadReminderPreview();
+        reminderModal.show();
+    }
+
+    function openReminderModalForEvent(event) {
+        if (!event || !event.start || !reminderModal || !reminderDateInput) {
+            return;
+        }
+        const dateIso = toIsoDateValue(event.start);
+        reminderDateInput.value = dateIso;
+        if (reminderAppointmentIdInput) {
+            reminderAppointmentIdInput.value = String(event.id || '');
+        }
+        if (reminderDayLabelEl) {
+            reminderDayLabelEl.textContent = event.title || toReminderDayLabel(event.start);
+        }
+        if (reminderTemplateInput) {
+            reminderTemplateInput.value = '';
+        }
+        reminderPreviewData = [];
+        renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
+        loadReminderPreview();
+        if (eventModal) {
+            eventModal.hide();
+        }
         reminderModal.show();
     }
 
@@ -833,10 +864,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sendSingleReminderBtn) {
                 const canSendSingleReminder = !isCompleted && !isAllDay && !isNonTreatmentEvent && event.extendedProps.patientId;
                 if (canSendSingleReminder) {
-                    sendSingleReminderBtn.href = `${contextPath}/promemoria?appointmentId=${encodeURIComponent(String(event.id))}`;
                     sendSingleReminderBtn.classList.remove('d-none');
                 } else {
-                    sendSingleReminderBtn.href = '#';
                     sendSingleReminderBtn.classList.add('d-none');
                 }
             }
@@ -1335,7 +1364,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             try {
-                const payload = await executeReminderSend(dateValue, templateValue);
+                const appointmentIdValue = reminderAppointmentIdInput ? reminderAppointmentIdInput.value.trim() : '';
+                const payload = await executeReminderSend(dateValue, templateValue, appointmentIdValue);
                 showGlobalNotice(reminderResultNotice(payload), 'success');
                 if (reminderModal) {
                     reminderModal.hide();
@@ -1343,6 +1373,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 showGlobalNotice(error.message || 'Errore durante l\'invio dei promemoria', 'error');
             }
+        });
+    }
+
+    if (sendSingleReminderBtn) {
+        sendSingleReminderBtn.addEventListener('click', () => {
+            if (!selectedEvent) {
+                return;
+            }
+            openReminderModalForEvent(selectedEvent);
         });
     }
 
@@ -1425,11 +1464,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch((err) => showAppointmentFormError(err.message));
     });
 
-    async function executeReminderSend(dateValue, templateValue) {
+    async function executeReminderSend(dateValue, templateValue, appointmentIdValue = '') {
         const data = new URLSearchParams();
         data.append('action', 'send-reminders');
         data.append('date', dateValue);
         data.append('template', templateValue);
+        if (appointmentIdValue) {
+            data.append('appointmentId', appointmentIdValue);
+        }
 
         const response = await fetch(contextPath + '/calendar', {
             method: 'POST',

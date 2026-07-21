@@ -209,7 +209,8 @@ public class CalendarServlet extends HttpServlet {
             template = resolveReminderTemplate(therapistId);
         }
 
-        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template);
+        Long appointmentId = parseOptionalLong(request.getParameter("appointmentId"));
+        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template, appointmentId);
         Map<String, Object> payload = new HashMap<>();
         payload.put("date", targetDate.toString());
         payload.put("dayLabel", formatReminderDayLabel(targetDate));
@@ -338,7 +339,8 @@ public class CalendarServlet extends HttpServlet {
         }
         reminderTemplateDAO.saveTemplate(therapistId, template);
 
-        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template);
+        Long appointmentId = parseOptionalLong(request.getParameter("appointmentId"));
+        List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template, appointmentId);
         int sentCount = 0;
         int skippedCount = 0;
         int failedCount = 0;
@@ -492,6 +494,17 @@ public class CalendarServlet extends HttpServlet {
         }
     }
 
+    private Long parseOptionalLong(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Appuntamento non valido.");
+        }
+    }
+
     private LocalDate parseOptionalDate(String value, String errorMessage) {
         if (value == null || value.isBlank()) {
             return null;
@@ -527,6 +540,10 @@ public class CalendarServlet extends HttpServlet {
     }
 
     private List<Map<String, Object>> buildReminderRecipients(long therapistId, LocalDate targetDate, String template) {
+        return buildReminderRecipients(therapistId, targetDate, template, null);
+    }
+
+    private List<Map<String, Object>> buildReminderRecipients(long therapistId, LocalDate targetDate, String template, Long appointmentId) {
         LocalDateTime start = targetDate.atStartOfDay();
         LocalDateTime end = targetDate.plusDays(1).atStartOfDay();
         List<Appointment> appointments = calendarController.getAppointmentsForTherapistInPeriod(therapistId, start, end);
@@ -534,6 +551,9 @@ public class CalendarServlet extends HttpServlet {
         String dayLabel = formatReminderDayLabel(targetDate);
 
         for (Appointment appointment : appointments) {
+            if (appointmentId != null && appointment.getId() != appointmentId) {
+                continue;
+            }
             if (appointment.getState() != AppointmentState.SCHEDULED) {
                 continue;
             }

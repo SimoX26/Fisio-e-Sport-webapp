@@ -32,9 +32,6 @@
     <!-- HEADER -->
     <div class="mb-4">
         <h2 class="page-title">Nuovo paziente</h2>
-        <p class="page-subtitle">
-            Inserisci i dati del paziente
-        </p>
     </div>
 
     <!-- FORM -->
