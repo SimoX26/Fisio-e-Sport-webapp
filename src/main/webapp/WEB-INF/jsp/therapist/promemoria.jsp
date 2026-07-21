@@ -19,8 +19,7 @@
 <div class="container app-shell mt-4">
     <div class="page-header-row mb-3">
         <div>
-            <h1 class="page-title mb-1">Invia promemoria</h1>
-            <div class="page-subtitle">Seleziona un appuntamento e invia un messaggio WhatsApp al singolo paziente.</div>
+            <h1 class="page-title mb-0">Invia promemoria</h1>
         </div>
         <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/dashboard">Torna alla pagina iniziale</a>
     </div>
@@ -52,10 +51,6 @@
             </div>
         </form>
 
-        <div class="promemoria-meta">
-            Appuntamenti programmati per <strong><c:out value="${selectedDateLabel}" /></strong>
-        </div>
-
         <form method="post" action="<%= request.getContextPath() %>/promemoria" class="app-form-grid">
             <input type="hidden" name="date" value="<c:out value='${selectedDate}' />">
 
@@ -79,9 +74,6 @@
             <div>
                 <label class="form-label" for="template">Messaggio</label>
                 <textarea class="form-control promemoria-message" id="template" name="template" rows="5"><c:out value="${template}" /></textarea>
-                <div class="form-text">
-                    Puoi usare: <code>{giorno}</code>, <code>{ora inizio}</code>, <code>{ora fine}</code>, <code>{ora inizio - ora fine}</code>.
-                </div>
             </div>
 
             <div class="app-form-actions">

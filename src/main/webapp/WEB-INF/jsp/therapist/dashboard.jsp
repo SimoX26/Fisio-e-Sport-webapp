@@ -75,7 +75,7 @@
             <span class="home-kpi-chip__value"><c:out value="${patientsToday}" /></span>
         </a>
         <a class="glass-card section-card home-kpi-chip text-decoration-none" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=today">
-            <span class="home-kpi-chip__label">Promemoria da inviare</span>
+            <span class="home-kpi-chip__label">Promemoria da inviare oggi</span>
             <span class="home-kpi-chip__value"><c:out value="${remindersToSendToday}" /></span>
         </a>
     </div>
@@ -139,12 +139,11 @@
                     <input type="hidden" name="action" value="add-waitlist-entry">
                     <div class="row g-2">
                         <div class="col-12">
-                            <label class="form-label home-form-label" for="waitlistPatientName">Paziente</label>
+                            <label class="form-label home-form-label" for="waitlistPatientName">Nome e Cognome Paziente</label>
                             <input id="waitlistPatientName"
                                    type="text"
                                    class="form-control"
                                    name="patientName"
-                                   placeholder="Nome e cognome paziente"
                                    required>
                         </div>
                         <div class="col-12">
