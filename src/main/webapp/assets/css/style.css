@@ -386,14 +386,21 @@ body.calendar-gcal-page{
     }
 
     .reminder-modal-panel--date,
-    .reminder-modal-panel--appointments,
-    .reminder-modal-panel--message{
+    .reminder-modal-panel--appointments{
         grid-column: 1;
     }
 
+    .reminder-modal-panel--message,
     .reminder-modal-panel--preview{
         grid-column: 2;
-        grid-row: 1 / span 3;
+    }
+
+    .reminder-modal-panel--message{
+        grid-row: 1;
+    }
+
+    .reminder-modal-panel--preview{
+        grid-row: 2 / span 2;
     }
 }
 
@@ -412,6 +419,13 @@ body.calendar-gcal-page{
     justify-content: space-between;
     gap: .75rem;
     margin-bottom: .5rem;
+}
+
+.reminder-modal-head .form-label{
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
 }
 
 .reminder-appointment-list{
@@ -454,23 +468,37 @@ body.calendar-gcal-page{
     border: 1px solid var(--border-color);
     border-radius: var(--radius-standard);
     background: #ffffff;
-    padding: 10px 12px;
+    padding: .9rem 1rem;
 }
 
 .reminder-preview-head {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 6px;
+    gap: .75rem;
+    margin-bottom: .45rem;
+}
+
+.reminder-preview-head strong{
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.reminder-preview-head span{
+    color: var(--text-main);
     font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
 }
 
 .reminder-preview-msg {
-    color: var(--text-muted);
+    color: var(--text-main);
     white-space: pre-wrap;
     line-height: 1.4;
-    font-size: .92rem;
+    font-size: .95rem;
 }
 
 @media (min-width: 992px){
@@ -1892,8 +1920,8 @@ body.calendar-gcal-page .modal-backdrop.show {
 }
 
 #eventModal .modal-dialog {
-    width: min(670px, calc(100vw - 1.5rem));
-    max-width: 670px;
+    width: min(760px, calc(100vw - 1.5rem));
+    max-width: 760px;
 }
 
 #eventModal .modal-header,
@@ -1922,6 +1950,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     gap: .5rem;
     flex-wrap: wrap;
     justify-content: center;
+    max-width: calc(100% - 4rem);
 }
 
 #eventModal .modal-body {
@@ -1932,10 +1961,16 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 #eventModal .modal-footer {
     justify-content: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: .45rem;
     padding-top: .75rem;
     padding-bottom: .75rem;
+}
+
+#eventModal .modal-footer #eventModalStateHint {
+    flex: 1 0 100%;
+    margin-right: 0 !important;
+    text-align: center;
 }
 
 #eventModal .modal-footer .btn {
@@ -1944,6 +1979,7 @@ body.calendar-gcal-page .modal-backdrop.show {
     font-weight: 600;
     line-height: 1.2;
     padding: .5rem .95rem;
+    max-width: 100%;
 }
 
 #eventModal .event-title-time {
@@ -1951,12 +1987,6 @@ body.calendar-gcal-page .modal-backdrop.show {
     font-size: 1rem;
     font-weight: 500;
     text-align: center;
-}
-
-@media (max-width: 767.98px) {
-    #eventModal .modal-footer {
-        flex-wrap: wrap;
-    }
 }
 
 /* =========================
