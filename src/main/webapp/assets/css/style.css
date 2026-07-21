@@ -2380,8 +2380,21 @@ body.calendar-gcal-page .modal-backdrop.show {
     body.calendar-view-week .fc .fc-timegrid-slot-label{
         position: sticky;
         left: 0;
+        min-width: 58px;
+        width: 58px;
         z-index: 18;
         background: #ffffff !important;
+    }
+
+    body.calendar-view-day .fc .fc-timegrid-slot-label-cushion,
+    body.calendar-view-week .fc .fc-timegrid-slot-label-cushion{
+        display: inline-block;
+        min-width: 100%;
+        padding-left: .3rem;
+        padding-right: .3rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-align: right;
     }
 
     body.calendar-view-day .fc .fc-scrollgrid-section-header .fc-timegrid-axis,
