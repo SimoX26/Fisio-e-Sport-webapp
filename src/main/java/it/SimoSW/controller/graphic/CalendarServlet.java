@@ -159,7 +159,7 @@ public class CalendarServlet extends HttpServlet {
         LocalDateTime end = parseDateTime(request.getParameter("end"));
 
         List<CalendarEventView> appointments = calendarController.getCalendarEventViewsForTherapistInPeriod(therapistId, start, end);
-        List<Map<String, Object>> events = new ArrayList<>();
+        List<Map<String, Object>> events = new ArrayList<>(appointments.size());
 
         for (CalendarEventView appointment : appointments) {
             if (appointment.getState() == AppointmentState.CANCELLED) {
@@ -178,7 +178,7 @@ public class CalendarServlet extends HttpServlet {
             Map<String, Object> extendedProps = new HashMap<>();
             extendedProps.put("patientId", appointment.getPatientId());
             extendedProps.put("patient", patientFullName);
-            extendedProps.put("patientPhone", calendarController.resolvePatientPhone(appointment.getPatientId()));
+            extendedProps.put("patientPhone", appointment.getPatientPhone());
             extendedProps.put("nonTreatmentEvent", appointment.getPatientId() == null);
             extendedProps.put("therapistId", appointment.getTherapistId());
             extendedProps.put("state", appointment.getState().name());

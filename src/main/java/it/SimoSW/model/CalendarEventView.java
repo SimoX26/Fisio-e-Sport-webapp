@@ -12,6 +12,7 @@ public class CalendarEventView {
     private final String notes;
     private final AppointmentState state;
     private final String patientFullName;
+    private final String patientPhone;
 
     public CalendarEventView(long appointmentId,
                              Long patientId,
@@ -21,7 +22,8 @@ public class CalendarEventView {
                              boolean allDay,
                              String notes,
                              AppointmentState state,
-                             String patientFullName) {
+                             String patientFullName,
+                             String patientPhone) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.therapistId = therapistId;
@@ -31,6 +33,7 @@ public class CalendarEventView {
         this.notes = notes;
         this.state = state;
         this.patientFullName = patientFullName;
+        this.patientPhone = patientPhone;
     }
 
     public long getAppointmentId() {
@@ -67,5 +70,9 @@ public class CalendarEventView {
 
     public String getPatientFullName() {
         return patientFullName;
+    }
+
+    public String getPatientPhone() {
+        return patientPhone;
     }
 }

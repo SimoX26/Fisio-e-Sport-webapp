@@ -211,7 +211,8 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                    a.notes,
                    a.state,
                    p.first_name,
-                   p.last_name
+                   p.last_name,
+                   p.phone
             FROM appointments a
             LEFT JOIN patients p ON p.id = a.patient_id
             WHERE a.therapist_id = ?
@@ -253,7 +254,8 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
                             rs.getBoolean("all_day"),
                             rs.getString("notes"),
                             AppointmentState.valueOf(rs.getString("state")),
-                            fullName
+                            fullName,
+                            rs.getString("phone")
                     ));
                 }
             }
