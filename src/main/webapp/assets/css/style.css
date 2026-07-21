@@ -2417,6 +2417,31 @@ body.calendar-gcal-page .modal-backdrop.show {
         visibility: visible;
     }
 
+    body.calendar-gcal-page .fc .fc-timegrid-slot-label[data-mobile-slot-label]{
+        color: transparent !important;
+        font-size: 0 !important;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-slot-label[data-mobile-slot-label] .fc-timegrid-slot-label-frame{
+        display: none;
+    }
+
+    body.calendar-gcal-page .fc .fc-timegrid-slot-label[data-mobile-slot-label]::after{
+        content: attr(data-mobile-slot-label);
+        display: block;
+        width: 100%;
+        padding-left: .3rem;
+        padding-right: .35rem;
+        color: #5f6368 !important;
+        font-size: .78rem;
+        font-weight: 700;
+        line-height: 1.1;
+        text-align: right;
+        white-space: nowrap;
+        opacity: 1;
+        visibility: visible;
+    }
+
     body.calendar-view-day .fc .fc-scrollgrid-section-header .fc-timegrid-axis,
     body.calendar-view-week .fc .fc-scrollgrid-section-header .fc-timegrid-axis{
         z-index: 30;

@@ -139,6 +139,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
     }
 
+    function resolveSlotLabelText(slotInfo) {
+        const text = (slotInfo?.text || '').replace(/\s+/g, ' ').trim();
+        if (text) {
+            return text;
+        }
+        if (slotInfo?.date instanceof Date && !Number.isNaN(slotInfo.date.getTime())) {
+            return toTimeValue(slotInfo.date);
+        }
+        return '';
+    }
+
     function toggleTimeSelectionVisibility() {
         if (!timeSelectionSection || !allDayInput) {
             return;
@@ -758,6 +769,12 @@ document.addEventListener('DOMContentLoaded', () => {
             hour12: false
         },
         slotLabelInterval: '01:00',
+        slotLabelDidMount(slotInfo) {
+            const label = resolveSlotLabelText(slotInfo);
+            if (label) {
+                slotInfo.el.setAttribute('data-mobile-slot-label', label);
+            }
+        },
         eventContent(arg) {
             const timeText = arg.timeText || '';
             const title = arg.event.title || '';
