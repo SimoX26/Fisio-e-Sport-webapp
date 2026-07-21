@@ -141,8 +141,8 @@ if [[ -z "$PASSWORD" ]]; then
 fi
 
 TARGET="${USER}@${HOST}"
-SSH_OPTS=(-o StrictHostKeyChecking=accept-new -p "$PORT")
-SCP_OPTS=(-o StrictHostKeyChecking=accept-new -P "$PORT")
+SSH_OPTS=(-o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -p "$PORT")
+SCP_OPTS=(-o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -P "$PORT")
 
 echo ">> Verifico cartella remota: $REMOTE_PATH"
 sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "mkdir -p ${REMOTE_PATH}"
@@ -174,14 +174,17 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
   set -e
   BAILEYS_PARENT_DIR=\$(dirname '${BAILEYS_REMOTE_PATH%/}')
   BAILEYS_OWNER='${BAILEYS_OWNER}'
+  echo '   - preparo Tomcat webapps'
   mkdir -p '$TOMCAT_WEBAPPS_PATH'
   cp -f ${REMOTE_PATH%/}/$WAR_NAME '${TOMCAT_WEBAPPS_PATH%/}/$WAR_NAME'
   find '$TOMCAT_WEBAPPS_PATH' -maxdepth 1 -type f -name '${APP_CONTEXT}*.war' ! -name '$WAR_NAME' -delete
+  echo '   - estraggo baileys-service'
   rm -rf '${BAILEYS_REMOTE_PATH%/}'
   mkdir -p \"\$BAILEYS_PARENT_DIR\"
   tar -xzf ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz -C \"\$BAILEYS_PARENT_DIR\"
   chmod +x '${BAILEYS_REMOTE_PATH%/}/start-baileys.sh'
   chmod +x '${BAILEYS_REMOTE_PATH%/}/stop-baileys.sh'
+  echo '   - preparo permessi baileys-service'
   if [ \"\$BAILEYS_OWNER\" = 'auto' ]; then
     TOMCAT_USER=\$(ps -eo user,args | awk '/[o]rg.apache.catalina.startup.Bootstrap/ {print \$1; exit}')
     if [ -z \"\$TOMCAT_USER\" ] && [ -d '$TOMCAT_WEBAPPS_PATH' ]; then
@@ -203,14 +206,24 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
   fi
   chmod -R u+rwX,go+rX,go-w '${BAILEYS_REMOTE_PATH%/}'
   if command -v npm >/dev/null 2>&1; then
+    echo '   - installo dipendenze npm baileys-service'
     if [ -n \"\$BAILEYS_RUN_USER\" ] && id \"\$BAILEYS_RUN_USER\" >/dev/null 2>&1 && command -v runuser >/dev/null 2>&1; then
-      runuser -u \"\$BAILEYS_RUN_USER\" -- npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      if command -v timeout >/dev/null 2>&1; then
+        timeout 300 runuser -u \"\$BAILEYS_RUN_USER\" -- npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      else
+        runuser -u \"\$BAILEYS_RUN_USER\" -- npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      fi
     else
-      npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      if command -v timeout >/dev/null 2>&1; then
+        timeout 300 npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      else
+        npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+      fi
     fi
   else
     echo 'ATTENZIONE: npm non trovato sul server. Installa nodejs/npm prima di avviare WhatsApp.'
   fi
+  echo '   - pulizia staging baileys-service'
   rm -f ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz
 "
 
