@@ -7,6 +7,7 @@ import it.SimoSW.exception.TimeSlotNotAvailableException;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.CalendarEventView;
+import it.SimoSW.model.dao.ReminderTemplateDAO;
 import it.SimoSW.service.whatsapp.WhatsAppBaileysService;
 import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
 import it.SimoSW.util.ApiResponseWriter;
@@ -40,6 +41,7 @@ public class CalendarServlet extends HttpServlet {
     private TreatmentController treatmentController;
     private WhatsAppConfigurationService whatsAppConfigurationService;
     private WhatsAppBaileysService whatsAppBaileysService;
+    private ReminderTemplateDAO reminderTemplateDAO;
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -50,6 +52,7 @@ public class CalendarServlet extends HttpServlet {
         this.treatmentController = initializer.getTreatmentController();
         this.whatsAppConfigurationService = initializer.getWhatsAppConfigurationService();
         this.whatsAppBaileysService = initializer.getWhatsAppBaileysService();
+        this.reminderTemplateDAO = initializer.getReminderTemplateDAO();
     }
 
     /* =========================
@@ -110,10 +113,11 @@ public class CalendarServlet extends HttpServlet {
                 case "cancel" -> cancelAppointment(request);
                 case "complete" -> completeAppointmentAndCreateTreatment(request);
                 case "send-reminders" -> sendReminders(request, response);
+                case "save-reminder-template" -> saveReminderTemplate(request, response);
                 default -> throw new IllegalArgumentException("Unknown action");
             }
 
-            if (!"send-reminders".equals(action)) {
+            if (!"send-reminders".equals(action) && !"save-reminder-template".equals(action)) {
                 ApiResponseWriter.writeSuccess(
                         response,
                         HttpServletResponse.SC_OK,
@@ -198,14 +202,13 @@ public class CalendarServlet extends HttpServlet {
     }
 
     private void loadReminderPreview(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        resolveTherapistIdFromSession(request);
+        long therapistId = resolveTherapistIdFromSession(request);
         LocalDate targetDate = parseRequiredDate(request.getParameter("date"));
         String template = normalizeNotes(request.getParameter("template"));
         if (template == null) {
-            template = DEFAULT_REMINDER_TEMPLATE;
+            template = resolveReminderTemplate(therapistId);
         }
 
-        long therapistId = resolveTherapistIdFromSession(request);
         List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template);
         Map<String, Object> payload = new HashMap<>();
         payload.put("date", targetDate.toString());
@@ -217,6 +220,24 @@ public class CalendarServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), payload);
+    }
+
+    private void saveReminderTemplate(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        long therapistId = resolveTherapistIdFromSession(request);
+        String template = normalizeNotes(request.getParameter("template"));
+        String normalizedTemplate = template == null ? DEFAULT_REMINDER_TEMPLATE : template;
+        reminderTemplateDAO.saveTemplate(therapistId, normalizedTemplate);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("template", normalizedTemplate);
+        payload.put("defaultTemplate", DEFAULT_REMINDER_TEMPLATE);
+
+        ApiResponseWriter.writeSuccess(
+                response,
+                HttpServletResponse.SC_OK,
+                "Template reminder salvato",
+                payload
+        );
     }
 
 /*
@@ -313,8 +334,9 @@ public class CalendarServlet extends HttpServlet {
 
         String template = normalizeNotes(request.getParameter("template"));
         if (template == null) {
-            template = DEFAULT_REMINDER_TEMPLATE;
+            template = resolveReminderTemplate(therapistId);
         }
+        reminderTemplateDAO.saveTemplate(therapistId, template);
 
         List<Map<String, Object>> recipients = buildReminderRecipients(therapistId, targetDate, template);
         int sentCount = 0;
@@ -562,6 +584,12 @@ public class CalendarServlet extends HttpServlet {
         }
         String raw = String.valueOf(value).trim();
         return raw.isEmpty() || "null".equalsIgnoreCase(raw) ? null : raw;
+    }
+
+    private String resolveReminderTemplate(long therapistId) {
+        return reminderTemplateDAO.findTemplateByTherapistId(therapistId)
+                .map(this::normalizeNotes)
+                .orElse(DEFAULT_REMINDER_TEMPLATE);
     }
 
     private String safeLogMessage(String message) {

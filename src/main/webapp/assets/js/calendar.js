@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendReminderBtn = document.getElementById('sendReminderBtn');
     const refreshReminderPreviewBtn = document.getElementById('refreshReminderPreviewBtn');
     const searchHighlightNoticeEl = document.getElementById('searchHighlightNotice');
+    let reminderTemplateSaveDebounce = null;
 
     if (!calendarEl || !saveButton || !appointmentModalEl || typeof FullCalendar === 'undefined') {
         return;
@@ -412,11 +413,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const dateValue = reminderDateInput.value;
-        const templateValue = reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate();
+        const query = new URLSearchParams({
+            reminderPreview: 'true',
+            date: dateValue
+        });
+        if (reminderTemplateInput && reminderTemplateInput.value.trim()) {
+            query.set('template', reminderTemplateInput.value.trim());
+        }
 
         try {
             const response = await fetch(
-                `${contextPath}/calendar?reminderPreview=true&date=${encodeURIComponent(dateValue)}&template=${encodeURIComponent(templateValue)}`,
+                `${contextPath}/calendar?${query.toString()}`,
                 { headers: { Accept: 'application/json' } }
             );
             if (!response.ok) {
@@ -425,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const payload = await parseApiPayload(response);
             reminderPreviewData = Array.isArray(payload?.recipients) ? payload.recipients : [];
             if (reminderTemplateInput && !reminderTemplateInput.value.trim()) {
-                reminderTemplateInput.value = payload?.defaultTemplate || defaultReminderTemplate();
+                reminderTemplateInput.value = payload?.template || payload?.defaultTemplate || defaultReminderTemplate();
             }
             renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
         } catch (error) {
@@ -444,8 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (reminderDayLabelEl) {
             reminderDayLabelEl.textContent = Number.isNaN(selectedDate.getTime()) ? dateIso : toReminderDayLabel(selectedDate);
         }
-        if (reminderTemplateInput && !reminderTemplateInput.value.trim()) {
-            reminderTemplateInput.value = defaultReminderTemplate();
+        if (reminderTemplateInput) {
+            reminderTemplateInput.value = '';
         }
         reminderPreviewData = [];
         renderReminderPreview(reminderTemplateInput ? reminderTemplateInput.value : defaultReminderTemplate());
@@ -1292,6 +1299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reminderTemplateInput) {
         reminderTemplateInput.addEventListener('input', () => {
             renderReminderPreview(reminderTemplateInput.value);
+            scheduleReminderTemplateSave();
         });
     }
 
@@ -1418,6 +1426,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!response.ok) {
             throw await parseApiError(response, 'Errore durante l\'invio dei reminder');
+        }
+        return parseApiPayload(response);
+    }
+
+    function scheduleReminderTemplateSave() {
+        if (reminderTemplateSaveDebounce) {
+            window.clearTimeout(reminderTemplateSaveDebounce);
+        }
+        reminderTemplateSaveDebounce = window.setTimeout(() => {
+            saveReminderTemplate().catch(() => {
+                // Keep editing smooth even if autosave fails.
+            });
+        }, 500);
+    }
+
+    async function saveReminderTemplate() {
+        if (!reminderTemplateInput) {
+            return null;
+        }
+        const templateValue = reminderTemplateInput.value.trim() || defaultReminderTemplate();
+        const data = new URLSearchParams();
+        data.append('action', 'save-reminder-template');
+        data.append('template', templateValue);
+
+        const response = await fetch(contextPath + '/calendar', {
+            method: 'POST',
+            body: data
+        });
+        if (!response.ok) {
+            throw await parseApiError(response, 'Errore durante il salvataggio del template reminder');
         }
         return parseApiPayload(response);
     }

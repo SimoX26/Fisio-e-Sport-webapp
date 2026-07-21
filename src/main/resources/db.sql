@@ -102,6 +102,21 @@ CREATE TABLE waitlist_entries (
 );
 
 /* =========================
+   THERAPIST REMINDER TEMPLATES
+   ========================= */
+CREATE TABLE therapist_reminder_templates (
+  therapist_id BIGINT PRIMARY KEY,
+  reminder_template TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_therapist_reminder_templates_user
+    FOREIGN KEY (therapist_id) REFERENCES users(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+/* =========================
    PATIENT ANAMNESES
    ========================= */
 CREATE TABLE patient_anamneses (

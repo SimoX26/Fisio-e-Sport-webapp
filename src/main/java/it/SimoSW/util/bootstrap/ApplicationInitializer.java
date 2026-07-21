@@ -15,6 +15,7 @@ import it.SimoSW.model.dao.PatientConditionDAO;
 import it.SimoSW.model.dao.PatientDAO;
 import it.SimoSW.model.dao.KpiMonthlySnapshotDAO;
 import it.SimoSW.model.dao.RememberMeTokenDAO;
+import it.SimoSW.model.dao.ReminderTemplateDAO;
 import it.SimoSW.model.dao.TreatmentPlanDAO;
 import it.SimoSW.model.dao.TreatmentSessionDAO;
 import it.SimoSW.model.dao.UserDAO;
@@ -26,6 +27,7 @@ import it.SimoSW.model.dao.database.DatabasePatientConditionDAO;
 import it.SimoSW.model.dao.database.DatabasePatientDAO;
 import it.SimoSW.model.dao.database.DatabaseKpiMonthlySnapshotDAO;
 import it.SimoSW.model.dao.database.DatabaseRememberMeTokenDAO;
+import it.SimoSW.model.dao.database.DatabaseReminderTemplateDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentPlanDAO;
 import it.SimoSW.model.dao.database.DatabaseTreatmentSessionDAO;
 import it.SimoSW.model.dao.database.DatabaseUserDAO;
@@ -46,6 +48,7 @@ public class ApplicationInitializer {
     private WaitlistController waitlistController;
     private WhatsAppConfigurationService whatsAppConfigurationService;
     private WhatsAppBaileysService whatsAppBaileysService;
+    private ReminderTemplateDAO reminderTemplateDAO;
 
     public void init() {
         initDatabasePersistence();
@@ -63,6 +66,7 @@ public class ApplicationInitializer {
         RememberMeTokenDAO rememberMeTokenDAO = new DatabaseRememberMeTokenDAO();
         AccessRequestDAO accessRequestDAO = new DatabaseAccessRequestDAO();
         WaitlistEntryDAO waitlistEntryDAO = new DatabaseWaitlistEntryDAO();
+        reminderTemplateDAO = new DatabaseReminderTemplateDAO();
         whatsAppConfigurationService = new WhatsAppConfigurationService();
         whatsAppBaileysService = new WhatsAppBaileysService(new ObjectMapper());
 
@@ -153,5 +157,9 @@ public class ApplicationInitializer {
 
     public WhatsAppBaileysService getWhatsAppBaileysService() {
         return whatsAppBaileysService;
+    }
+
+    public ReminderTemplateDAO getReminderTemplateDAO() {
+        return reminderTemplateDAO;
     }
 }
