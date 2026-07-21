@@ -104,10 +104,11 @@
                                     <form method="post" action="<%= request.getContextPath() %>/calendar/trash" class="d-inline ms-1">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<c:out value='${row.id}'/>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Eliminare definitivamente questo appuntamento?');">
-                                            Elimina
-                                        </button>
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger btn-icon-only btn-trash-icon"
+                                                onclick="return confirm('Eliminare definitivamente questo appuntamento?');"
+                                                aria-label="Elimina definitivamente appuntamento"
+                                                title="Elimina definitivamente appuntamento"></button>
                                     </form>
                                 </td>
                             </tr>

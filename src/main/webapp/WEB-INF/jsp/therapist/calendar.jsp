@@ -100,9 +100,11 @@
                 <button type="button" class="btn btn-outline-primary" id="editAppointmentBtn">
                     Modifica
                 </button>
-                <button type="button" class="btn btn-outline-danger" id="deleteAppointmentBtn">
-                    Elimina
-                </button>
+                <button type="button"
+                        class="btn btn-outline-danger btn-icon-only btn-trash-icon"
+                        id="deleteAppointmentBtn"
+                        aria-label="Elimina appuntamento"
+                        title="Elimina appuntamento"></button>
             </div>
 
         </div>
@@ -288,7 +290,10 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                <button class="btn btn-danger" id="confirmDeleteAppointmentBtn">Elimina</button>
+                <button class="btn btn-danger btn-icon-only btn-trash-icon"
+                        id="confirmDeleteAppointmentBtn"
+                        aria-label="Conferma eliminazione appuntamento"
+                        title="Conferma eliminazione appuntamento"></button>
             </div>
         </div>
     </div>

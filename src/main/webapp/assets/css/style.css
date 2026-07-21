@@ -363,12 +363,16 @@ body.calendar-gcal-page{
 }
 
 #reminderModal .modal-content{
+    display: flex;
+    flex-direction: column;
     height: 100%;
     max-height: 100%;
     overflow: hidden;
 }
 
 #reminderModal .modal-body{
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -379,14 +383,15 @@ body.calendar-gcal-page{
 
 @media (min-width: 992px){
     #reminderModal .modal-dialog{
-        height: calc(100vh - 2rem);
-        height: calc(100dvh - 2rem);
+        height: calc(100vh - 3rem);
+        height: calc(100dvh - 3rem);
         max-width: min(1280px, calc(100vw - 2rem));
         width: calc(100vw - 2rem);
     }
 
     .reminder-modal-grid{
         flex: 1 1 auto;
+        height: 100%;
         min-height: 0;
         grid-template-columns: minmax(0, 1.08fr) minmax(380px, .92fr);
         grid-template-rows: auto minmax(0, 1fr);
@@ -410,7 +415,7 @@ body.calendar-gcal-page{
 
     .reminder-modal-panel--preview{
         grid-column: 2;
-        grid-row: 2 / span 2;
+        grid-row: 2;
     }
 
     .reminder-modal-panel--appointments,
@@ -423,12 +428,16 @@ body.calendar-gcal-page{
     .reminder-appointment-list,
     .reminder-preview-list{
         flex: 1 1 auto;
-        min-height: 0;
         max-height: none;
+        overflow: visible;
     }
 
     .reminder-modal-panel--message #reminderTemplate{
-        min-height: 170px;
+        min-height: 84px;
+    }
+
+    #reminderModal .modal-body{
+        overflow-y: auto;
     }
 }
 
@@ -527,6 +536,22 @@ body.calendar-gcal-page{
     white-space: pre-wrap;
     line-height: 1.4;
     font-size: .95rem;
+}
+
+@media (min-width: 992px){
+    .reminder-modal-panel--appointments,
+    .reminder-modal-panel--preview{
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .reminder-appointment-list,
+    .reminder-preview-list{
+        flex: 1 1 auto;
+        max-height: none;
+        overflow: visible;
+    }
 }
 
 @media (min-width: 992px){
@@ -784,6 +809,38 @@ body.calendar-gcal-page{
     color: #b02a37 !important;
     border-color: rgba(220,53,69,.52) !important;
     background: #ffe5e8 !important;
+}
+
+.btn-icon-only{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    min-width: 46px;
+    padding: .55rem;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+.btn-sm.btn-icon-only{
+    width: 38px;
+    min-width: 38px;
+    padding: .4rem;
+}
+
+.btn-icon-only.btn-trash-icon::before{
+    content: "";
+    display: block;
+    width: 1.15rem;
+    height: 1.15rem;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.btn-sm.btn-icon-only.btn-trash-icon::before{
+    width: 1.05rem;
+    height: 1.05rem;
 }
 
 .btn-secondary{
@@ -1948,8 +2005,8 @@ body.calendar-gcal-page .modal-backdrop.show {
 }
 
 #eventModal .modal-dialog {
-    width: min(1080px, calc(100vw - 2rem));
-    max-width: 1080px;
+    width: min(980px, calc(100vw - 2rem));
+    max-width: 980px;
 }
 
 #eventModal .modal-header,

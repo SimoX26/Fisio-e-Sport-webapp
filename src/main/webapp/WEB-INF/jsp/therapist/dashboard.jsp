@@ -200,7 +200,10 @@
                                         <form method="post" action="<%= request.getContextPath() %>/dashboard" class="home-waitlist-remove-form">
                                             <input type="hidden" name="action" value="remove-waitlist-entry">
                                             <input type="hidden" name="id" value="<c:out value='${entry.id}' />">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">Rimuovi</button>
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm btn-icon-only btn-trash-icon"
+                                                    aria-label="Rimuovi contatto dalla lista di attesa"
+                                                    title="Rimuovi contatto dalla lista di attesa"></button>
                                         </form>
                                     </div>
                                 </div>

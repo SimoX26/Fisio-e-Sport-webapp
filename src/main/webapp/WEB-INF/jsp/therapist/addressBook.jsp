@@ -174,12 +174,12 @@
                                         Cronologia Trattamenti
                                     </a>
                                     <button type="button"
-                                            class="btn btn-sm btn-outline-danger js-delete-patient"
+                                            class="btn btn-sm btn-outline-danger btn-icon-only btn-trash-icon js-delete-patient"
                                             data-id="<c:out value='${patient.id}'/>"
                                             data-name="<c:out value='${patient.fullName}'/>"
-                                            data-linked-appointments="<c:out value='${patient.linkedAppointmentsCount}'/>">
-                                        Elimina
-                                    </button>
+                                            data-linked-appointments="<c:out value='${patient.linkedAppointmentsCount}'/>"
+                                            aria-label="Elimina paziente"
+                                            title="Elimina paziente"></button>
                                 </div>
                             </td>
                         </tr>
@@ -559,7 +559,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="submit" class="btn btn-danger">Elimina</button>
+                    <button type="submit"
+                            class="btn btn-danger btn-icon-only btn-trash-icon"
+                            aria-label="Conferma eliminazione paziente"
+                            title="Conferma eliminazione paziente"></button>
                 </div>
             </form>
         </div>
