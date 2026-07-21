@@ -2196,6 +2196,29 @@ body.calendar-gcal-page .modal-backdrop.show {
         max-height: none;
     }
 
+    body.calendar-view-day .fc .fc-scrollgrid-section-header th,
+    body.calendar-view-week .fc .fc-scrollgrid-section-header th{
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #ffffff !important;
+    }
+
+    body.calendar-view-day .fc .fc-timegrid-axis,
+    body.calendar-view-day .fc .fc-timegrid-slot-label,
+    body.calendar-view-week .fc .fc-timegrid-axis,
+    body.calendar-view-week .fc .fc-timegrid-slot-label{
+        position: sticky;
+        left: 0;
+        z-index: 18;
+        background: #ffffff !important;
+    }
+
+    body.calendar-view-day .fc .fc-scrollgrid-section-header .fc-timegrid-axis,
+    body.calendar-view-week .fc .fc-scrollgrid-section-header .fc-timegrid-axis{
+        z-index: 30;
+    }
+
     #calendar{
         min-width: 760px;
         min-height: 520px;
