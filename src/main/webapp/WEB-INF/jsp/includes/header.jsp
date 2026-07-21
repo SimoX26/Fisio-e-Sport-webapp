@@ -106,7 +106,7 @@
                     <span class="nav-link disabled nav-separator">|</span>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item nav-item-mobile-divider">
                     <a class="nav-link"
                        href="<%= request.getContextPath() %>/settings">
                         Impostazioni

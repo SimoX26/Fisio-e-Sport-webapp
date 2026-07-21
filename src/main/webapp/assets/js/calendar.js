@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function defaultReminderTemplate() {
-        return "Gentile {nome paziente}, le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
+        return "Le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
     }
 
     function renderReminderMessage(template, recipient) {

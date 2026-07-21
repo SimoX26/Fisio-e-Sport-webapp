@@ -2,6 +2,7 @@ package it.SimoSW.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
 
 public class Patient {
     private static final DateTimeFormatter CREATED_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -48,8 +49,8 @@ public class Patient {
     }
 
     public String getFullName() {
-        String first = firstName == null ? "" : firstName.trim();
-        String last = lastName == null ? "" : lastName.trim();
+        String first = repairMojibake(firstName == null ? "" : firstName.trim());
+        String last = repairMojibake(lastName == null ? "" : lastName.trim());
         String fullName = (first + " " + last).trim();
         return fullName.isEmpty() ? "Paziente" : fullName;
     }
@@ -103,5 +104,17 @@ public class Patient {
 
     public void setLinkedAppointmentsCount(int linkedAppointmentsCount) {
         this.linkedAppointmentsCount = Math.max(linkedAppointmentsCount, 0);
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || !looksLikeMojibake(value)) {
+            return value;
+        }
+        String repaired = new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        return looksLikeMojibake(repaired) ? value : repaired;
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        return value.contains("Ã") || value.contains("Â") || value.contains("â") || value.contains("�");
     }
 }

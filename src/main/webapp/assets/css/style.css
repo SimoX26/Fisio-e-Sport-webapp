@@ -1798,6 +1798,13 @@ body.calendar-gcal-page .modal-backdrop.show {
         padding: .5rem .25rem;
     }
 
+    .navbar .nav-item-mobile-divider .nav-link{
+        margin-top: .45rem;
+        padding-top: .9rem;
+        border-top: 1px solid var(--border-color);
+        border-radius: 0;
+    }
+
     .navbar-toggler{
         min-width: 78px;
         min-height: 32px;

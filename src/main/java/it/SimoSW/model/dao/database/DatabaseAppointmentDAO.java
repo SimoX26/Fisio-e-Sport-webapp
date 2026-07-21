@@ -5,6 +5,7 @@ import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.CalendarEventView;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -231,11 +232,11 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String firstName = rs.getString("first_name");
-                    String lastName = rs.getString("last_name");
+                    String firstName = repairMojibake(rs.getString("first_name"));
+                    String lastName = repairMojibake(rs.getString("last_name"));
                     String fullName = ((firstName == null ? "" : firstName.trim()) + " " + (lastName == null ? "" : lastName.trim())).trim();
                     if (fullName.isEmpty()) {
-                        fullName = rs.getString("title");
+                        fullName = repairMojibake(rs.getString("title"));
                     }
                     if (fullName == null || fullName.isBlank()) {
                         long patientId = rs.getLong("patient_id");
@@ -441,5 +442,17 @@ public class DatabaseAppointmentDAO implements AppointmentDAO {
             a.setCancelledAt(cancelledAt.toLocalDateTime());
         }
         return a;
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null || value.isBlank() || !looksLikeMojibake(value)) {
+            return value;
+        }
+        String repaired = new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        return looksLikeMojibake(repaired) ? value : repaired;
+    }
+
+    private boolean looksLikeMojibake(String value) {
+        return value.contains("Ã") || value.contains("Â") || value.contains("â") || value.contains("�");
     }
 }

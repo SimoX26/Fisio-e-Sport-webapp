@@ -34,7 +34,7 @@ public class CalendarServlet extends HttpServlet {
 
     private static final DateTimeFormatter REMINDER_DAY_LABEL_FORMATTER = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.ITALIAN);
     private static final DateTimeFormatter REMINDER_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-    private static final String DEFAULT_REMINDER_TEMPLATE = "Gentile {nome paziente}, le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
+    private static final String DEFAULT_REMINDER_TEMPLATE = "Le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
 
     private CalendarController calendarController;
     private TreatmentController treatmentController;
