@@ -379,11 +379,31 @@ body.calendar-gcal-page{
         max-width: min(1180px, calc(100vw - 4rem));
         width: calc(100vw - 4rem);
     }
+
+    .reminder-modal-grid{
+        grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr);
+        align-items: start;
+    }
+
+    .reminder-modal-panel--date,
+    .reminder-modal-panel--appointments,
+    .reminder-modal-panel--message{
+        grid-column: 1;
+    }
+
+    .reminder-modal-panel--preview{
+        grid-column: 2;
+        grid-row: 1 / span 3;
+    }
 }
 
 .reminder-modal-grid{
     display: grid;
     gap: 1rem;
+}
+
+.reminder-modal-panel{
+    min-width: 0;
 }
 
 .reminder-modal-head{

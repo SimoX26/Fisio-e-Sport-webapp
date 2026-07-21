@@ -10,12 +10,12 @@
             </div>
             <div class="modal-body">
                 <div class="reminder-modal-grid">
-                    <div>
+                    <div class="reminder-modal-panel reminder-modal-panel--date">
                         <label class="form-label" for="reminderDate">Giorno</label>
                         <input type="date" class="form-control" id="reminderDate">
                     </div>
 
-                    <div>
+                    <div class="reminder-modal-panel reminder-modal-panel--appointments">
                         <div class="reminder-modal-head">
                             <label class="form-label mb-0">Appuntamenti</label>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllReminderAppointmentsBtn">
@@ -28,12 +28,12 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div class="reminder-modal-panel reminder-modal-panel--message">
                         <label class="form-label" for="reminderTemplate">Messaggio</label>
                         <textarea class="form-control" id="reminderTemplate" rows="4"></textarea>
                     </div>
 
-                    <div>
+                    <div class="reminder-modal-panel reminder-modal-panel--preview">
                         <div class="reminder-modal-head">
                             <h6 class="mb-0">Anteprima</h6>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshReminderPreviewBtn">
