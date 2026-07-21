@@ -314,9 +314,6 @@ body.calendar-gcal-page{
 
 body.calendar-view-day .fc .fc-scrollgrid-section-header th,
 body.calendar-view-week .fc .fc-scrollgrid-section-header th{
-    position: sticky;
-    top: var(--calendar-weekdays-sticky-top);
-    z-index: 20;
     background: #ffffff !important;
 }
 
@@ -2378,58 +2375,22 @@ body.calendar-gcal-page .modal-backdrop.show {
     body.calendar-view-day .fc .fc-timegrid-slot-label,
     body.calendar-view-week .fc .fc-timegrid-axis,
     body.calendar-view-week .fc .fc-timegrid-slot-label{
-        position: sticky;
-        left: 0;
-        min-width: 58px;
-        width: 58px;
-        overflow: visible;
-        z-index: 18;
         background: #ffffff !important;
-    }
-
-    body.calendar-view-day .fc .fc-timegrid-axis-frame,
-    body.calendar-view-day .fc .fc-timegrid-slot-label-frame,
-    body.calendar-view-week .fc .fc-timegrid-axis-frame,
-    body.calendar-view-week .fc .fc-timegrid-slot-label-frame{
-        width: 58px;
-        min-width: 58px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-end;
-        overflow: visible;
     }
 
     body.calendar-view-day .fc .fc-timegrid-axis-cushion,
     body.calendar-view-day .fc .fc-timegrid-slot-label-cushion,
     body.calendar-view-week .fc .fc-timegrid-axis-cushion,
     body.calendar-view-week .fc .fc-timegrid-slot-label-cushion{
-        display: block;
-        width: 100%;
-        min-width: 100%;
-        padding-left: .3rem;
-        padding-right: .35rem;
         color: #5f6368 !important;
         font-weight: 600;
-        line-height: 1.1;
-        text-align: right;
-        white-space: nowrap;
         opacity: 1;
         visibility: visible;
-    }
-
-    body.calendar-view-day .fc .fc-scrollgrid-section-header .fc-timegrid-axis,
-    body.calendar-view-week .fc .fc-scrollgrid-section-header .fc-timegrid-axis{
-        z-index: 30;
     }
 
     #calendar{
         min-width: 760px;
         min-height: 520px;
-    }
-
-    /* In vista "giorno" riduciamo drasticamente la larghezza minima su mobile */
-    body.calendar-view-day #calendar{
-        min-width: 320px;
     }
 
     .fc .fc-toolbar{
