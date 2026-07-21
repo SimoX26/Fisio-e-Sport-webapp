@@ -448,6 +448,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openReminderModalForDate(dateIso) {
+        if (window.fisioReminderModal) {
+            window.fisioReminderModal.openForDate(dateIso);
+            return;
+        }
         if (!reminderModal || !reminderDateInput) {
             return;
         }
@@ -469,6 +473,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openReminderModalForEvent(event) {
+        if (window.fisioReminderModal && event && event.start) {
+            window.fisioReminderModal.openForAppointment(toIsoDateValue(event.start), event.id);
+            if (eventModal) {
+                eventModal.hide();
+            }
+            return;
+        }
         if (!event || !event.start || !reminderModal || !reminderDateInput) {
             return;
         }
@@ -1336,20 +1347,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 0);
     }
 
-    if (reminderTemplateInput) {
+    if (reminderTemplateInput && !window.fisioReminderModal) {
         reminderTemplateInput.addEventListener('input', () => {
             renderReminderPreview(reminderTemplateInput.value);
             scheduleReminderTemplateSave();
         });
     }
 
-    if (refreshReminderPreviewBtn) {
+    if (refreshReminderPreviewBtn && !window.fisioReminderModal) {
         refreshReminderPreviewBtn.addEventListener('click', () => {
             loadReminderPreview();
         });
     }
 
-    if (sendReminderBtn) {
+    if (sendReminderBtn && !window.fisioReminderModal) {
         sendReminderBtn.addEventListener('click', async () => {
             const dateValue = reminderDateInput ? reminderDateInput.value : '';
             if (!dateValue) {

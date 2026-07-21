@@ -349,6 +349,52 @@ body.calendar-gcal-page{
     gap: 10px;
 }
 
+.reminder-modal-grid{
+    display: grid;
+    gap: 1rem;
+}
+
+.reminder-modal-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: .5rem;
+}
+
+.reminder-appointment-list{
+    display: grid;
+    gap: .5rem;
+    max-height: 210px;
+    overflow: auto;
+}
+
+.reminder-appointment-item{
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-standard);
+    background: #ffffff;
+    padding: .65rem .75rem;
+    cursor: pointer;
+}
+
+.reminder-appointment-item input{
+    margin-top: .2rem;
+}
+
+.reminder-appointment-item span{
+    display: grid;
+    gap: .1rem;
+    min-width: 0;
+}
+
+.reminder-appointment-item small{
+    color: var(--text-muted);
+    font-size: var(--font-size-small);
+}
+
 .reminder-preview-item {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-standard);
@@ -1152,12 +1198,18 @@ body.calendar-gcal-page{
     padding: .35rem .55rem;
     background: #ffffff;
     min-width: 0;
+    font-family: inherit;
 }
 
 .home-action-pill:hover{
     border-color: rgba(13,110,253,.38);
     color: var(--brand-primary);
     background: rgba(13,110,253,.04);
+}
+
+button.home-action-pill{
+    appearance: none;
+    cursor: pointer;
 }
 
 @media (min-width: 768px){

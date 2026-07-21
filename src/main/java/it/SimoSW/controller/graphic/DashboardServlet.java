@@ -5,6 +5,7 @@ import it.SimoSW.controller.application.WaitlistController;
 import it.SimoSW.model.Appointment;
 import it.SimoSW.model.AppointmentState;
 import it.SimoSW.model.WaitlistEntry;
+import it.SimoSW.service.whatsapp.WhatsAppConfigurationService;
 import it.SimoSW.util.bootstrap.ApplicationInitializer;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,7 @@ public class DashboardServlet extends HttpServlet {
     private static final ZoneId HOME_ZONE_ID = ZoneId.of("Europe/Rome");
     private CalendarController calendarController;
     private WaitlistController waitlistController;
+    private WhatsAppConfigurationService whatsAppConfigurationService;
 
     public static class AgendaItemView {
         private final String startTime;
@@ -68,6 +70,7 @@ public class DashboardServlet extends HttpServlet {
         ApplicationInitializer initializer = (ApplicationInitializer) getServletContext().getAttribute("appInitializer");
         this.calendarController = initializer.getCalendarController();
         this.waitlistController = initializer.getWaitlistController();
+        this.whatsAppConfigurationService = initializer.getWhatsAppConfigurationService();
     }
 
     @Override
@@ -97,6 +100,7 @@ public class DashboardServlet extends HttpServlet {
             if (loggedUser != null && !loggedUser.isBlank()) {
                 loggedUserDisplay = toDisplayName(loggedUser);
                 long therapistId = calendarController.resolveTherapistUserIdFromUsername(loggedUser);
+                request.setAttribute("whatsAppConfigured", whatsAppConfigurationService.hasConfiguration(therapistId));
 
                 LocalDateTime todayStart = today.atStartOfDay();
                 LocalDateTime tomorrowStart = today.plusDays(1).atStartOfDay();

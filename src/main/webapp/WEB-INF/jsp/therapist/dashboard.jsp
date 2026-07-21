@@ -21,9 +21,13 @@
 
       <!-- Custom CSS -->
        <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260721-1">
+       <script src="<%= request.getContextPath() %>/assets/js/reminder-modal.js?v=20260721-1" defer></script>
 </head>
 
-<body class="app-page">
+<body class="app-page"
+      data-context-path="<%= request.getContextPath() %>"
+      data-whatsapp-configured="${requestScope.whatsAppConfigured}">
+<div id="appNoticeContainer" class="app-notice-container" aria-live="polite" aria-atomic="true"></div>
 
 <!-- HEADER -->
 <%@ include file="/WEB-INF/jsp/includes/header.jsp" %>
@@ -37,7 +41,7 @@
         <div class="home-topbar-actions" aria-label="Azioni rapide">
             <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
             <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
-            <a class="home-action-pill" href="<%= request.getContextPath() %>/promemoria">Invia promemoria</a>
+            <button type="button" class="home-action-pill" id="openHomeReminderModalBtn">Invia promemoria</button>
         </div>
     </div>
 
@@ -197,6 +201,8 @@
         </div>
     </div>
 </div>
+
+<%@ include file="/WEB-INF/jsp/includes/reminderModal.jsp" %>
 
 </body>
 </html>

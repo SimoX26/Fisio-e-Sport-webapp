@@ -23,7 +23,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/style.css?v=20260721-1">
-    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260519-34" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/reminder-modal.js?v=20260721-1" defer></script>
+    <script src="<%= request.getContextPath() %>/assets/js/calendar.js?v=20260721-1" defer></script>
 </head>
 
 <body data-context-path="<%= request.getContextPath() %>"
@@ -66,50 +67,7 @@
     </div>
 </div>
 
-<!-- =========================
-     MODALE PROMEMORIA GIORNALIERI
-     ========================= -->
-<div class="modal fade" id="reminderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content glass-card">
-            <div class="modal-header">
-                <h5 class="modal-title">Promemoria pazienti</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-2 small text-muted">Selezione: <strong id="reminderDayLabel">-</strong></div>
-                <input type="hidden" id="reminderDate">
-                <input type="hidden" id="reminderAppointmentId">
-                <c:if test="${not requestScope.whatsAppConfigured}">
-                    <div class="alert alert-warning py-2 small" role="alert">
-                        Servizio WhatsApp non configurato per questo account. Contattare l'amministratore di sistema.
-                    </div>
-                </c:if>
-
-                <div class="mb-3">
-                    <label class="form-label" for="reminderTemplate">Messaggio promemoria</label>
-                    <textarea class="form-control" id="reminderTemplate" rows="4"></textarea>
-                    <div class="form-text">
-                        Placeholder disponibili: <code>{nome paziente}</code>, <code>{giorno}</code>, <code>{ora inizio}</code>, <code>{ora fine}</code>, <code>{ora inizio - ora fine}</code>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="mb-0">Anteprima destinatari</h6>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshReminderPreviewBtn">Aggiorna anteprima</button>
-                </div>
-                <div id="reminderPreviewEmpty" class="alert alert-light border mb-0 d-none">
-                    Nessun appuntamento pianificato per il giorno selezionato.
-                </div>
-                <div id="reminderPreviewList" class="reminder-preview-list"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                <button type="button" class="btn btn-primary" id="sendReminderBtn">Invia promemoria</button>
-            </div>
-        </div>
-    </div>
-</div>
+<%@ include file="/WEB-INF/jsp/includes/reminderModal.jsp" %>
 
 <!-- =========================
      MODALE DETTAGLI EVENTO
