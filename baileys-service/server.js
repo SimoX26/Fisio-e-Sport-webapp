@@ -172,13 +172,11 @@ const server = http.createServer(async (request, response) => {
     }
     writeHtml(response, 200, "<!doctype html><html><head><meta charset=\"utf-8\">"
         + "<title>Baileys QR</title>"
-        + "<style>html,body{margin:0;padding:0;background:#f7f4ee;color:#202124;font-family:sans-serif;overflow:hidden}"
-        + "body{display:block}main{text-align:center;padding:16px;box-sizing:border-box;max-width:100%}"
+        + "<style>html,body{width:100%;height:100%;margin:0;padding:0;background:#f7f4ee;color:#202124;font-family:sans-serif;overflow:hidden}"
+        + "body{display:grid;place-items:center}main{text-align:center;padding:12px;box-sizing:border-box;max-width:100%}"
         + ".qr{background:#fff;padding:14px;border-radius:18px;box-shadow:0 12px 30px #0002;display:inline-block;max-width:100%;box-sizing:border-box}"
-        + "img{width:min(100%,280px);height:auto;display:block}p{max-width:360px;line-height:1.4;margin:10px auto 0;font-size:.92rem}h1{font-size:1.1rem;margin:0 0 12px}</style></head><body><main>"
+        + "img{width:min(100%,360px);height:auto;display:block}h1{font-size:1.05rem;margin:0 0 12px}</style></head><body><main>"
         + "<h1>Scansiona il QR WhatsApp</h1><div class=\"qr\"><img src=\"" + runtimeState.qrDataUrl + "\" alt=\"QR WhatsApp\"></div>"
-        + "<p>Se WhatsApp chiede una seconda scansione, il QR viene aggiornato automaticamente dalla pagina impostazioni.</p>"
-        + "<p>QR #" + runtimeState.qrCounter + " generato alle " + runtimeState.qrUpdatedAt + "</p>"
         + "</main></body></html>");
     return;
   }
