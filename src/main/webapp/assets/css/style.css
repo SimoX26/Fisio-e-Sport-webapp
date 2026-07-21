@@ -358,8 +358,8 @@ body.calendar-gcal-page{
 }
 
 #reminderModal .modal-dialog{
-    height: calc(100vh - 1rem);
-    height: calc(100dvh - 1rem);
+    height: calc(100vh - 2.5rem);
+    height: calc(100dvh - 2.5rem);
 }
 
 #reminderModal .modal-content{
@@ -2052,6 +2052,10 @@ body.calendar-gcal-page .modal-backdrop.show {
 }
 
 @media (max-width: 767.98px){
+    :root{
+        --mobile-modal-edge-gap: 1.25rem;
+    }
+
     html{
         overflow-x: hidden;
     }
@@ -2285,12 +2289,12 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     .modal-dialog{
-        margin: .5rem;
+        margin: var(--mobile-modal-edge-gap);
     }
 
     body.app-page .modal-content{
-        max-height: calc(100vh - 1rem);
-        max-height: calc(100dvh - 1rem);
+        max-height: calc(100vh - (var(--mobile-modal-edge-gap) * 2));
+        max-height: calc(100dvh - (var(--mobile-modal-edge-gap) * 2));
     }
 
     body.app-page .modal-body{
@@ -2310,8 +2314,8 @@ body.calendar-gcal-page .modal-backdrop.show {
     }
 
     body.modal-open .modal-dialog{
-        max-height: calc(100vh - 1rem);
-        max-height: calc(100dvh - 1rem);
+        max-height: calc(100vh - (var(--mobile-modal-edge-gap) * 2));
+        max-height: calc(100dvh - (var(--mobile-modal-edge-gap) * 2));
     }
 
     body.modal-open .modal-content{
@@ -2437,12 +2441,14 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 #editPatientModal .modal-dialog {
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
 }
 
 #editPatientModal .modal-content {
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
 }
 
 #editPatientModal form {
@@ -2461,10 +2467,12 @@ body.calendar-gcal-page .modal-backdrop.show {
 
 #completeTreatmentModal .modal-dialog {
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
 }
 
 #completeTreatmentModal .modal-content {
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
 }
 
 #completeTreatmentModal .modal-body {

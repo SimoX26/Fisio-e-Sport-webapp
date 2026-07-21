@@ -142,7 +142,9 @@ public class AddressBookServlet extends HttpServlet {
                 case "create" -> {
                     createPatient(request);
                     PostSubmitNavigationGuard.blockFormPageOnce(request, "/address-book/create", "/address-book?lockBack=1");
-                    redirectPath = "/address-book?created=1&lockBack=1";
+                    redirectPath = "dashboard".equals(normalizeOptional(request.getParameter("returnTo")))
+                            ? "/dashboard?patientCreated=1"
+                            : "/address-book?created=1&lockBack=1";
                 }
                 case "update" -> {
                     updatePatient(request);

@@ -40,7 +40,12 @@
         </div>
         <div class="home-topbar-actions" aria-label="Azioni rapide">
             <a class="home-action-pill" href="<%= request.getContextPath() %>/calendar?new=1">Nuovo appuntamento</a>
-            <a class="home-action-pill" href="<%= request.getContextPath() %>/address-book/create">Nuovo paziente</a>
+            <button type="button"
+                    class="home-action-pill"
+                    data-bs-toggle="modal"
+                    data-bs-target="#quickPatientModal">
+                Nuovo paziente
+            </button>
             <button type="button" class="home-action-pill" id="openHomeReminderModalBtn">Invia promemoria</button>
         </div>
     </div>
@@ -66,6 +71,12 @@
     <c:if test="${param.waitlistRemoved == '1'}">
         <div class="alert alert-success mb-3" role="alert">
             Contatto rimosso dalla lista di attesa.
+        </div>
+    </c:if>
+
+    <c:if test="${param.patientCreated == '1'}">
+        <div class="alert alert-success mb-3" role="alert">
+            Paziente salvato correttamente.
         </div>
     </c:if>
 
@@ -203,6 +214,53 @@
 </div>
 
 <%@ include file="/WEB-INF/jsp/includes/reminderModal.jsp" %>
+
+<div class="modal fade" id="quickPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h5 class="modal-title">Nuovo paziente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <form action="<%= request.getContextPath() %>/address-book" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="create">
+                    <input type="hidden" name="id" value="0">
+                    <input type="hidden" name="returnTo" value="dashboard">
+
+                    <div class="mb-3">
+                        <label class="form-label" for="quickPatientFullName">Nome e Cognome</label>
+                        <input type="text"
+                               name="fullName"
+                               id="quickPatientFullName"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="quickPatientEmail">Email</label>
+                        <input type="email"
+                               name="email"
+                               id="quickPatientEmail"
+                               class="form-control">
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label" for="quickPatientPhone">Telefono</label>
+                        <input type="text"
+                               name="phone"
+                               id="quickPatientPhone"
+                               class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Salva paziente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
