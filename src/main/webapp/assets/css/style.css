@@ -2278,10 +2278,12 @@ body.calendar-gcal-page .modal-backdrop.show {
     body.modal-open{
         overflow: hidden;
         overscroll-behavior: none;
+        touch-action: none;
     }
 
     body.modal-open .modal{
         overscroll-behavior: contain;
+        touch-action: none;
     }
 
     body.modal-open .modal-dialog{

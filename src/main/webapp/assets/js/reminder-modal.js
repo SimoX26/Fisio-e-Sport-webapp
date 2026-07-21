@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const contextPath = document.body.dataset.contextPath || '';
     const whatsAppConfigured = (document.body.dataset.whatsappConfigured || '').trim() === 'true';
     const modalEl = document.getElementById('reminderModal');
-    const modalBodyEl = modalEl ? modalEl.querySelector('.modal-body') : null;
     const dateInput = document.getElementById('reminderDate');
     const appointmentListEl = document.getElementById('reminderAppointmentList');
     const appointmentEmptyEl = document.getElementById('reminderAppointmentEmpty');
@@ -24,8 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let recipients = [];
     let preselectedAppointmentIds = new Set();
     let noticeCounter = 0;
-    let modalTouchStartY = 0;
-    let modalTouchStartTarget = null;
 
     function pad2(value) {
         return String(value).padStart(2, '0');
@@ -37,38 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function defaultReminderTemplate() {
         return "Le ricordiamo l'appuntamento fissato per {giorno} per l'orario {ora inizio - ora fine}.";
-    }
-
-    function closestScrollableWithinModal(target) {
-        if (!(target instanceof Element) || !modalEl.contains(target)) {
-            return null;
-        }
-        return target.closest('.reminder-appointment-list, .reminder-preview-list, .modal-body');
-    }
-
-    function containModalOverscroll(event) {
-        if (!modalBodyEl || event.touches.length !== 1) {
-            return;
-        }
-        const scrollContainer = closestScrollableWithinModal(modalTouchStartTarget || event.target);
-        if (!scrollContainer) {
-            event.preventDefault();
-            return;
-        }
-
-        const currentY = event.touches[0].clientY;
-        const deltaY = currentY - modalTouchStartY;
-        const canScroll = scrollContainer.scrollHeight > scrollContainer.clientHeight + 1;
-        if (!canScroll) {
-            event.preventDefault();
-            return;
-        }
-
-        const atTop = scrollContainer.scrollTop <= 0;
-        const atBottom = scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 1;
-        if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
-            event.preventDefault();
-        }
     }
 
     function escapeHtml(value) {
@@ -311,14 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
     homeOpenBtn?.addEventListener('click', () => openForDate(toIsoDate(new Date())));
     closeBtn?.addEventListener('click', () => modal.hide());
     cancelBtn?.addEventListener('click', () => modal.hide());
-    modalEl.addEventListener('touchstart', (event) => {
-        if (event.touches.length === 1) {
-            modalTouchStartY = event.touches[0].clientY;
-            modalTouchStartTarget = event.target;
-        }
-    }, { passive: true, capture: true });
-    modalEl.addEventListener('touchmove', containModalOverscroll, { passive: false, capture: true });
-
     window.fisioReminderModal = {
         openForDate,
         openForAppointment
