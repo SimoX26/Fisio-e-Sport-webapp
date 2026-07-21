@@ -344,9 +344,34 @@ body.calendar-gcal-page{
 .reminder-preview-list {
     max-height: 320px;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+#reminderModal{
+    overscroll-behavior: contain;
+    touch-action: manipulation;
+}
+
+#reminderModal .modal-dialog{
+    height: calc(100vh - 1rem);
+    height: calc(100dvh - 1rem);
+}
+
+#reminderModal .modal-content{
+    max-height: 100%;
+    overflow: hidden;
+}
+
+#reminderModal .modal-body{
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .reminder-modal-grid{
@@ -367,6 +392,9 @@ body.calendar-gcal-page{
     gap: .5rem;
     max-height: 210px;
     overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .reminder-appointment-item{

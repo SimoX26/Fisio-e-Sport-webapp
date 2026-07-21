@@ -6,7 +6,7 @@
         <div class="modal-content glass-card">
             <div class="modal-header">
                 <h5 class="modal-title">Invia promemoria</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeReminderModalBtn"></button>
             </div>
             <div class="modal-body">
                 <div class="reminder-modal-grid">
@@ -54,7 +54,7 @@
                 </c:if>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelReminderModalBtn">Annulla</button>
                 <button type="button" class="btn btn-primary" id="sendReminderBtn">Invia promemoria</button>
             </div>
         </div>
