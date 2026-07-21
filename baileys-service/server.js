@@ -212,8 +212,20 @@ const server = http.createServer(async (request, response) => {
         return;
       }
 
-      const result = await runtimeState.socket.sendMessage(`${recipient}@s.whatsapp.net`, { text: message });
-      writeJson(response, 200, { success: true, messageId: result?.key?.id || "" });
+      const matches = await runtimeState.socket.onWhatsApp(`${recipient}@s.whatsapp.net`);
+      const match = Array.isArray(matches) ? matches.find((item) => item?.exists) : null;
+      if (!match?.jid) {
+        writeJson(response, 404, { error: "Il numero non risulta attivo su WhatsApp." });
+        return;
+      }
+
+      const result = await runtimeState.socket.sendMessage(match.jid, { text: message });
+      const messageId = result?.key?.id || "";
+      if (!messageId) {
+        writeJson(response, 502, { error: "WhatsApp non ha confermato l'invio del messaggio." });
+        return;
+      }
+      writeJson(response, 200, { success: true, messageId });
     } catch (error) {
       writeJson(response, 500, {
         error: error && error.message ? error.message : "Errore interno Baileys"

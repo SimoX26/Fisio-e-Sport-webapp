@@ -374,6 +374,13 @@ body.calendar-gcal-page{
     touch-action: pan-y;
 }
 
+@media (min-width: 992px){
+    #reminderModal .modal-dialog{
+        max-width: min(1180px, calc(100vw - 4rem));
+        width: calc(100vw - 4rem);
+    }
+}
+
 .reminder-modal-grid{
     display: grid;
     gap: 1rem;

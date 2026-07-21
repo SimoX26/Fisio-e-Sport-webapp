@@ -167,11 +167,14 @@ public class WhatsAppBaileysService {
             }
 
             int status = connection.getResponseCode();
+            Map<String, Object> response = readJsonBody(connection);
             if (status < 200 || status >= 300) {
-                Map<String, Object> response = readJsonBody(connection);
                 Object gatewayError = response.get("error");
                 String messageFromGateway = gatewayError == null ? "Il Servizio WhatsApp non ha accettato il messaggio." : String.valueOf(gatewayError);
                 throw new RuntimeException(messageFromGateway);
+            }
+            if (!Boolean.TRUE.equals(response.get("success")) || isBlank(response.get("messageId"))) {
+                throw new RuntimeException("Il Servizio WhatsApp non ha confermato l'invio del messaggio.");
             }
         } catch (IOException ex) {
             throw new RuntimeException("Servizio WhatsApp locale non raggiungibile. Controllare il servizio di messaggistica.", ex);
@@ -198,6 +201,10 @@ public class WhatsAppBaileysService {
             throw new IllegalArgumentException("Messaggio WhatsApp mancante.");
         }
         return rawMessage.trim();
+    }
+
+    private boolean isBlank(Object value) {
+        return value == null || String.valueOf(value).isBlank();
     }
 
     private Map<String, Object> readJsonBody(HttpURLConnection connection) {

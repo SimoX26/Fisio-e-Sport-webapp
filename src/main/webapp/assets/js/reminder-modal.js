@@ -94,6 +94,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function reminderResultNotice(payload) {
+        const processedCount = payload?.processedCount || 0;
+        const sentCount = payload?.sentCount || 0;
+        const skippedCount = payload?.skippedCount || 0;
+        const failedCount = payload?.failedCount || 0;
+        return `Promemoria elaborati: ${processedCount}, inviati: ${sentCount}, saltati: ${skippedCount}, falliti: ${failedCount}.`;
+    }
+
     function selectedAppointmentIds() {
         return Array.from(appointmentListEl.querySelectorAll('input[name="reminderAppointment"]:checked'))
             .map((input) => input.value)
@@ -251,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw await parseApiError(response, 'Errore durante l\'invio dei promemoria.');
             }
             const payload = await parseApiPayload(response);
-            showNotice(`Promemoria inviati: ${payload?.sentCount || 0}.`, 'success');
+            showNotice(reminderResultNotice(payload), payload?.failedCount > 0 ? 'info' : 'success');
             modal.hide();
         } catch (error) {
             showNotice(error.message || 'Errore durante l\'invio dei promemoria.', 'error');
