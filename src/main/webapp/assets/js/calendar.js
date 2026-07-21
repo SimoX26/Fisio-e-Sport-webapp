@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitleTimeEl = document.getElementById('modalTitleTime');
     const modalNotesEl = document.getElementById('modalNotes');
     const openPatientDetailsBtn = document.getElementById('openPatientDetailsBtn');
+    const sendSingleReminderBtn = document.getElementById('sendSingleReminderBtn');
     const editAppointmentBtn = document.getElementById('editAppointmentBtn');
     const deleteAppointmentBtn = document.getElementById('deleteAppointmentBtn');
     const completeAppointmentBtn = document.getElementById('completeAppointmentBtn');
@@ -827,6 +828,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     openPatientDetailsBtn.href = '#';
                     openPatientDetailsBtn.classList.add('d-none');
+                }
+            }
+            if (sendSingleReminderBtn) {
+                const canSendSingleReminder = !isCompleted && !isAllDay && !isNonTreatmentEvent && event.extendedProps.patientId;
+                if (canSendSingleReminder) {
+                    sendSingleReminderBtn.href = `${contextPath}/promemoria?appointmentId=${encodeURIComponent(String(event.id))}`;
+                    sendSingleReminderBtn.classList.remove('d-none');
+                } else {
+                    sendSingleReminderBtn.href = '#';
+                    sendSingleReminderBtn.classList.add('d-none');
                 }
             }
             if (modalNotesEl) {

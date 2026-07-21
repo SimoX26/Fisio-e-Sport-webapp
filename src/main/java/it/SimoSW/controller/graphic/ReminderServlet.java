@@ -73,8 +73,15 @@ public class ReminderServlet extends HttpServlet {
         try {
             long therapistId = resolveTherapistIdFromSession(request);
             LocalDate selectedDate = parseOptionalDate(request.getParameter("date"));
-            renderPage(request, response, therapistId, selectedDate, null, null,
-                    "1".equals(request.getParameter("sent")) ? "Promemoria inviato correttamente." : null);
+            Long selectedAppointmentId = parseOptionalLong(request.getParameter("appointmentId"));
+            if (selectedAppointmentId != null) {
+                Appointment selectedAppointment = calendarController.getAppointmentForTherapist(selectedAppointmentId, therapistId);
+                validateSendableAppointment(selectedAppointment);
+                selectedDate = selectedAppointment.getStart().toLocalDate();
+            }
+            renderPage(request, response, therapistId, selectedDate, selectedAppointmentId, null,
+                    "1".equals(request.getParameter("sent")) ? "Promemoria inviato correttamente." : null,
+                    null);
         } catch (RuntimeException ex) {
             request.setAttribute("error", ex.getMessage());
             request.getRequestDispatcher("/WEB-INF/jsp/therapist/promemoria.jsp").forward(request, response);
@@ -108,22 +115,28 @@ public class ReminderServlet extends HttpServlet {
             reminderTemplateDAO.saveTemplate(therapistId, effectiveTemplate);
             whatsAppBaileysService.sendTextMessage(patientPhone, renderMessage(effectiveTemplate, appointment, patientName));
 
-            LocalDate appointmentDate = appointment.getStart().toLocalDate();
-            response.sendRedirect(request.getContextPath() + "/promemoria?date=" + appointmentDate + "&sent=1");
+            response.sendRedirect(request.getContextPath() + "/promemoria?appointmentId=" + appointment.getId() + "&sent=1");
         } catch (RuntimeException ex) {
             long therapistId = resolveTherapistIdFromSession(request);
-            renderPage(request, response, therapistId, selectedDate, selectedAppointmentId, ex.getMessage(), null);
+            renderPage(request, response, therapistId, selectedDate, selectedAppointmentId, ex.getMessage(), null, template);
         }
     }
 
     private void renderPage(HttpServletRequest request, HttpServletResponse response, long therapistId, LocalDate selectedDate,
-                            Long selectedAppointmentId, String error, String success) throws ServletException, IOException {
+                            Long selectedAppointmentId, String error, String success, String templateOverride) throws ServletException, IOException {
         LocalDate effectiveDate = selectedDate == null ? LocalDate.now(ROME_ZONE_ID) : selectedDate;
+        List<AppointmentOption> appointments = loadAppointmentOptions(therapistId, effectiveDate);
+        AppointmentOption selectedAppointment = appointments.stream()
+                .filter(appointment -> selectedAppointmentId != null && appointment.getId() == selectedAppointmentId)
+                .findFirst()
+                .orElse(null);
         request.setAttribute("selectedDate", effectiveDate.toString());
         request.setAttribute("selectedDateLabel", effectiveDate.format(DAY_LABEL_FORMATTER));
         request.setAttribute("selectedAppointmentId", selectedAppointmentId);
-        request.setAttribute("appointments", loadAppointmentOptions(therapistId, effectiveDate));
-        request.setAttribute("template", resolveTemplate(therapistId));
+        request.setAttribute("selectedAppointment", selectedAppointment);
+        request.setAttribute("appointmentLocked", selectedAppointment != null);
+        request.setAttribute("appointments", appointments);
+        request.setAttribute("template", templateOverride == null ? resolveTemplate(therapistId) : templateOverride);
         request.setAttribute("whatsAppConfigured", whatsAppConfigurationService.hasConfiguration(therapistId));
         request.setAttribute("error", error);
         request.setAttribute("success", success);

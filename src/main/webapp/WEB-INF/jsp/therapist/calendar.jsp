@@ -133,6 +133,7 @@
 
             <div class="modal-footer">
                 <span id="eventModalStateHint" class="me-auto text-muted small d-none"></span>
+                <a href="#" class="btn btn-outline-primary" id="sendSingleReminderBtn">Invia promemoria</a>
                 <a href="#" class="btn btn-outline-secondary" id="openPatientDetailsBtn">Dettagli paziente</a>
                 <button type="button" class="btn btn-success" id="completeAppointmentBtn">
                     Completa trattamento

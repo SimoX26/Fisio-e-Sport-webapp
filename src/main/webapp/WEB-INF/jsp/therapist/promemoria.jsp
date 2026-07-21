@@ -21,7 +21,7 @@
         <div>
             <h1 class="page-title mb-0">Invia promemoria</h1>
         </div>
-        <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/dashboard">Torna alla pagina iniziale</a>
+        <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=${selectedDate}">Calendario</a>
     </div>
 
     <c:if test="${not empty error}">
@@ -41,19 +41,35 @@
     </c:if>
 
     <div class="glass-card section-card promemoria-card">
-        <form method="get" action="<%= request.getContextPath() %>/promemoria" class="promemoria-date-form">
-            <div>
-                <label class="form-label" for="date">Giorno appuntamento</label>
-                <input class="form-control" type="date" id="date" name="date" value="<c:out value='${selectedDate}' />">
+        <c:if test="${not appointmentLocked}">
+            <form method="get" action="<%= request.getContextPath() %>/promemoria" class="promemoria-date-form">
+                <div>
+                    <label class="form-label" for="date">Giorno appuntamento</label>
+                    <input class="form-control" type="date" id="date" name="date" value="<c:out value='${selectedDate}' />">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-outline-primary">Mostra appuntamenti</button>
+                </div>
+            </form>
+        </c:if>
+
+        <c:if test="${appointmentLocked}">
+            <div class="promemoria-selected">
+                <div>
+                    <span class="promemoria-selected__label">Appuntamento</span>
+                    <strong><c:out value="${selectedAppointment.label}" /></strong>
+                </div>
             </div>
-            <div>
-                <button type="submit" class="btn btn-outline-primary">Mostra appuntamenti</button>
-            </div>
-        </form>
+        </c:if>
 
         <form method="post" action="<%= request.getContextPath() %>/promemoria" class="app-form-grid">
             <input type="hidden" name="date" value="<c:out value='${selectedDate}' />">
 
+            <c:choose>
+                <c:when test="${appointmentLocked}">
+                    <input type="hidden" name="appointmentId" value="<c:out value='${selectedAppointmentId}' />">
+                </c:when>
+                <c:otherwise>
             <div>
                 <label class="form-label" for="appointmentId">Appuntamento</label>
                 <select class="form-select" id="appointmentId" name="appointmentId" required>
@@ -70,6 +86,8 @@
                     <div class="form-text">Nessun appuntamento programmato con paziente per il giorno selezionato.</div>
                 </c:if>
             </div>
+                </c:otherwise>
+            </c:choose>
 
             <div>
                 <label class="form-label" for="template">Messaggio</label>
@@ -80,9 +98,6 @@
                 <button type="submit" class="btn btn-primary" <c:if test="${empty appointments or not whatsAppConfigured}">disabled</c:if>>
                     Invia promemoria
                 </button>
-                <a class="btn btn-outline-secondary" href="<%= request.getContextPath() %>/calendar?view=timeGridDay&date=${selectedDate}">
-                    Apri calendario
-                </a>
             </div>
         </form>
     </div>
