@@ -6,15 +6,17 @@
         <c:choose>
             <c:when test="${sessionScope.userRole == 'ADMIN'}">
                 <c:set var="searchAction" value="/admin/search" />
+                <c:set var="homePath" value="/admin" />
             </c:when>
             <c:otherwise>
                 <c:set var="searchAction" value="/search" />
+                <c:set var="homePath" value="/dashboard" />
             </c:otherwise>
         </c:choose>
 
         <!-- BRAND -->
         <a class="navbar-brand fw-bold"
-           href="<%= request.getContextPath() %>/index.jsp">
+           href="${pageContext.request.contextPath}${homePath}">
             <span class="brand-dot"></span>
             FISIO E SPORTS
         </a>

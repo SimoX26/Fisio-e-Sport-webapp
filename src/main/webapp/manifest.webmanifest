@@ -2,7 +2,7 @@
   "name": "Fisio e Sports",
   "short_name": "FisioSport",
   "description": "Gestione appuntamenti e pazienti per studio di fisioterapia",
-  "start_url": "./index.jsp",
+  "start_url": "./login",
   "scope": "./",
   "id": "./",
   "display": "standalone",

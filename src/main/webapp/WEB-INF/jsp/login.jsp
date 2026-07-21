@@ -61,10 +61,6 @@
                     Non hai un account?
                     <a href="<%= request.getContextPath() %>/register">Richiedi accesso</a>
                 </div>
-
-                <div class="text-center mt-3 small">
-                    <a href="<%= request.getContextPath() %>/index.jsp">← Torna alla home</a>
-                </div>
             </div>
         </div>
     </div>
