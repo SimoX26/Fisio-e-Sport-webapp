@@ -1251,10 +1251,11 @@ body.calendar-gcal-page{
 
 .settings-qr-frame{
     width: 100%;
-    min-height: 420px;
+    height: 420px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-standard);
     background: #f7f4ee;
+    overflow: hidden;
 }
 
 .settings-ready-box{

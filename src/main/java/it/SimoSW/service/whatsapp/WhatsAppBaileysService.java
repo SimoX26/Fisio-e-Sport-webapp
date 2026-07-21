@@ -109,12 +109,18 @@ public class WhatsAppBaileysService {
     }
 
     public void stopService() {
+        BaileysStatus status = getStatus();
+        if (status.isReachable()) {
+            if (requestShutdownViaGateway()) {
+                return;
+            }
+        }
+
         File directory = resolveServiceDirectory();
         File stopScript = new File(directory, "stop-baileys.sh");
         if (!stopScript.isFile()) {
             throw new IllegalStateException("Script stop Baileys non trovato: " + stopScript.getAbsolutePath());
         }
-
         File logFile = new File(directory, "baileys-service.log");
         ProcessBuilder processBuilder = new ProcessBuilder("bash", stopScript.getAbsolutePath());
         processBuilder.directory(directory);
@@ -200,6 +206,27 @@ public class WhatsAppBaileysService {
             });
         } catch (IOException ex) {
             return Map.of();
+        }
+    }
+
+    private boolean requestShutdownViaGateway() {
+        HttpURLConnection connection = null;
+        try {
+            URL endpoint = new URL(gatewayBaseUrl + "/api/shutdown");
+            connection = (HttpURLConnection) endpoint.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(timeoutMs);
+            connection.setReadTimeout(timeoutMs);
+            connection.setDoOutput(true);
+            connection.getOutputStream().write(new byte[0]);
+            int status = connection.getResponseCode();
+            return status >= 200 && status < 300;
+        } catch (IOException ex) {
+            return false;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
