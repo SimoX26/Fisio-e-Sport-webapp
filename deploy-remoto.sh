@@ -155,6 +155,7 @@ echo ">> Preparo archivio baileys-service"
 tar \
   --exclude='node_modules' \
   --exclude='auth-session' \
+  --exclude='baileys-service.pid' \
   --exclude='baileys-service.log' \
   -czf "$BAILEYS_ARCHIVE" \
   "$BAILEYS_DIR"
@@ -173,6 +174,7 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
   mkdir -p \"\$BAILEYS_PARENT_DIR\"
   tar -xzf ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz -C \"\$BAILEYS_PARENT_DIR\"
   chmod +x '${BAILEYS_REMOTE_PATH%/}/start-baileys.sh'
+  chmod +x '${BAILEYS_REMOTE_PATH%/}/stop-baileys.sh'
   rm -f ${REMOTE_PATH%/}/baileys-service-deploy.tar.gz
 "
 

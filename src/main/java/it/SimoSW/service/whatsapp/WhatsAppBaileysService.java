@@ -108,6 +108,32 @@ public class WhatsAppBaileysService {
         }
     }
 
+    public void stopService() {
+        File directory = resolveServiceDirectory();
+        File stopScript = new File(directory, "stop-baileys.sh");
+        if (!stopScript.isFile()) {
+            throw new IllegalStateException("Script stop Baileys non trovato: " + stopScript.getAbsolutePath());
+        }
+
+        File logFile = new File(directory, "baileys-service.log");
+        ProcessBuilder processBuilder = new ProcessBuilder("bash", stopScript.getAbsolutePath());
+        processBuilder.directory(directory);
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
+        processBuilder.redirectError(ProcessBuilder.Redirect.appendTo(logFile));
+        try {
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("Arresto del servizio WhatsApp non riuscito.");
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Impossibile arrestare il servizio WhatsApp locale.", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Arresto del servizio WhatsApp interrotto.", ex);
+        }
+    }
+
     public void sendTextMessage(String destinationPhone, String message) {
         String recipient = sanitizePhone(destinationPhone);
         String normalizedMessage = requireMessage(message);

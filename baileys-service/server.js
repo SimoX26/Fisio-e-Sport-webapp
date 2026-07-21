@@ -165,18 +165,18 @@ const server = http.createServer(async (request, response) => {
   if (request.method === "GET" && requestUrl.pathname === "/api/qr") {
     if (!runtimeState.qrDataUrl) {
       writeHtml(response, 200, "<!doctype html><html><head><meta charset=\"utf-8\">"
-          + "<meta http-equiv=\"refresh\" content=\"2\"><title>Baileys QR</title></head>"
+          + "<title>Baileys QR</title></head>"
           + "<body><p>QR non disponibile. Stato: "
           + runtimeState.state + "</p></body></html>");
       return;
     }
     writeHtml(response, 200, "<!doctype html><html><head><meta charset=\"utf-8\">"
-        + "<meta http-equiv=\"refresh\" content=\"2\"><title>Baileys QR</title>"
+        + "<title>Baileys QR</title>"
         + "<style>body{font-family:sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f7f4ee;color:#202124}"
         + "main{text-align:center;padding:20px}.qr{background:#fff;padding:18px;border-radius:18px;box-shadow:0 20px 50px #0002;display:inline-block}"
         + "img{width:min(72vw,320px);height:auto;display:block}p{max-width:420px;line-height:1.45;margin:12px auto 0}h1{font-size:1.25rem;margin:0 0 14px}</style></head><body><main>"
         + "<h1>Scansiona il QR WhatsApp</h1><div class=\"qr\"><img src=\"" + runtimeState.qrDataUrl + "\" alt=\"QR WhatsApp\"></div>"
-        + "<p>Se WhatsApp chiede una seconda scansione, resta su questa pagina: il QR si aggiorna automaticamente ogni 2 secondi.</p>"
+        + "<p>Se WhatsApp chiede una seconda scansione, il QR viene aggiornato automaticamente dalla pagina impostazioni.</p>"
         + "<p>QR #" + runtimeState.qrCounter + " generato alle " + runtimeState.qrUpdatedAt + "</p>"
         + "</main></body></html>");
     return;
@@ -224,3 +224,16 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`[baileys-service] listening on http://127.0.0.1:${port}`);
   startBaileys();
 });
+
+function shutdown() {
+  try {
+    runtimeState.socket?.end?.();
+  } catch (error) {
+    console.error("[baileys-service] Error during shutdown:", error);
+  }
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(0), 4000).unref();
+}
+
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
