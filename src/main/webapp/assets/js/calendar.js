@@ -104,8 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const calendarScrollShell = calendarEl.closest('.calendar-scroll-shell');
-
     if (searchHighlightNoticeEl) {
         const hasHighlightFromSearch = highlightAppointmentId !== null || highlightPatientId !== null;
         searchHighlightNoticeEl.classList.toggle('d-none', !hasHighlightFromSearch);
@@ -540,74 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function isMobileCalendarViewport() {
-        return window.matchMedia('(max-width: 767.98px)').matches;
-    }
-
-    function readTimeSlotLabel(slotLabelEl) {
-        const visibleText = (slotLabelEl.textContent || '').replace(/\s+/g, ' ').trim();
-        if (visibleText) {
-            return visibleText;
-        }
-
-        const rowTime = slotLabelEl.closest('tr[data-time]')?.getAttribute('data-time') || '';
-        return rowTime.length >= 5 ? rowTime.slice(0, 5) : '';
-    }
-
-    function syncMobileTimeAxisPosition() {
-        const axisEl = calendarEl.querySelector('.calendar-mobile-time-axis');
-        if (!axisEl || !calendarScrollShell) {
-            return;
-        }
-        axisEl.style.transform = `translateX(${calendarScrollShell.scrollLeft}px)`;
-    }
-
-    function renderMobileTimeAxis() {
-        let axisEl = calendarEl.querySelector('.calendar-mobile-time-axis');
-        if (!axisEl) {
-            axisEl = document.createElement('div');
-            axisEl.className = 'calendar-mobile-time-axis';
-            axisEl.setAttribute('aria-hidden', 'true');
-            calendarEl.appendChild(axisEl);
-        }
-
-        const isTimeGrid = document.body.classList.contains('calendar-view-day')
-            || document.body.classList.contains('calendar-view-week');
-        if (!isMobileCalendarViewport() || !isTimeGrid) {
-            axisEl.classList.remove('is-visible');
-            axisEl.innerHTML = '';
-            return;
-        }
-
-        const calendarRect = calendarEl.getBoundingClientRect();
-        const slotLabels = Array.from(calendarEl.querySelectorAll('.fc-timegrid-slot-label'));
-        axisEl.innerHTML = '';
-
-        slotLabels.forEach((slotLabelEl) => {
-            const label = readTimeSlotLabel(slotLabelEl);
-            if (!label) {
-                return;
-            }
-
-            const rect = slotLabelEl.getBoundingClientRect();
-            const itemEl = document.createElement('span');
-            itemEl.className = 'calendar-mobile-time-axis-item';
-            itemEl.textContent = label;
-            itemEl.style.top = `${Math.max(0, rect.top - calendarRect.top)}px`;
-            itemEl.style.height = `${Math.max(1, rect.height)}px`;
-            axisEl.appendChild(itemEl);
-        });
-
-        axisEl.classList.toggle('is-visible', axisEl.childElementCount > 0);
-        syncMobileTimeAxisPosition();
-    }
-
-    function scheduleMobileTimeAxisRender() {
-        window.requestAnimationFrame(() => {
-            renderMobileTimeAxis();
-        });
-    }
-
     function hidePatientSuggestions() {
         if (!patientSuggestionsMenuEl) {
             return;
@@ -899,7 +829,6 @@ document.addEventListener('DOMContentLoaded', () => {
             applyViewClass(calendar);
             applyDesktopWeekFillMode(calendar);
             renderReminderButtons(calendar);
-            scheduleMobileTimeAxisRender();
         },
         events: {
             url: contextPath + '/calendar',
@@ -1013,13 +942,8 @@ document.addEventListener('DOMContentLoaded', () => {
     applyViewClass(calendar);
     applyDesktopWeekFillMode(calendar);
     renderReminderButtons(calendar);
-    scheduleMobileTimeAxisRender();
     window.addEventListener('resize', () => {
         applyDesktopWeekFillMode(calendar);
-        scheduleMobileTimeAxisRender();
-    });
-    if (calendarScrollShell) {
-        calendarScrollShell.addEventListener('scroll', syncMobileTimeAxisPosition, { passive: true });
     }
 
     if (openModalButton) {

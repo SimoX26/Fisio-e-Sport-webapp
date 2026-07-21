@@ -321,7 +321,6 @@ body.calendar-view-week .fc .fc-scrollgrid-section-header th{
 }
 
 #calendar{
-    position: relative;
     width: 100%;
     min-width: 1100px;
     min-height: 760px;
@@ -2411,39 +2410,6 @@ body.calendar-gcal-page .modal-backdrop.show {
         padding-right: .35rem;
         color: #5f6368 !important;
         font-weight: 600;
-        line-height: 1.1;
-        text-align: right;
-        white-space: nowrap;
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .calendar-mobile-time-axis{
-        display: none;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 58px;
-        z-index: 35;
-        pointer-events: none;
-        background: #ffffff;
-        border-right: 1px solid #e0e3e7;
-    }
-
-    .calendar-mobile-time-axis.is-visible{
-        display: block;
-    }
-
-    .calendar-mobile-time-axis-item{
-        position: absolute;
-        left: 0;
-        width: 100%;
-        padding-left: .3rem;
-        padding-right: .35rem;
-        color: #5f6368 !important;
-        font-size: .78rem;
-        font-weight: 700;
         line-height: 1.1;
         text-align: right;
         white-space: nowrap;
