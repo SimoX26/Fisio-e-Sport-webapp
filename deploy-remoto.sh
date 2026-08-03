@@ -216,15 +216,15 @@ sshpass -p "$PASSWORD" ssh "${SSH_OPTS[@]}" "$TARGET" "
     echo '   - installo dipendenze npm baileys-service'
     if [ -n \"\$BAILEYS_RUN_USER\" ] && id \"\$BAILEYS_RUN_USER\" >/dev/null 2>&1 && command -v runuser >/dev/null 2>&1; then
       if command -v timeout >/dev/null 2>&1; then
-        timeout 300 runuser -u \"\$BAILEYS_RUN_USER\" -- npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+        timeout 300 runuser -u \"\$BAILEYS_RUN_USER\" -- bash -lc \"cd '${BAILEYS_REMOTE_PATH%/}' && if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi\"
       else
-        runuser -u \"\$BAILEYS_RUN_USER\" -- npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+        runuser -u \"\$BAILEYS_RUN_USER\" -- bash -lc \"cd '${BAILEYS_REMOTE_PATH%/}' && if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi\"
       fi
     else
       if command -v timeout >/dev/null 2>&1; then
-        timeout 300 npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+        timeout 300 bash -lc 'cd '"'"'${BAILEYS_REMOTE_PATH%/}'"'"' && if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi'
       else
-        npm install --omit=dev --prefix '${BAILEYS_REMOTE_PATH%/}'
+        bash -lc 'cd '"'"'${BAILEYS_REMOTE_PATH%/}'"'"' && if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi'
       fi
     fi
   elif [ '${INSTALL_BAILEYS_DEPS}' = 'true' ]; then

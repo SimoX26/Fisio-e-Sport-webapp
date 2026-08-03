@@ -62,6 +62,9 @@ whatsapp.baileys.gatewayBaseUrl=http://127.0.0.1:3001
 In alternativa, avvia il servizio locale da terminale:
 
 ```bash
+cd baileys-service
+npm ci
+cd ..
 ./baileys-service/start-baileys.sh
 ```
 

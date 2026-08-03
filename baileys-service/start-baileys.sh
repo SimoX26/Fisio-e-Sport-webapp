@@ -28,8 +28,17 @@ if ! command -v node >/dev/null 2>&1; then
   exit 127
 fi
 
-if [ ! -d node_modules ]; then
-  npm install
+install_dependencies() {
+  if [ -f package-lock.json ]; then
+    npm ci --omit=dev
+  else
+    npm install --omit=dev
+  fi
+}
+
+if [ ! -d node_modules ] || [ ! -f node_modules/@whiskeysockets/baileys/package.json ]; then
+  echo "[baileys-service] Dipendenze mancanti o incomplete, reinstallazione in corso..."
+  install_dependencies
 fi
 
 echo $$ > "$PID_FILE"
