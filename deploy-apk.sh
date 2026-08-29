@@ -11,27 +11,21 @@ Descrizione:
 
 Opzioni:
   --android-url <url>     URL backend per build APK (FISIO_SPORT_BASE_URL)
-  --apk-prefix <prefix>   Prefisso nome APK generato (es: test)
-  --apk-test              Profilo test LAN (prefix: test, server: 192.168.1.16, overlay rosso)
   --apk-output-dir <dir>  Cartella output APK locale (default: /home/simone/Scaricati)
   --help                  Mostra questo aiuto
 
 Esempi:
   ./deploy-apk.sh
-  ./deploy-apk.sh --apk-test
-  ./deploy-apk.sh --apk-prefix test --android-url http://192.168.1.16:8080/Fisio-e-Sport-webapp
+  ./deploy-apk.sh --android-url http://192.168.1.50:8080/Fisio-e-Sports
 HELP
 }
 
 ANDROID_DIR="android-app"
 APK_DIR="${ANDROID_DIR}/app/build/outputs/apk/debug"
 BASE_APK_NAME="FisioESport.apk"
-LAN_TEST_URL="http://192.168.1.16:8080/Fisio-e-Sport-webapp"
 
 ANDROID_URL=""
 ANDROID_URL_EXPLICIT="false"
-APK_PREFIX=""
-APK_TEST_MODE="false"
 APK_OUTPUT_DIR="/home/simone/Scaricati"
 
 while [[ $# -gt 0 ]]; do
@@ -40,14 +34,6 @@ while [[ $# -gt 0 ]]; do
       ANDROID_URL="${2:-}"
       ANDROID_URL_EXPLICIT="true"
       shift 2
-      ;;
-    --apk-prefix)
-      APK_PREFIX="${2:-}"
-      shift 2
-      ;;
-    --apk-test)
-      APK_TEST_MODE="true"
-      shift
       ;;
     --apk-output-dir)
       APK_OUTPUT_DIR="${2:-}"
@@ -70,35 +56,17 @@ if [[ ! -d "$ANDROID_DIR" ]]; then
   exit 1
 fi
 
-if [[ "$APK_TEST_MODE" == "true" ]]; then
-  if [[ "$ANDROID_URL_EXPLICIT" != "true" ]]; then
-    ANDROID_URL="$LAN_TEST_URL"
-    ANDROID_URL_EXPLICIT="true"
-  fi
-  if [[ -z "$APK_PREFIX" ]]; then
-    APK_PREFIX="test"
-  fi
-fi
-
 if [[ "$ANDROID_URL_EXPLICIT" == "true" ]]; then
   echo ">> Build APK con backend URL: $ANDROID_URL"
   (
     cd "$ANDROID_DIR"
-    if [[ "$APK_TEST_MODE" == "true" ]]; then
-      ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}" -PFISIO_SPORT_TEST_OVERLAY=true -PFISIO_SPORT_TEST_APP=true
-    else
-      ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}"
-    fi
+    ./gradlew assembleDebug "-PFISIO_SPORT_BASE_URL=${ANDROID_URL}"
   )
 else
   echo ">> Build APK con configurazione di default"
   (
     cd "$ANDROID_DIR"
-    if [[ "$APK_TEST_MODE" == "true" ]]; then
-      ./gradlew assembleDebug -PFISIO_SPORT_TEST_OVERLAY=true -PFISIO_SPORT_TEST_APP=true
-    else
-      ./gradlew assembleDebug
-    fi
+    ./gradlew assembleDebug
   )
 fi
 
@@ -114,14 +82,6 @@ DEST_APK="${APK_OUTPUT_DIR%/}/${BASE_APK_NAME}"
 cp -f "$APK_FILE" "$DEST_APK"
 APK_FILE="$DEST_APK"
 APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
-
-if [[ -n "$APK_PREFIX" ]]; then
-  APK_BASENAME="$(basename "$DEST_APK")"
-  PREFIXED_APK="${APK_OUTPUT_DIR%/}/${APK_PREFIX}-${APK_BASENAME}"
-  cp -f "$DEST_APK" "$PREFIXED_APK"
-  APK_FILE="$PREFIXED_APK"
-  APK_ABS_PATH="$(cd "$(dirname "$APK_FILE")" && pwd)/$(basename "$APK_FILE")"
-fi
 
 echo ">> APK generato: $APK_FILE"
 echo ">> Percorso filesystem: $APK_ABS_PATH"

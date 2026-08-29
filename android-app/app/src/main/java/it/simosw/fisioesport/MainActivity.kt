@@ -15,7 +15,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -87,7 +86,6 @@ class MainActivity : AppCompatActivity() {
         applySystemInsets()
         setupWebView()
         setupNavigation()
-        setupTestOverlay()
 
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState)
@@ -206,27 +204,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
-    }
-
-    private fun setupTestOverlay() {
-        if (!BuildConfig.TEST_OVERLAY_ENABLED) {
-            return
-        }
-
-        val overlayView = View(this).apply {
-            setBackgroundColor(0x22FF0000)
-            isClickable = false
-            isFocusable = false
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }
-
-        addContentView(
-            overlayView,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
     }
 
     override fun onPause() {

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>it.SimoSW</groupId>
-  <artifactId>Fisio-e-Sport-webapp</artifactId>
+  <artifactId>Fisio-e-Sports</artifactId>
   <packaging>war</packaging>
   <version>1.0</version>
 
@@ -77,7 +77,7 @@
   </dependencies>
 
   <build>
-    <finalName>Fisio-e-Sport-webapp</finalName>
+    <finalName>Fisio-e-Sports</finalName>
       <plugins>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>

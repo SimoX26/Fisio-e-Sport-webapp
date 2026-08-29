@@ -90,4 +90,3 @@ backups/*.sql.gz
 # Local tool artifacts
 # =========================
 .codex
-.aider*

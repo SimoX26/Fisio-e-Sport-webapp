@@ -25,12 +25,12 @@ Imposta in `sdk.dir` il percorso locale dell'Android SDK. `local.properties` è 
 
 La build legge la proprietà Gradle `FISIO_SPORT_BASE_URL`. In assenza della proprietà usa il backend remoto configurato in `app/build.gradle.kts`.
 
-Da un dispositivo fisico non usare `localhost`: indica un host raggiungibile dal telefono, mantenendo il contesto web `Fisio-e-Sport-webapp`.
+Da un dispositivo fisico non usare `localhost`: indica un host raggiungibile dal telefono, mantenendo il contesto web `Fisio-e-Sports`.
 
 Esempio per un backend nella rete locale:
 
 ```bash
-./gradlew assembleDebug -PFISIO_SPORT_BASE_URL=http://192.168.1.50:8080/Fisio-e-Sport-webapp
+./gradlew assembleDebug -PFISIO_SPORT_BASE_URL=http://192.168.1.50:8080/Fisio-e-Sports
 ```
 
 ## Build
@@ -61,12 +61,6 @@ La build release è disponibile con `./gradlew assembleRelease`, ma il progetto 
 
 ```bash
 ./deploy-apk.sh --apk-output-dir /percorso/output
-```
-
-Per una build di test LAN con applicazione separata e overlay rosso:
-
-```bash
-./deploy-apk.sh --apk-test --apk-output-dir /percorso/output
 ```
 
 Consulta tutte le opzioni con `./deploy-apk.sh --help`.

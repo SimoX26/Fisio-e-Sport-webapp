@@ -81,7 +81,7 @@ Compila e verifica il progetto:
 mvn clean package
 ```
 
-Il WAR viene generato in `target/Fisio-e-Sport-webapp.war`; il nome del contesto applicativo resta `Fisio-e-Sport-webapp` anche se il repository si chiama `Fisio-e-Sports`.
+Il WAR viene generato in `target/Fisio-e-Sports.war` e il contesto applicativo Tomcat è `Fisio-e-Sports`.
 
 Puoi copiare manualmente il WAR nella directory `webapps` di Tomcat oppure usare lo script locale, specificando il percorso della tua installazione:
 
@@ -92,7 +92,7 @@ Puoi copiare manualmente il WAR nella directory `webapps` di Tomcat oppure usare
 L'applicazione sarà disponibile, salvo configurazioni diverse di Tomcat, su:
 
 ```text
-http://localhost:8080/Fisio-e-Sport-webapp/
+http://localhost:8080/Fisio-e-Sports/
 ```
 
 Per tutte le opzioni degli script di deploy:
