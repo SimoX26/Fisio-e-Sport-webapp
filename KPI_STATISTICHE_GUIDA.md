@@ -1,73 +1,107 @@
-# Guida Lettura Statistiche KPI
+# Guida alle statistiche KPI
 
-Questa guida spiega come interpretare la pagina **Statistiche** (`/dashboard/insights`) e l'endpoint dati (`/dashboard/kpi`).
+La pagina `/dashboard/insights` visualizza i dati restituiti dall'endpoint `/dashboard/kpi`.
 
-## Origine dei dati
+## Ambito e periodo
 
-Le statistiche sono basate su snapshot mensili salvati in `kpi_monthly_snapshot`.
-Il sistema aggiorna gli snapshot automaticamente (job notturno) per:
+L'interfaccia permette di selezionare:
 
-- mese corrente
-- mese precedente
+- `me`: dati del terapista autenticato;
+- `global`: dati aggregati di tutti i terapisti;
+- una finestra di 6, 12 o 24 mesi.
 
-Questo approccio migliora le performance su server con risorse limitate.
+L'endpoint accetta il parametro `months` fino a un massimo di 36.
 
-## Ambiti (`scope`)
+## Aggiornamento dei dati
 
-- `me`: mostra solo i KPI del terapista loggato.
-- `global`: mostra i KPI aggregati globali.
+I valori principali sono salvati nella tabella `kpi_monthly_snapshot`. All'avvio della webapp e ogni giorno alle 02:30 lo scheduler aggiorna il mese corrente e quello precedente, sia per l'ambito globale sia per ogni terapista attivo.
 
-## Finestra temporale
+Alcuni indicatori gestionali vengono calcolati durante la lettura degli snapshot. I mesi più vecchi possono quindi essere assenti se non sono mai stati salvati nella tabella.
 
-La pagina permette la selezione della finestra:
+## Indicatori operativi
 
-- ultimi 6 mesi
-- ultimi 12 mesi
-- ultimi 24 mesi
+### Appuntamenti del mese
 
-## KPI mostrati
+Appuntamenti non cancellati, associati a un paziente e con data di inizio nel mese.
 
-### Completati (mese)
-Numero di appuntamenti in stato `COMPLETED` nel mese selezionato.
+### Trattamenti completati
 
-### Nuovi pazienti (mese)
-Numero di pazienti creati nel mese.
-In `scope=me`, vengono conteggiati i pazienti creati nel mese che hanno almeno un appuntamento associato a quel terapista.
+Appuntamenti in stato `COMPLETED` con data di fine nel mese.
 
-### Ore prenotate (mese)
-Somma delle durate degli appuntamenti non cancellati nel mese, espressa in ore.
+### Appuntamenti cancellati
 
-Formula:
+Appuntamenti in stato `CANCELLED` la cui data di cancellazione ricade nel mese.
 
-`ore_prenotate = total_booked_minutes / 60`
+### Ore prenotate
 
-### Tasso cancellazione
-Percentuale di cancellazioni rispetto agli appuntamenti creati nel mese.
+Somma della durata degli appuntamenti non cancellati e associati a un paziente, con data di inizio nel mese:
 
-Formula:
+```text
+ore prenotate = totalBookedMinutes / 60
+```
 
-`tasso_cancellazione = appointments_cancelled / appointments_created * 100`
+### Tasso di cancellazione
 
-## Grafico trend
+Rapporto mostrato dall'interfaccia tra cancellazioni e appuntamenti del mese:
 
-Il grafico lineare mostra l'andamento mensile di:
+```text
+tasso di cancellazione = appuntamenti cancellati / appuntamenti del mese * 100
+```
 
-- appuntamenti completati
-- appuntamenti cancellati
-- nuovi pazienti
+Se il denominatore è zero, il valore mostrato è `0%`.
 
-## Tabella dettaglio
+## Indicatori gestionali
 
-La tabella sotto al grafico mostra, per ogni mese della finestra selezionata:
+### Nuovi appuntamenti creati
 
-- creati
-- completati
-- cancellati
-- nuovi pazienti
-- ore prenotate
+Appuntamenti il cui campo `created_at` ricade nel mese, indipendentemente dalla data fissata per la prestazione.
 
-## Note operative
+### Nuovi pazienti
 
-- Se vedi valori a `0`, verifica che gli snapshot siano stati creati correttamente.
-- Dopo deploy o modifiche importanti, è consigliato verificare che il job scheduler KPI sia attivo.
-- I mesi antecedenti all'introduzione del sistema snapshot possono risultare vuoti (comportamento atteso).
+Pazienti il cui primo appuntamento non cancellato ricade nel mese selezionato. Nell'ambito `me` vengono considerate solo le prestazioni del terapista autenticato.
+
+### Pazienti attivi
+
+Numero distinto di pazienti con almeno un appuntamento non cancellato nel mese.
+
+### Pazienti di ritorno
+
+```text
+pazienti di ritorno = pazienti attivi - nuovi pazienti
+```
+
+Il risultato non scende mai sotto zero.
+
+### Saturazione agenda
+
+```text
+saturazione = minuti prenotati / minuti disponibili * 100
+```
+
+La capacità applicativa è fissata a 160 ore mensili per terapista. Nell'ambito globale viene moltiplicata per il numero di terapisti attivi.
+
+### Media appuntamenti per paziente
+
+```text
+media = appuntamenti del mese / pazienti attivi
+```
+
+Se non ci sono pazienti attivi, il valore mostrato è `0,0`.
+
+## Grafico e tabella
+
+Il grafico mostra l'andamento mensile di:
+
+- appuntamenti del mese;
+- trattamenti completati;
+- appuntamenti cancellati;
+- nuovi appuntamenti creati;
+- pazienti creati nel mese (`newPatientsMonth`).
+
+La tabella riporta, per ciascun mese disponibile, tutti gli indicatori mostrati nelle schede.
+
+## Risoluzione dei problemi
+
+- Se tutti i valori sono a zero, controlla i log di avvio dello scheduler e la connessione al database.
+- Se mancano alcuni mesi, verifica la presenza dei relativi record in `kpi_monthly_snapshot`.
+- Per un database aggiornato da una versione precedente, verifica che sia stata applicata la migrazione `2026-05-13_kpi_monthly_snapshot.sql`.
